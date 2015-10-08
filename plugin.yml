@@ -1,0 +1,9 @@
+name: Mobs
+main: cn.rpgmc.run.Main
+version: 2.0.3
+commands:
+  Mobs:
+    description: by owen
+    usage: §c[怪物生成器]§5参数错误,您可以使用/Mobs help命令排查错误.
+    permission: mobs
+    permission-message: §c[怪物生成器]§5您没有<mobs>权限
