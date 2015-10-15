@@ -177,6 +177,7 @@ if(args[0].equalsIgnoreCase("spawn")){
 }else if(args[0].equalsIgnoreCase("reload")){
 	if(args.length==1){
 		try {
+			Main.getCfg().load(Main.getF());
 			Main.getCfg().set("Version",Main.getV());
 			Main.loadYml();
 			p.sendMessage("§c[怪物生成器]§f配置重载成功.");
@@ -190,7 +191,7 @@ if(args[0].equalsIgnoreCase("spawn")){
 	return true ;
 }else if(args[0].equalsIgnoreCase("help")){
 	if(args.length==1){
-		p.sendMessage("§c[怪物生成器]§f/Mobs help [main/mob/spawn] (spawn)<Point/World> 查看[主命令/怪物命令/刷新点命令]的帮助文本");
+		p.sendMessage("§c[怪物生成器]§f/Mobs help [main/mob/skill/spawn] (spawn)<Point/World> 查看[主命令/怪物命令/技能命令/刷新点命令]的帮助文本");
 	return true;
 	}
 if(args.length!=2){
@@ -202,7 +203,9 @@ if(args[1].equalsIgnoreCase("main")){
 mainHelp(p);
 }else if(args[1].equalsIgnoreCase("mob")){
 mobHelp(p);
-}else if(args[1].equalsIgnoreCase("spawn")){
+}else if(args[1].equalsIgnoreCase("skill")){
+	skillHelp(p);
+	}else if(args[1].equalsIgnoreCase("spawn")){
 
 if(args.length==2){
 	p.sendMessage("§c[怪物生成器]§f/Mobs help spawn <Point/World> 查看[刷新点命令]的帮助文本");
@@ -241,14 +244,14 @@ return true;
 	
 }
 
-private static void worldSpawnHelp(Player p) {
+public static void worldSpawnHelp(Player p) {
 	p.sendMessage("§a  /Mobs spawn modify world [add/list/del] 修改刷新的世界");
 	p.sendMessage("§a  /Mobs spawn modify chance [几率] 修改刷新的几率");
 	p.sendMessage("§a  /Mobs spawn modify playerNearby [距离] 修改与玩家的刷新最大距离");
 	
 }
 
-private static void pointSpawnHelp(Player p) {
+public static void pointSpawnHelp(Player p) {
 	p.sendMessage("§a  /Mobs spawn modify point 设置刷新点位置");
 	p.sendMessage("§a  /Mobs spawn modify single [Single] 设置每次刷新数量");
 	p.sendMessage("§a  /Mobs spawn modify range [Range] 设置活动半径(超出会被弹回原点)");
@@ -256,7 +259,7 @@ private static void pointSpawnHelp(Player p) {
 	
 }
 
-private static void spawnHelp(Player p) {
+public static void spawnHelp(Player p) {
 	p.sendMessage("§a  /Mobs spawn new [Point/World] [刷新点名] 创建某个刷新点(自动select)");
 	p.sendMessage("§a  /Mobs spawn select [Point/World] [刷新点名] 设置某个刷新点的配置");
 	p.sendMessage("§a  /Mobs spawn list [Point/World] 查看刷新点列表");
@@ -269,7 +272,7 @@ private static void spawnHelp(Player p) {
 	
 }
 
-private static void mobHelp(Player p) {
+public static void mobHelp(Player p) {
 	p.sendMessage("§a  /Mobs mob new [怪物名(不是显示名字,做为记号)] 创建某个怪物(自动select)");
 	p.sendMessage("§a  /Mobs mob select [怪物名] 设置某个怪物的配置");
 	p.sendMessage("§a  /Mobs mob spawn 在视线处创建一个该怪物");
@@ -285,11 +288,23 @@ private static void mobHelp(Player p) {
 	p.sendMessage("§a  /Mobs mob modify exp [HighEXP] <LowEXP> 设置死亡掉落的经验");
 	p.sendMessage("§a  /Mobs mob modify type [Type] 设置怪物类型");
 	p.sendMessage("§a  /Mobs mob modify eqpt 设置装备为当前穿戴的装备和手拿的武器");
+	p.sendMessage("§a  /Mobs mob modify skill [add/list/del] 增删查技能列表");
 	p.sendMessage("§a  /Mobs mob modify sl [Day/Night/Sun/Rain/Thunder] [true/false] 设置怪物刷新对环境的需求");
 	
 }
+public static void skillHelp(Player p) {
+p.sendMessage("§a  /Mobs skill new [技能名(不是显示名字,做为记号)] [技能类型] 创建某个技能(自动select)");
+p.sendMessage("§a  /Mobs skill select [技能名] 设置某个技能的配置");
+p.sendMessage("§a  /Mobs skill type  查看技能类型列表");
+p.sendMessage("§a  /Mobs skill list <技能类型> 查看技能列表");
+p.sendMessage("§a  /Mobs skill see 查看一个技能的详细信息");
+p.sendMessage("§a  /Mobs skill help [技能类型] 查看该类型技能包含的子指令");
+p.sendMessage("§a  /Mobs skill modify  修改技能属性");
+Skill.help();
+}
 
-private static void mainHelp(Player p) {
+
+public static void mainHelp(Player p) {
 	p.sendMessage("§a  /Mobs set 设置选择器的物品ID为手上的物品");
 	p.sendMessage("§a  /Mobs spawn 设置刷新点的各种属性<重要命令>");
 	p.sendMessage("§a  /Mobs mob 设置怪物的各种属性<重要命令>");
@@ -302,9 +317,81 @@ private static void mainHelp(Player p) {
 }
 
 private static boolean skill(String[] args, Player p) {
-	// TODO 自动生成的方法存根
-	p.sendMessage("本功能请期待下个版本!");
+
+	if(args[1].equalsIgnoreCase("new")){
+		if(args.length!=4)
+			return false;
+		
+		if(Skill.isSkill(args[3])!=-1)
+		{p.sendMessage("§c[怪物生成器]§f名称已存在.");
+			return true;
+		}
+		
+	Skill skill=	Skill.newSkill(args[2],args[3]);
+	if(skill==null){
+		p.sendMessage("§c[怪物生成器]§f该技能类型不存在,或程序内部错误.");
+		return true;
+	}
+	p.sendMessage("§c[怪物生成器]§f操作成功.");
+	Main.setsSkill(skill);
+	try {
+		Main.saveYml();
+	} catch (IOException e) {
+		// TODO 自动生成的 catch 块
+		e.printStackTrace();
+	}
 	return true;
+		
+	}else if(args[1].equalsIgnoreCase("select")){
+		if(args.length!=3)
+			return false;
+		
+		if(Skill.isSkill(args[2])==-1){
+			p.sendMessage("§c[怪物生成器]§f该技能不存在.");
+			return true;
+		}
+		
+		Main.setsSkill(Skill.getSkills().get(Skill.isSkill(args[2])));
+		p.sendMessage("§c[怪物生成器]§f选择成功.");
+		return true;
+		
+		
+		
+	}else if(args[1].equalsIgnoreCase("type")){
+		p.sendMessage(Skill.getTypes());
+		return true;
+	}else if(args[1].equalsIgnoreCase("list")){
+		if(args.length==2)
+			p.sendMessage(Skill.getList());
+		else if(args.length==3)
+			p.sendMessage(Skill.getList(args[2]));
+		else return false;
+		
+	return true;
+	}else if(args[1].equalsIgnoreCase("help")){
+		if(args.length!=3)
+			return false;
+		p.sendMessage(Skill.help(args[2]));
+		return true;
+		
+	}
+	
+	
+	
+	
+	
+	else if(Main.getsSkill()==null)
+	{p.sendMessage("§c[怪物生成器]§f请先选择一个技能.");
+	return true;}
+	else if(args[1].equalsIgnoreCase("see")){
+	p.sendMessage(Main.getsSkill().see());
+	return true;
+}else if(args[1].equalsIgnoreCase("modify")){
+	return Main.getsSkill().cmdManager(args, p);
+
+}
+
+	return false;
 }
 
 
@@ -333,6 +420,14 @@ private static boolean mob(Player p, String[] args) {
 	}else if(args[1].equalsIgnoreCase("new")){
 		if(args.length!=3)
 			return false;
+		
+		if(MobModel.isMobModel(args[2])!=-1)
+		{
+
+			p.sendMessage("§c[怪物生成器]§f名称已存在.");
+
+			
+		}else{
 		try {
 			Main.setsMobModel(new MobModel(args[2],Main.getCfg().getConfigurationSection("MobModel")));
 			Main.saveYml();
@@ -340,13 +435,14 @@ private static boolean mob(Player p, String[] args) {
 		} catch (IOException e) {
 			p.sendMessage("§c[怪物生成器]§f创建失败.");
 		}
+		}
 		return true;
 		
 	}else if(args[1].equalsIgnoreCase("list")){
 		 String s="怪物列表:";
-		for(int i=0;i<MobModel.getMobModel().size();i++){
-			s+=MobModel.getMobModel().get(i).getsName();
-			if(i!=MobModel.getMobModel().size()-1){
+		for(int i=0;i<MobModel.getMobModels().size();i++){
+			s+=MobModel.getMobModels().get(i).getsName();
+			if(i!=MobModel.getMobModels().size()-1){
 				s+=",";
 			}
 		}
@@ -515,6 +611,55 @@ else if(args[2].equalsIgnoreCase("drops")){
 	 }else if(args[2].equalsIgnoreCase("eqpt")){
 		 mm.setEqpt(new Eqpt(p.getEquipment().getHelmet(),p.getEquipment().getChestplate(),p.getEquipment().getLeggings(),p.getEquipment().getBoots(),p.getEquipment().getItemInHand()));
 		//装备
+	 }else if(args[2].equalsIgnoreCase("skill")){
+		 
+		 if(args.length<4)
+			 return false;
+		 
+		 if(args[3].equalsIgnoreCase("add")){
+			 
+			 
+			 
+			 if(args.length!=5)
+				 return false;
+			 Skill skill = Skill.getSkill(args[4]);
+			 if(skill==null)
+			 {
+				 
+				 p.sendMessage("§c[怪物生成器]§f该技能不存在.");
+				 return true;
+				 
+			 }else
+			 mm.addSkill(skill);
+			 
+			 
+		 }else if(args[3].equalsIgnoreCase("del")){
+			 if(args.length!=5)
+				 return false;
+			 if(!mm.delSkills(Integer.parseInt(args[4])))
+			 {p.sendMessage("§c[怪物生成器]§f该技能不存在.");
+			 return false;}
+			 
+			 
+			 
+			 
+		 }else if(args[3].equalsIgnoreCase("list")){
+			 if(args.length!=4)
+				 return false;
+			 
+			 String str="怪物技能列表:";
+			 for(int i=0;i<mm.getSkills().size();i++){
+				 if(i!=0)
+					 str+=",";
+				 str+=i+":"+mm.getSkills().get(i).getsName();
+			 }
+			 p.sendMessage("str");
+			 return true;
+			 
+		 }else
+			 return false;
+		 
+
 	 }else{
 		 return false;
 	 }
@@ -567,6 +712,12 @@ private static boolean spawn(Player p, String[] args) {
 			p.sendMessage("§c[怪物生成器]§f请先选择一个点.");
 			return true;
 		}
+		
+		if(PointSpawn.isPSpawn(args[3])!=-1)
+		{
+			p.sendMessage("§c[怪物生成器]§f名称已存在.");
+			return true;
+		}
 		Main.setsSpawn(new PointSpawn(args[3],Main.getCfg().getConfigurationSection("PointSpawn"),Main.getO()));
 		Main.getsSpawn().save();
 		p.sendMessage("§c[怪物生成器]§f创建成功.");
@@ -576,8 +727,16 @@ private static boolean spawn(Player p, String[] args) {
 			p.sendMessage("§c[怪物生成器]§f保存失败.");
 		}
 	return true;
-	}
-	else if(args[2].equalsIgnoreCase("World")){
+	
+	
+	
+	
+	}else if(args[2].equalsIgnoreCase("World")){
+		if(WorldSpawn.isWSpawn(args[3])!=-1)
+		{
+			p.sendMessage("§c[怪物生成器]§f名称已存在.");
+			return true;
+		}
 		ArrayList<World> w = new ArrayList<World>();
 		w.add(p.getWorld());
 		Main.setsSpawn(new WorldSpawn(args[3],Main.getCfg().getConfigurationSection("WorldSpawn"),w));
@@ -806,7 +965,7 @@ return true;
 			p.sendMessage("§c[怪物生成器]§f怪物不存在.");
 			return true;
 		}
-		Main.getsSpawn().setMm(MobModel.getMobModel().get(MobModel.isMobModel(args[3])));
+		Main.getsSpawn().setMm(MobModel.getMobModels().get(MobModel.isMobModel(args[3])));
 		p.sendMessage("§c[怪物生成器]§f设置成功.");
 	}else
 		return false;

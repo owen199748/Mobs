@@ -166,9 +166,9 @@ locs.addAll(((WorldSpawn)spawn).getLoc());
 					{
 						if(s.getRange().equalsIgnoreCase(Skill.RANGE_WORLD))
 						{
-							s.runSkill(m.getE().getWorld().getEntities());
+							m.runSkill(s,m.getE().getWorld().getEntities());
 						}else if(s.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-							s.runSkill(Arrays.asList(m.getE().getLocation().getChunk().getEntities()));
+							m.runSkill(s,Arrays.asList(m.getE().getLocation().getChunk().getEntities()));
 						}
 						
 					}
@@ -179,7 +179,7 @@ locs.addAll(((WorldSpawn)spawn).getLoc());
 			
 
 		}
-		
+	
 		
 	}
 

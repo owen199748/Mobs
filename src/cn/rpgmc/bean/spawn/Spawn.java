@@ -150,16 +150,6 @@ public Spawn(String sName,ConfigurationSection cfg) {
 
 	cfg.createSection(sName);
 	this.cfg=cfg.getConfigurationSection(sName);
-	
-
-
-	
-	
-	
-	
-	
-	
-	
 	for(int i=0;i<spawns.size();i++){
 		if(spawns.get(i).getcName().equalsIgnoreCase(this.cName))
 		{
@@ -167,7 +157,7 @@ public Spawn(String sName,ConfigurationSection cfg) {
 			return;
 		}
 	}
-spawns.add(this);
+	addSpawn(this);
 }
 public Spawn(ConfigurationSection cfg) {
 
@@ -178,9 +168,7 @@ public Spawn(ConfigurationSection cfg) {
 if(cfg.getString("MobModel")==null){
 	mm=null;
 }else
-	mm=new MobModel
-			(MAIN_CFG.getConfigurationSection("MobModel")
-					.getConfigurationSection(cfg.getString("MobModel")));
+	mm=MobModel.getMobModel(cfg.getString("MobModel"));
 	time=cfg.getInt("time");
 
 	for(int i=0;i<spawns.size();i++){
@@ -190,10 +178,17 @@ if(cfg.getString("MobModel")==null){
 			return;
 		}
 	}
-spawns.add(this);
+	addSpawn(this);
 }
 
-
+public static void addSpawn(Spawn spawn){
+	for(int i=0;i<spawns.size();i++)
+		if(spawns.get(i).getcName().equalsIgnoreCase(spawn.getcName()))
+			{spawns.set(i,spawn);
+			return;}
+	
+	spawns.add(spawn);
+}
 
 public long getNow() {
 	return now;

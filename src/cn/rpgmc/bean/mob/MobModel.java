@@ -23,6 +23,7 @@ import cn.rpgmc.bean.integer.Damage;
 import cn.rpgmc.bean.integer.EXP;
 import cn.rpgmc.bean.integer.HP;
 import cn.rpgmc.bean.skill.Skill;
+import cn.rpgmc.bean.spawn.Spawn;
 import cn.rpgmc.run.Main;
 
 public class MobModel {
@@ -63,6 +64,9 @@ public EXP getExp() {
 public void setExp(EXP exp) {
 	this.exp = exp;
 }
+public static void setMobModel(ArrayList<MobModel> mobModel) {
+	MobModel.mobModel = mobModel;
+}
 
 public boolean isMob(int r){
 	for(int i =0;i<mobs.size();i++)
@@ -74,15 +78,36 @@ public boolean isMob(int r){
 	return false;
 }
 
-	private ArrayList<Skill> getSkills() {
+	public ArrayList<Skill> getSkills() {
 		// TODO 自动生成的方法存根
 		return skills;
 	}
+	public boolean delSkills(int i) {
+if(i<0|i>=skills.size())
+	return false;
+
+skills.remove(i);
+return true;
+	}
+	public void addSkill(Skill skill) {
+		// TODO 自动生成的方法存根
+		skills.add(skill);
+	}
+	
 	public Eqpt getEqpt() {
 		return eqpt;
 	}
-public static ArrayList<MobModel> getMobModel() {
+public static ArrayList<MobModel> getMobModels() {
 	return mobModel;
+}
+
+public static MobModel getMobModel(String str) {
+for(int i=0;i<getMobModels().size();i++){
+	if(getMobModels().get(i).getsName().equalsIgnoreCase(str))
+		return getMobModels().get(i);
+}
+
+return null;
 }
 public static int isMobModel(String sName) {
 	for(int i=0;i<mobModel.size();i++){
@@ -105,17 +130,7 @@ public MobModel(String sName,ConfigurationSection cfg) throws IOException {
 	dropType =2;
 	cfg.createSection(sName);
 	this.cfg=cfg.getConfigurationSection(sName);
-
-
-	
-for(int i=0;i<mobModel.size();i++){
-	if(mobModel.get(i).getsName().equalsIgnoreCase(this.sName))
-	{
-		mobModel.set(i,this);
-		return;
-	}
-}
-mobModel.add(this);
+addMobModel(this);
 this.save();
 	
 }
@@ -159,25 +174,36 @@ this.save();
 	
 	
 /////////////加载技能
-	skills=(ArrayList<Skill>) cfg.getList("skill");
-	if(skills==null)
-		skills=new ArrayList<Skill>();
+	ArrayList<String> skillStr = (ArrayList<String>) cfg.getList("skills");
+	for(int i=0;i<skillStr.size();i++){
+		if(Skill.isSkill(skillStr.get(i))!=-1)
+		{skills.add(Skill.getSkills().get(Skill.isSkill(skillStr.get(i))));
+		
+		}
+
+	}
+
 	survivalLimit.isNight(cfg.getConfigurationSection("SurvivalLimit").getBoolean("isNight"));
 	survivalLimit.isRain(cfg.getConfigurationSection("SurvivalLimit").getBoolean("isRain"));
 	survivalLimit.isThundering(cfg.getConfigurationSection("SurvivalLimit").getBoolean("isThundering"));
 
-	for(int i=0;i<mobModel.size();i++){
-		if(mobModel.get(i).getsName().equalsIgnoreCase(this.sName))
-		{
-			mobModel.set(i,this);
-			return;
-		}
+	
+	addMobModel(this);
 	}
 	
-	mobModel.add(this);
+	
+	
+	public static void addMobModel(MobModel mm){
+		for(int i=0;i<mobModel.size();i++)
+			if(mobModel.get(i).getsName().equalsIgnoreCase(mm.getsName()))
+				{mobModel.set(i,mm);
+				return;}
+		
+		mobModel.add(mm);
 	}
 	
-	public void setDropType(int dropType) {
+	
+	public void setDropType(int dropType) { 
 		this.dropType = dropType;
 	}
 	public void setDisplayName(String displayName) {
@@ -195,6 +221,7 @@ this.save();
 	public void addDrop(ItemStack drop,int l) {
 		this.drop.add(new DropItemStack(drop,l));
 	}
+	
 	public boolean delDrop(int drop) {
 		if(this.drop.remove(drop)==null){
 			return false;
@@ -210,12 +237,10 @@ this.save();
 	public void setType(EntityType type) {
 		this.type = type;
 	}
-	public void setSkills(ArrayList<Skill> skills) {
-		this.skills = skills;
-	}
+
 	
 	public boolean remove() {
-		if(!getMobModel().remove(this))
+		if(!getMobModels().remove(this))
 			return false;
 		ConfigurationSection m = MAIN_CFG.getConfigurationSection("MobModel");
 		if(m==null)
@@ -255,6 +280,11 @@ for(int i=0;i<drop.size();i++){
 	l.add(drop.get(i).getItem());
 	cfg.getConfigurationSection("drop").set(drop.get(i).getI()+"", l);
 }
+ArrayList<String> skillStr = new ArrayList<String>();
+for(int i=0;i<skills.size();i++){
+	skillStr.add(skills.get(i).getsName());
+}
+cfg.set("skills", skillStr);
 	
 	}
 	
@@ -323,7 +353,6 @@ else if(dropType==2)
 		}
 	}
 	}
-
 Mob m = new Mob(dmg.getInt(),e,isl,getSkills(),exp.getInt(),isAttrCover);
 if(m!=null)
 	mobs.add(m);

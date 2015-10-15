@@ -33,6 +33,11 @@ public ArrayList<Mob> getMobs() {
 	return mobs;
 }
 
+public void runSkill(Skill skill,List<Entity> e)  {
+	skill.runSkill(this, e);
+	
+}
+
 public void setExp(int exp) {
 	this.exp = exp;
 }

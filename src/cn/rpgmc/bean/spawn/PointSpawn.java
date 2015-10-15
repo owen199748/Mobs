@@ -106,6 +106,15 @@ super.save();
 		String s4 = "一次刷新数量:"+one;
 		return getMainSee()+"\n"+s1+"\n"+s2+"\n"+s3+"\n"+s4;
 	}
+	public static int isPSpawn(String string) {
+		for(int i=0;i<Pmobcreates.size();i++){
+			if(Pmobcreates.get(i).getcName().equalsIgnoreCase(string)){
+				return i;
+			}
+		}
+		return -1;
+	
+	}
 
 
 }

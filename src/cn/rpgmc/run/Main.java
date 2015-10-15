@@ -37,6 +37,7 @@ import org.bukkit.scheduler.BukkitTask;
 import cn.rpgmc.bean.mob.DropItemStack;
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.mob.MobModel;
+import cn.rpgmc.bean.skill.Skill;
 import cn.rpgmc.bean.spawn.PointSpawn;
 import cn.rpgmc.bean.spawn.Spawn;
 import cn.rpgmc.bean.spawn.WorldSpawn;
@@ -45,6 +46,7 @@ public class Main extends JavaPlugin {
 	private static int clickItem=0;
 	private static MobModel sMobModel=null;
 	private static Spawn sSpawn=null;
+	private static Skill sSkill=null;
 	private static Location o=null;
 	private static String V ="";
 	private static FileConfiguration cfg;
@@ -59,6 +61,12 @@ public class Main extends JavaPlugin {
 	}
 	public static void setsSpawn(Spawn sSpawn) {
 		Main.sSpawn = sSpawn;
+	}
+	public static Skill getsSkill() {
+		return sSkill;
+	}
+	public static void setsSkill(Skill sSkill) {
+		Main.sSkill = sSkill;
 	}
 	public static Spawn getsSpawn() {
 		return sSpawn;
@@ -155,8 +163,30 @@ public class Main extends JavaPlugin {
 
 	public static void loadYml(){
 		setClickItem(cfg.getInt("Tools"));
-Set<String> all = cfg.getConfigurationSection("PointSpawn").getKeys(false);
+Skill.setSkills(new ArrayList<Skill> ());
+Set<String>  all = cfg.getConfigurationSection("Skill").getKeys(false);
 Object[] ary = all.toArray();	
+for(int i = 0;i<ary.length;i++){
+	Skill.newSkill( cfg.getConfigurationSection("Skill")
+			.getConfigurationSection((String) ary[i]));
+}
+
+MobModel.setMobModel( new ArrayList<MobModel>());
+all = cfg.getConfigurationSection("MobModel").getKeys(false);
+ary = all.toArray();	
+for(int i = 0;i<ary.length;i++){
+
+new MobModel(
+		
+	 cfg.getConfigurationSection("MobModel")
+	 .getConfigurationSection((String) ary[i]));
+		
+	}
+
+
+Spawn.setSpawns( new ArrayList<Spawn>());
+all = cfg.getConfigurationSection("PointSpawn").getKeys(false);
+ary = all.toArray();	
 Spawn.getSpawns().clear();
 for(int i = 0;i<ary.length;i++){
 new PointSpawn(
@@ -175,14 +205,8 @@ new WorldSpawn(
 	}
 
 
-all = cfg.getConfigurationSection("MobModel").getKeys(false);
-ary = all.toArray();	
-for(int i = 0;i<ary.length;i++){
-new MobModel(
-	 cfg.getConfigurationSection("MobModel")
-	 .getConfigurationSection((String) ary[i]));
-		
-	}
+
+
 
 
 List<World> ws = Bukkit.getServer().getWorlds();
@@ -219,15 +243,17 @@ boolean a = true;
 		cfg.set("MonsterSpawnBannedWorld", MonsterSpawnBannedWorld);
 		cfg.set("AnimalSpawnBannedWorld", AnimalSpawnBannedWorld);
 
-for(int i=0 ;i<MobModel.getMobModel().size();i++){
-	MobModel.getMobModel().get(i).save();
+for(int i=0 ;i<MobModel.getMobModels().size();i++){
+	MobModel.getMobModels().get(i).save();
 }
 
 for(int i=0 ;i<Spawn.getSpawns().size();i++){
 	Spawn.getSpawns().get(i).save();
 }
 		
-		
+for(int i=0 ;i<Skill.getSkills().size();i++){
+	Skill.getSkills().get(i).save();
+}		
 		
 		
 		
@@ -253,15 +279,16 @@ for(int i=0 ;i<Spawn.getSpawns().size();i++){
 
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
-		
 		if ((sender instanceof Player))
 		if (cmd.getName().equalsIgnoreCase("Mobs")) {
 			Player p=(Player) sender;
 			try {
 				return Cmd.mobSpawn(p,args);
 			} catch (Exception e) {
-				// TODO 自动生成的 catch 块
+	
 				e.printStackTrace();
+				p.sendMessage("插件报错!");
+				return true;
 			}
 		}else{
 			return false;

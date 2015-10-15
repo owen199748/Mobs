@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -36,18 +37,19 @@ ls=this;
 	public void ete(EntityTargetEvent ete)
 	{
 		if(Mob.isMob(ete.getEntity().getEntityId())){
+			Mob m=Mob.getMob(ete.getEntity().getEntityId());
 			Entity e = ete.getEntity();
 			for(int i=0;i<Mob.getMob(e.getEntityId()).getSkills().size();i++){
 				Skill skill = Mob.getMob(e.getEntityId()).getSkills().get(i);
-				
+				if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_TARGET))
 				if(skill.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-				skill.runSkill(Arrays.asList(e.getLocation().getChunk().getEntities()));
+				m.runSkill(skill,Arrays.asList(e.getLocation().getChunk().getEntities()));
 				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
-					skill.runSkill(e.getWorld().getEntities());	
+					m.runSkill(skill,e.getWorld().getEntities());	
 				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
 					ArrayList<Entity> a = new ArrayList<Entity>();
 					a.add(ete.getTarget());
-					skill.runSkill(a);	
+					m.runSkill(skill,a);	
 				}
 				
 				
@@ -56,18 +58,19 @@ ls=this;
 		}
 		if(ete.getTarget()!=null)
 		if(Mob.isMob(ete.getTarget().getEntityId())){
+			Mob m=Mob.getMob(ete.getTarget().getEntityId());
 			Entity e = ete.getTarget();
 			for(int i=0;i<Mob.getMob(e.getEntityId()).getSkills().size();i++){
 				Skill skill = Mob.getMob(e.getEntityId()).getSkills().get(i);
-				
+				if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_BETARGET))
 				if(skill.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-				skill.runSkill(Arrays.asList(e.getLocation().getChunk().getEntities()));
+				m.runSkill(skill,Arrays.asList(e.getLocation().getChunk().getEntities()));
 				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
-					skill.runSkill(e.getWorld().getEntities());	
+					m.runSkill(skill,e.getWorld().getEntities());	
 				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
 					ArrayList<Entity> a = new ArrayList<Entity>();
 					a.add(ete.getEntity());
-					skill.runSkill(a);	
+					m.runSkill(skill,a);	
 				}
 				
 				
@@ -144,38 +147,46 @@ int dmg = mob.getDmg();
 		}
 		
 		if(Mob.isMob(edbee.getEntity().getEntityId())){
+			Mob m=Mob.getMob(edbee.getEntity().getEntityId());
 			Entity e = edbee.getEntity();
 			for(int i=0;i<Mob.getMob(e.getEntityId()).getSkills().size();i++){
 				Skill skill = Mob.getMob(e.getEntityId()).getSkills().get(i);
-				
+				if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_HURT))
 				if(skill.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-				skill.runSkill(Arrays.asList(e.getLocation().getChunk().getEntities()));
+				m.runSkill(skill,Arrays.asList(e.getLocation().getChunk().getEntities()));
 				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
-					skill.runSkill(e.getWorld().getEntities());	
+					m.runSkill(skill,e.getWorld().getEntities());	
 				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
 					ArrayList<Entity> a = new ArrayList<Entity>();
 					a.add(edbee.getDamager());
-					skill.runSkill(a);	
+					m.runSkill(skill,a);	
 				}
-				
-				
+				if(e instanceof LivingEntity)
+					if(((LivingEntity)e).getHealth()-edbee.getDamage()<=0)
+				if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_DYING))
+					if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
+						
+						skill.runSkill(m, edbee.getDamager());
+						
+					}
 			}
 			
 		}
 		
 		if(Mob.isMob(edbee.getDamager().getEntityId())){
+			Mob m=Mob.getMob(edbee.getDamager().getEntityId());
 			Entity e = edbee.getDamager();
 			for(int i=0;i<Mob.getMob(e.getEntityId()).getSkills().size();i++){
 				Skill skill = Mob.getMob(e.getEntityId()).getSkills().get(i);
-				
+				if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_ATTACK))
 				if(skill.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-				skill.runSkill(Arrays.asList(e.getLocation().getChunk().getEntities()));
+				m.runSkill(skill,Arrays.asList(e.getLocation().getChunk().getEntities()));
 				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
-					skill.runSkill(e.getWorld().getEntities());	
+					m.runSkill(skill,e.getWorld().getEntities());	
 				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
 					ArrayList<Entity> a = new ArrayList<Entity>();
 					a.add(edbee.getEntity());
-					skill.runSkill(a);	
+					m.runSkill(skill,a);	
 				}
 				
 				
@@ -190,22 +201,22 @@ int dmg = mob.getDmg();
 	Spawn.removeEntity(ede.getEntity());
 	if(Mob.isMob(ede.getEntity().getEntityId())){
 		Entity e = ede.getEntity();
-		Mob mob = Mob.getMob(e.getEntityId());
-		if(mob.isAttrCover())
-		ede.setDroppedExp(mob.getExp());
+		Mob m = Mob.getMob(e.getEntityId());
+		if(m.isAttrCover())
+		ede.setDroppedExp(m.getExp());
 		else
-		ede.setDroppedExp(ede.getDroppedExp()+mob.getExp());
-		for(int i=0;i<mob.getSkills().size();i++){
-			Skill skill = mob.getSkills().get(i);
-			
+		ede.setDroppedExp(ede.getDroppedExp()+m.getExp());
+		for(int i=0;i<m.getSkills().size();i++){
+			Skill skill = m.getSkills().get(i);
+			if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_DYING))
 			if(skill.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-			skill.runSkill(Arrays.asList(e.getLocation().getChunk().getEntities()));
+			m.runSkill(skill,Arrays.asList(e.getLocation().getChunk().getEntities()));
 			}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
-				skill.runSkill(e.getWorld().getEntities());	
+				m.runSkill(skill,e.getWorld().getEntities());	
 			}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
 				ArrayList<Entity> a = new ArrayList<Entity>();
 				a.add(ede.getEntity().getLastDamageCause().getEntity());
-				skill.runSkill(a);	
+				m.runSkill(skill,a);	
 			}
 			
 			
@@ -214,9 +225,9 @@ int dmg = mob.getDmg();
 		
 		
 		
-		if(mob.getDrop()!=null){
+		if(m.getDrop()!=null){
 			ede.getDrops().clear();
-			ede.getDrops().addAll(mob.getDrop());
+			ede.getDrops().addAll(m.getDrop());
 		}
 		
 		

@@ -28,6 +28,15 @@ public class WorldSpawn extends Spawn{
 		this.playerNearby = playerNearby;
 	}
 	
+	public static int isWSpawn(String string) {
+		for(int i=0;i<Wmobcreates.size();i++){
+			if(Wmobcreates.get(i).getcName().equalsIgnoreCase(string)){
+				return i;
+			}
+		}
+		return -1;
+	
+	}
 
 		public WorldSpawn(ConfigurationSection cfg) {
 		super(cfg);
