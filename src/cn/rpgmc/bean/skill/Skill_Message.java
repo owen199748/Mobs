@@ -58,7 +58,7 @@ public Skill_Message(String sName2, ConfigurationSection cfg2) {
 	protected void run(Mob mob,Entity entity) {
 		if(entity instanceof Player)
 	((Player)entity).sendMessage(msg.replaceAll("%a%", ((LivingEntity)mob.getE()).getCustomName())
-			.replaceAll("%b%", ((Player)entity).getDisplayName()));
+			.replaceAll("%b%", ((Player)entity).getDisplayName()).replaceAll("&","¡ì"));
 
 	}
 

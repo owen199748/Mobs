@@ -253,7 +253,11 @@ abstract public String getSee() ;
 public String getMainSee(){
 String s1="刷新点名:"+cName;
 String s2="刷新点类型:"+getCreateType();
-String s3="怪物模板:"+mm.getsName();
+String s3="";
+if(mm==null)
+	s3="怪物模板:"+"无";
+else
+	s3="怪物模板:"+mm.getsName();
 String s4="刷新间隔:"+time;
 String s5="最大数量:"+all;
 return s1+"\n"+s2+"\n"+s3+"\n"+s4+"\n"+s5;

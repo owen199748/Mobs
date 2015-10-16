@@ -322,12 +322,12 @@ private static boolean skill(String[] args, Player p) {
 		if(args.length!=4)
 			return false;
 		
-		if(Skill.isSkill(args[3])!=-1)
+		if(Skill.isSkill(args[2])!=-1)
 		{p.sendMessage("§c[怪物生成器]§f名称已存在.");
 			return true;
 		}
 		
-	Skill skill=	Skill.newSkill(args[2],args[3]);
+	Skill skill=	Skill.newSkill(args[3],args[2]);
 	if(skill==null){
 		p.sendMessage("§c[怪物生成器]§f该技能类型不存在,或程序内部错误.");
 		return true;
@@ -463,6 +463,7 @@ return true;
 		
 		mm.spawnMob(p.getEyeLocation());
 		p.sendMessage("§c[怪物生成器]§f创建成功.");
+		return true;
 		
 	}else if(args[1].equalsIgnoreCase("modify"))	{
 		return mobModify(p,args);

@@ -85,7 +85,8 @@ public abstract class Skill {
 				
 				
 				
-			}
+			}else
+				Bukkit.broadcastMessage(str);
 			
 			
 			
@@ -99,6 +100,8 @@ public abstract class Skill {
 		}
 	if(t==null)
 		return null;
+
+	
 	
 	try {
 		return (Skill) t.getDeclaredConstructor(String.class,ConfigurationSection.class).newInstance(sName,Main.getCfg().getConfigurationSection("Skill"));
@@ -158,7 +161,8 @@ public static boolean isRange(String range) {
 return true;
 }
 public boolean cmdManager(String[] args,Player p) {
-	
+	if(args.length<3)
+		return false;
 		
 		if(args[2].equalsIgnoreCase("chance")){
 			if(args.length!=4)
@@ -234,8 +238,7 @@ public boolean cmdManager(String[] args,Player p) {
 			}
 			return true;
 
-		}else
-			{
+		}
 			
 			boolean b= cmdElse(args, p);
 			save();
@@ -247,9 +250,7 @@ public boolean cmdManager(String[] args,Player p) {
 			
 			return b;
 		
-			}
-		
-		return false;
+
 
 }
 
