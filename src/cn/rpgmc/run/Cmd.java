@@ -42,6 +42,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 
 
+import org.bukkit.potion.PotionEffectType;
+
 import com.avaje.ebeaninternal.api.ClassUtil;
 
 import cn.rpgmc.bean.mob.DropItemStack;
@@ -175,6 +177,31 @@ if(args[0].equalsIgnoreCase("spawn")){
 	}
 	p.sendMessage(s1);
 	p.sendMessage(s2);
+	return true;
+}else if(args[0].equalsIgnoreCase("listPotionEffectType")){
+	 String str = "支持的药水类型:";
+	 for(int i=0;i<PotionEffectType.values().length;i++){
+		 if(i!=0)
+			 str+=",";
+		 
+		 str+=PotionEffectType.values()[i].getName()
+				 ;
+	 }
+	 p.sendMessage(str);
+	 
+	return true;
+}else if(args[0].equalsIgnoreCase("listEntityType")){
+	 String str = "支持的怪物类型:";
+	 for(int i=0;i<EntityType.values().length;i++){
+		 if(i!=0)
+			 str+=",";
+		 
+		 str+=EntityType.values()[i].name();
+				 ;
+	 }
+	 p.sendMessage(str);
+	 
+	return true;
 }else if(args[0].equalsIgnoreCase("reload")){
 	if(args.length==1){
 		try {
@@ -289,6 +316,7 @@ public static void mobHelp(Player p) {
 	p.sendMessage("§a  /Mobs mob modify damage [HighDamage] <LowDamage> 设置伤害");
 	p.sendMessage("§a  /Mobs mob modify exp [HighEXP] <LowEXP> 设置死亡掉落的经验");
 	p.sendMessage("§a  /Mobs mob modify type [Type] 设置怪物类型");
+	p.sendMessage("§a  /Mobs mob modify effect [set:([药水类型] [药水等级])/del/list] 增加怪物的永久药水状态");
 	p.sendMessage("§a  /Mobs mob modify rider [sName] 让这个怪物附带一个驾驶者(其他的怪物模板)");
 	p.sendMessage("§a  /Mobs mob modify eqpt 设置装备为当前穿戴的装备和手拿的武器");
 	p.sendMessage("§a  /Mobs mob modify skill [add/list/del] 增删查技能列表");
@@ -312,8 +340,10 @@ public static void mainHelp(Player p) {
 	p.sendMessage("§a  /Mobs spawn 设置刷新点的各种属性<重要命令>");
 	p.sendMessage("§a  /Mobs mob 设置怪物的各种属性<重要命令>");
 	p.sendMessage("§a  /Mobs skill 设置技能的各种属性<重要命令>");
-	p.sendMessage("§a  /Mobs setban [Animal/Monster] [true/false] 设置你所在的世界是否禁用默认产生的动物/怪物");
-	p.sendMessage("§a  /Mobs listban 查看你所在的世界是否禁用默认产生的动物/怪物");
+	p.sendMessage("§a  /Mobs setBan [Animal/Monster] [true/false] 设置你所在的世界是否禁用默认产生的动物/怪物");
+	p.sendMessage("§a  /Mobs listBan 查看你所在的世界是否禁用默认产生的动物/怪物");
+	p.sendMessage("§a  /Mobs listPotionEffectType 查看所有支持的药水类型");
+	p.sendMessage("§a  /Mobs listEntityType 查看所有支持作为怪物的类型");
 	p.sendMessage("§a  /Mobs reload 重载插件");
 	p.sendMessage("§a  /Mobs help 帮助");
 	
@@ -575,7 +605,52 @@ else if(args[2].equalsIgnoreCase("drop")){
 		 }else
 			 return false;
 		
-	 }else if(args[2].equalsIgnoreCase("pe")){
+	 }else if(args[2].equalsIgnoreCase("effect")){
+		 if(args.length<4)
+			 return false;
+					 if(args[3].equalsIgnoreCase("set"))
+					 {
+						 if(args.length<6)
+						 return false;
+						 
+						 if(PotionEffectType.getByName(args[4])==null)
+						 {
+							 p.sendMessage("§c[Mobs]§f该药水类型不存在.");
+							 return true;
+						 }else{
+							 Main.getsMobModel().addPotionEffect(args[4], Integer.parseInt(args[5]));
+							 
+						 }
+						 
+					 }else if(args[3].equalsIgnoreCase("del")){
+						 if(args.length<5)
+							 return false;
+						 if(Main.getsMobModel().delPotionEffect(args[4])==false)
+						 {
+							 p.sendMessage("§c[Mobs]§f该药水状态不存在.");
+							 return true;
+						 }
+						 
+						 
+						 
+					 }else if(args[3].equalsIgnoreCase("list")){
+						 String str = "药水效果列表:";
+						 for(int i=0;i<Main.getsMobModel().getPotionEffectList().size();i++){
+							 if(i!=0)
+								 str+=",";
+							 
+							 str+=
+									 (String) Main.getsMobModel().getPotionEffectList().toArray()[i] 
+									 +":"+Main.getsMobModel().getPotionEffectLv((String) Main.getsMobModel().getPotionEffectList().toArray()[i])
+									 +"级";
+						 }
+						 p.sendMessage(str);
+						 return true;
+						 
+						 
+					 }else return false;
+					 
+
 		 
 	 }else if(args[2].equalsIgnoreCase("rider")){
 		 if(args.length!=4)

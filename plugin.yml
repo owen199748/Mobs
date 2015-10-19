@@ -1,6 +1,6 @@
 name: Mobs
 main: cn.rpgmc.run.Main
-version: 2.1.2
+version: 2.1.3
 commands:
   Mobs:
     description: by owen

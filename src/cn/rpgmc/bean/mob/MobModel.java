@@ -65,6 +65,14 @@ public int getPotionEffectLv(String eff) {
 	
 	return potionEffect.get(eff);
 }
+
+public boolean delPotionEffect(String eff) {
+	if(potionEffect.get(eff)==null)
+		return false;
+	
+	potionEffect.remove(eff);
+	return true;
+}
 public void addPotionEffect(String eff,int lv) {
 	potionEffect.put(eff, lv);
 }
@@ -313,6 +321,7 @@ cfg.getConfigurationSection("eqpt").set("Chestplate", eqpt.getChestplate());
 cfg.getConfigurationSection("eqpt").set("Leggings", eqpt.getLeggings());
 cfg.getConfigurationSection("eqpt").set("Boots", eqpt.getBoots());
 cfg.getConfigurationSection("eqpt").set("Hand", eqpt.getHand());
+cfg.set("potionEffect", null);
 cfg.createSection("potionEffect");
 Object[] effc = potionEffect.keySet().toArray();
 for(int i=0;i<effc.length;i++){
@@ -367,7 +376,7 @@ if(survivalLimit.isThundering()){
 			continue;
 		
 	e.addPotionEffect(new PotionEffect(PotionEffectType.getByName((String) pea[i]),
-			0,potionEffect.get((String) pea[i]),true), false);
+			Integer.MAX_VALUE,potionEffect.get((String) pea[i]),true), false);
 	}
 	if(isMobModel(rider)!=-1)
 	{MobModel riderMob=getMobModels().get(isMobModel(rider));
