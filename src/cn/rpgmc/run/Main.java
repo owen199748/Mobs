@@ -8,11 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -31,9 +33,10 @@ import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-
 import cn.rpgmc.bean.mob.DropItemStack;
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.mob.MobModel;
@@ -99,7 +102,31 @@ public class Main extends JavaPlugin {
 	public static File getF() {
 		return f;
 	}
+	
+	
+	
+	
+	
+	
+public void start(){
+	Server server = getServer();
+	
+	PluginManager manager = server.getPluginManager();
+	
+	Logger logger = getLogger();
+	
+
+}
+	
+	
+	
+	
+	
+	
+	
+	
 	public void onEnable() {
+		start();
 		V=this.getDescription().getVersion();
 		Logger lg = getLogger();
 		Bukkit.getServer().getWorld("world").setSpawnFlags(false, false);
@@ -138,7 +165,7 @@ public class Main extends JavaPlugin {
 		}
 		
 	}
-
+	
 		loadYml();
 		lg.info("---加载成功>>>");
 		lg.info("||||||||||||||||||||||||||||||");
@@ -279,9 +306,21 @@ for(int i=0 ;i<Skill.getSkills().size();i++){
 
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
+		
+		
+		
+		
+		
 		if ((sender instanceof Player))
 		if (cmd.getName().equalsIgnoreCase("Mobs")) {
 			Player p=(Player) sender;
+			if(args.length==0)
+			{
+p.sendMessage("§c[Mobs]§5Version:"+V+"\n"+"§c[Mobs]§5更多帮助请参照 /Mobs help");
+				
+				
+				return true;
+			}
 			try {
 				return Cmd.mobSpawn(p,args);
 			} catch (Exception e) {
@@ -291,7 +330,8 @@ for(int i=0 ;i<Skill.getSkills().size();i++){
 				return true;
 			}
 		}else{
-			return false;
+return false;
+		
 		}
 		
 	sender.sendMessage("本插件不支持控制台操作!");

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,7 +30,7 @@ private static ArrayList<Spawn> spawns=new ArrayList<Spawn>();
 
 private ConfigurationSection cfg=null;
 private String cName=null;
-private MobModel mm=null;
+private String mm=null;
 private int time=0;
 private long now=0;
 private int all=0;
@@ -116,7 +117,10 @@ public synchronized static Spawn getNextSpawn(){
 public abstract String getCreateType();
 
 public Mob spawnMob(Location loc) {
-	Mob m = mm.spawnMob(loc);
+	if(getMobModel()==null)
+		return null;
+	
+	Mob m = getMobModel().spawnMob(loc);
 	if(m==null)
 		return null;
 	mobs.add(m);
@@ -126,8 +130,8 @@ public Mob spawnMob(Location loc) {
 public void setcName(String cName) {
 	this.cName = cName;
 }
-public void setMm(MobModel mm) {
-	this.mm = mm;
+public void setMobModel(MobModel mm) {
+	this.mm = mm.getsName();
 }
 public void setMobs(ArrayList<Mob> mobs) {
 	this.mobs = mobs;
@@ -135,8 +139,8 @@ public void setMobs(ArrayList<Mob> mobs) {
 public String getcName() {
 	return cName;
 }
-public MobModel getMm() {
-	return mm;
+public MobModel getMobModel() {
+	return MobModel.getMobModel(mm);
 }
 public ArrayList<Mob> getMobs() {
 	return mobs;
@@ -168,7 +172,7 @@ public Spawn(ConfigurationSection cfg) {
 if(cfg.getString("MobModel")==null){
 	mm=null;
 }else
-	mm=MobModel.getMobModel(cfg.getString("MobModel"));
+	mm=cfg.getString("MobModel");
 	time=cfg.getInt("time");
 
 	for(int i=0;i<spawns.size();i++){
@@ -224,7 +228,7 @@ public void save() {
 	if(mm==null)
 		cfg.set("MobModel", null);		
 else
-cfg.set("MobModel", mm.getsName());
+cfg.set("MobModel", mm);
 cfg.set("time", time);
 cfg.set("all", all);
 
@@ -257,7 +261,7 @@ String s3="";
 if(mm==null)
 	s3="怪物模板:"+"无";
 else
-	s3="怪物模板:"+mm.getsName();
+	s3="怪物模板:"+mm;
 String s4="刷新间隔:"+time;
 String s5="最大数量:"+all;
 return s1+"\n"+s2+"\n"+s3+"\n"+s4+"\n"+s5;

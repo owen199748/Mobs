@@ -32,7 +32,6 @@ public abstract class Skill {
 	private ConfigurationSection cfg = null;
 	private double chance=0;
 	private int cooling = 0;
-	private static long BECOOLING = 0;
 	public static final String TRIGGER_CYCLE="TRIGGER_CYCLE";//周期
 	public static final String TRIGGER_ATTACK="TRIGGER_ATTACK";//攻击
 	public static final String TRIGGER_HURT="TRIGGER_HURT";//受到伤害
@@ -178,8 +177,8 @@ public boolean cmdManager(String[] args,Player p) {
 			if(args.length!=4)
 				return false;
 			if(!isTrigger(args[3]))
-				{p.sendMessage("§c[怪物生成器]§f触发类型不存在.");
-				return false;
+				{p.sendMessage("§c[Mobs]§f触发类型不存在.");
+				return true;
 				}
 				setTrigger(args[3]);
 			
@@ -188,8 +187,8 @@ public boolean cmdManager(String[] args,Player p) {
 			if(args.length!=4)
 				return false;
 			if(!isRange(args[3]))
-				{p.sendMessage("§c[怪物生成器]§f触发类型不存在.");
-			return false;
+				{p.sendMessage("§c[Mobs]§f触发类型不存在.");
+			return true;
 			
 				}
 			
@@ -228,27 +227,30 @@ public boolean cmdManager(String[] args,Player p) {
 			}else return false;
 			
 		
-			p.sendMessage("§c[怪物生成器]§f操作成功.");
-			
-			save();
-			try {
-				Main.saveYml();
-			} catch (IOException e) {
-				p.sendMessage("§c[怪物生成器]§f保存失败.");
-			}
-			return true;
 
-		}
+		}else{
 			
 			boolean b= cmdElse(args, p);
 			save();
+			p.sendMessage("§c[Mobs]§f设置成功.");
 			try {
 				Main.saveYml();
 			} catch (IOException e) {
-				p.sendMessage("§c[怪物生成器]§f保存失败.");
+				p.sendMessage("§c[Mobs]§f保存失败.");
 			}
 			
 			return b;
+		}
+
+		save();
+		p.sendMessage("§c[Mobs]§f设置成功.");
+		try {
+			Main.saveYml();
+		} catch (IOException e) {
+			p.sendMessage("§c[Mobs]§f保存失败.");
+		}
+		
+		return true;
 		
 
 
@@ -391,9 +393,8 @@ public static String help() {
 				"    RANGE_WORLD 所在世界\n"+
 				"    RANGE_CHUNK 所在区块\n"+
 				"    RANGE_TARGET 触发者(该类型触发方式不可为周期.)\n"+
-				"  /mobs skill modify enemys [add/del/list] 可触发实体列表,例子:"+
+				"  /mobs skill modify enemys [add/del/list] 可触发实体列表(不填视为全部触发),例子:"+
 				"    /mobs skill modify enemys add PLAYER (该技能可以被所有玩家触发)"+
-				"    /mobs skill modify enemys add LIVINGENTITY (该技能可以被所有生物触发)"+
 				"    /mobs skill modify enemys add ZOMBIE (该技能可以被所有僵尸触发)";
 
 	
@@ -456,30 +457,27 @@ public static Skill getSkill(String skill) {
 	
 	}
 	private Skill(){
-		
+	
 	}
-	public Skill(String sName,ConfigurationSection cfg) {
+	protected Skill(String sName,ConfigurationSection cfg) {
 		cfg.createSection(sName);
 		this.cfg=cfg.getConfigurationSection(sName);
 		this.sName=sName;
-			trigger=TRIGGER_ATTACK;
-			chance=25;
-			range=RANGE_TARGET;
-			cooling=500;
-			 newSkillNext();
+		this.trigger=TRIGGER_ATTACK;
+		this.chance=25;
+		this.range=RANGE_TARGET;
+		this.cooling=500;
 		addSkills(this);
-		save();
 	}
 
-public Skill(ConfigurationSection cfg) {
+protected Skill(ConfigurationSection cfg) {
 	this.cfg=cfg;
-	trigger=cfg.getString("trigger");
-	chance=cfg.getInt("chance");
-	range=cfg.getString("range");
-	cooling=cfg.getInt("cooling");
-	enemys=(ArrayList<String>) cfg.getList("enemys");
-	sName=cfg.getName();
-	skillNext(cfg);
+	this.trigger=cfg.getString("trigger");
+	this.chance=cfg.getInt("chance");
+	this.range=cfg.getString("range");
+	this.cooling=cfg.getInt("cooling");
+	this.enemys=(ArrayList<String>) cfg.getList("enemys");
+	this.sName=cfg.getName();
 	addSkills(this);
 }
 
@@ -572,8 +570,8 @@ return false;
 	public void runSkill(Mob mob,List<Entity> e) {
 		if(chance>(Math.random()*100)){
 			long time=System.currentTimeMillis();
-			if(time-BECOOLING>cooling*50)
-			{BECOOLING=System.currentTimeMillis();
+			if(time-mob.getBeCooling(this)>cooling*50)
+			{mob.setBeCooling(this,System.currentTimeMillis() );
 				
 				for(int i =0;i<e.size();i++)
 			{

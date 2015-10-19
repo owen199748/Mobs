@@ -1,5 +1,6 @@
 package cn.rpgmc.bean.skill;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -12,31 +13,35 @@ private String msg="";
 
 public Skill_Message(ConfigurationSection cfg) {
 	super(cfg);
+	skillNext(cfg);
 }
 
 public Skill_Message(String sName2, ConfigurationSection cfg2) {
 	super( sName2, cfg2);
+	newSkillNext();
+	save();
 	}
 
 	@Override
 	protected void skillNext(ConfigurationSection cfg) {
-		msg=cfg.getString("msg");
+		this.msg=cfg.getString("msg");
 		
 	}
+	
+
+	
 	@Override
 	protected void newSkillNext() {
-		msg="";
-	
+		this.msg="";
 	}
 	@Override
 	protected void saveNext() {
-		getCfg().set("msg", msg);
+		getCfg().set("msg", this.msg);
 		
 	}
 	@Override
 	public String seeNext() {
-	
-		return "  对话内容:"+msg+"\n";
+		return "  对话内容:"+this.msg+"\n";
 	}
 
 
@@ -59,7 +64,6 @@ public Skill_Message(String sName2, ConfigurationSection cfg2) {
 		if(entity instanceof Player)
 	((Player)entity).sendMessage(msg.replaceAll("%a%", ((LivingEntity)mob.getE()).getCustomName())
 			.replaceAll("%b%", ((Player)entity).getDisplayName()).replaceAll("&","§"));
-
 	}
 
 	public static String getType(){

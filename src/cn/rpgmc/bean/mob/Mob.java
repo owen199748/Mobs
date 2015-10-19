@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
-
 import cn.rpgmc.bean.skill.Skill;
 import cn.rpgmc.bean.spawn.Spawn;
 
@@ -19,7 +19,7 @@ public class Mob{
 	private boolean isAttrCover = true;
 	private int dmg=0;
 	private int exp=0;
-	private ArrayList<Skill> skills=new ArrayList<Skill>();
+	private HashMap<Skill,Long> skills=new HashMap<Skill,Long>();
 	private ArrayList<ItemStack> drop;
 	private static final ArrayList<Mob> mobs= new ArrayList<Mob>();
 	public boolean isAttrCover() {
@@ -37,7 +37,10 @@ public void runSkill(Skill skill,List<Entity> e)  {
 	skill.runSkill(this, e);
 	
 }
-
+public void runSkill(Skill skill,Entity e)  {
+	skill.runSkill(this, e);
+	
+}
 public void setExp(int exp) {
 	this.exp = exp;
 }
@@ -65,11 +68,10 @@ public static Mob getMob(int entityId) {
 
 	
 public ArrayList<Skill> getSkills() {
-	return skills;
+	ArrayList<Skill> a = new ArrayList<Skill>( skills.keySet());
+	return a;
 }
-public void setSkills(ArrayList<Skill> skills) {
-	this.skills = skills;
-}
+
 
 public int getDmg() {
 	return dmg;
@@ -90,8 +92,10 @@ public void setE(LivingEntity e) {
 	this.e = e;
 }
 	public Mob(int dmg,LivingEntity e,ArrayList<ItemStack> drop,ArrayList<Skill> skills,int exp,boolean isAttrCover) {
-
-this.skills=skills;
+HashMap<Skill, Long> h = new HashMap<Skill,Long>();
+for(int i=0;i<skills.size();i++)
+	h.put(skills.get(i),new Long(0));
+this.skills=h;
 this.dmg=dmg;
 this.e=e;
 this.drop=drop;
@@ -104,6 +108,23 @@ mobs.add(this);
 		mobs.get(i).getE().remove();
 		}
 		mobs.clear();
+	}
+
+	public long getBeCooling(Skill skill) {
+		if(skills.get(skill)!=null)
+			return skills.get(skill);
+		
+		return 0;
+	}
+
+	public void setBeCooling(Skill skill, long l) {
+		skills.put(skill, l);
+		
+	}
+
+	public void remove() {
+		mobs.remove(this);
+		
 	}
 
 }

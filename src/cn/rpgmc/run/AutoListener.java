@@ -2,22 +2,18 @@ package cn.rpgmc.run;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.util.Vector;
 
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.skill.Skill;
@@ -84,18 +80,15 @@ ls=this;
 		if(pje.getPlayer().isOp()){
 			if(!Main.getCfg().getString("Version").equalsIgnoreCase(Main.getV())){
 				
-				pje.getPlayer().sendMessage("§c[怪物生成器]§f插件与存在的配置版本不统一,请删除配置并重载插件.");
-				pje.getPlayer().sendMessage("§c[怪物生成器]§如果确认老版本配置支持当前版本请输入 /Mobs reload 转换为新版本配置.");
+				pje.getPlayer().sendMessage("§c[Mobs]§f插件与存在的配置版本不统一,请删除配置并重载插件.");
+				pje.getPlayer().sendMessage("§c[Mobs]§如果确认老版本配置支持当前版本请输入 /Mobs reload 转换为新版本配置.");
 			}
 			
 			
 		}
+
 	}
-	
 
-
-
-	
 	
 	
 	
@@ -114,7 +107,7 @@ ls=this;
 			if(bpe.getItem().getTypeId()==Main.getClickItem()){
 
 				Main.setO(bpe.getClickedBlock().getLocation());
-				bpe.getPlayer().sendMessage("§c[怪物生成器]§6您已经选定了一个点:"+
+				bpe.getPlayer().sendMessage("§c[Mobs]§6您已经选定了一个点:"+
 						bpe.getClickedBlock().getX()+"x,"+
 						bpe.getClickedBlock().getY()+"y,"+
 						bpe.getClickedBlock().getZ()+"z,"+"位于世界:"+
@@ -161,14 +154,7 @@ int dmg = mob.getDmg();
 					a.add(edbee.getDamager());
 					m.runSkill(skill,a);	
 				}
-				if(e instanceof LivingEntity)
-					if(((LivingEntity)e).getHealth()-edbee.getDamage()<=0)
-				if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_DYING))
-					if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
-						
-						skill.runSkill(m, edbee.getDamager());
-						
-					}
+
 			}
 			
 		}
@@ -202,6 +188,8 @@ int dmg = mob.getDmg();
 	if(Mob.isMob(ede.getEntity().getEntityId())){
 		Entity e = ede.getEntity();
 		Mob m = Mob.getMob(e.getEntityId());
+
+		
 		if(m.isAttrCover())
 		ede.setDroppedExp(m.getExp());
 		else
@@ -214,9 +202,7 @@ int dmg = mob.getDmg();
 			}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
 				m.runSkill(skill,e.getWorld().getEntities());	
 			}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
-				ArrayList<Entity> a = new ArrayList<Entity>();
-				a.add(ede.getEntity().getLastDamageCause().getEntity());
-				m.runSkill(skill,a);	
+				m.runSkill(skill,ede.getEntity().getKiller());	
 			}
 			
 			
@@ -231,7 +217,7 @@ int dmg = mob.getDmg();
 		}
 		
 		
-		
+		m.remove();
 	}
 	
 }

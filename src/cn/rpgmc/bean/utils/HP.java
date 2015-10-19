@@ -1,4 +1,4 @@
-package cn.rpgmc.bean.integer;
+package cn.rpgmc.bean.utils;
 
 public class HP extends RangeInt {
 

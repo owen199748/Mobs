@@ -21,13 +21,13 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import cn.rpgmc.bean.integer.HP;
 import cn.rpgmc.bean.mob.DropItemStack;
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.skill.Skill;
 import cn.rpgmc.bean.spawn.PointSpawn;
 import cn.rpgmc.bean.spawn.Spawn;
 import cn.rpgmc.bean.spawn.WorldSpawn;
+import cn.rpgmc.bean.utils.HP;
 
 public class Spawner extends BukkitRunnable {
 private long g=0;
@@ -58,7 +58,7 @@ public static final int RUNS=10;
 		
 
 	long n  = System.currentTimeMillis()-startTime;
-	if(spawn.getMm()==null)
+	if(spawn.getMobModel()==null)
 		return;
 	
 int a = spawn.getAll()-spawn.getMobs().size();//计算刷新几个
@@ -122,9 +122,10 @@ locs.addAll(((WorldSpawn)spawn).getLoc());
 	
 
 		
-
+			
+		if(spawn.getMobModel()!=null)
 			for(int x=0;x<locs.size();x++){
-			ArrayList<DropItemStack> item =spawn.getMm().getDrop();
+			ArrayList<DropItemStack> item =spawn.getMobModel().getDrop();
 			spawn.spawnMob(locs.get(x));
 			}
 			
@@ -137,7 +138,6 @@ locs.addAll(((WorldSpawn)spawn).getLoc());
 	
 	
 	
-
 
 
 	}

@@ -3,27 +3,24 @@ package cn.rpgmc.bean.mob;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.WeatherType;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
-import cn.rpgmc.bean.integer.Damage;
-import cn.rpgmc.bean.integer.EXP;
-import cn.rpgmc.bean.integer.HP;
 import cn.rpgmc.bean.skill.Skill;
-import cn.rpgmc.bean.spawn.Spawn;
+import cn.rpgmc.bean.utils.Damage;
+import cn.rpgmc.bean.utils.EXP;
+import cn.rpgmc.bean.utils.HP;
 import cn.rpgmc.run.Main;
 
 public class MobModel {
@@ -32,6 +29,7 @@ public class MobModel {
 	private static ArrayList<MobModel> mobModel = new ArrayList<MobModel>();
 	private String sName;
 	private String displayName = null;
+	private boolean autoDisplayName = false;
 	private HP hp = new HP(0);
 	private EXP exp = new EXP(0);
 	private Eqpt eqpt = new Eqpt();
@@ -40,6 +38,8 @@ public class MobModel {
 	private boolean isAttrCover = true;
 	private ArrayList<DropItemStack> drop=new ArrayList<DropItemStack>();
 	private int dropType = 0;
+	private String rider = null;
+	private HashMap<String,Integer> potionEffect = new HashMap<String,Integer>();
 	private SurvivalLimit survivalLimit =new SurvivalLimit();
 	private ConfigurationSection cfg = null;
 	private ArrayList<Skill> skills=new ArrayList<Skill>();
@@ -51,6 +51,26 @@ public class MobModel {
 	
 public SurvivalLimit getSurvivalLimit() {
 	return survivalLimit;
+}
+public void setRider(String rider) {
+	this.rider = rider;
+}
+public Set<String> getPotionEffectList() {
+	return potionEffect.keySet();
+}
+public int getPotionEffectLv(String eff) {
+	if(potionEffect.get(eff)==null)
+		return -1;
+	
+	
+	return potionEffect.get(eff);
+}
+public void addPotionEffect(String eff,int lv) {
+	potionEffect.put(eff, lv);
+}
+
+public MobModel() {
+	// TODO 自动生成的构造函数存根
 }
 public void setAttrCover(boolean isAttrCover) {
 	this.isAttrCover = isAttrCover;
@@ -109,7 +129,21 @@ for(int i=0;i<getMobModels().size();i++){
 
 return null;
 }
+
+public void setAutoDisplayName(boolean autoDisplayName) {
+	this.autoDisplayName = autoDisplayName;
+}
+
+public boolean isAutoDisplayName() {
+	return autoDisplayName;
+}
+
+
 public static int isMobModel(String sName) {
+	if(sName==null)
+		return -1;
+	
+	
 	for(int i=0;i<mobModel.size();i++){
 		if(mobModel.get(i).getsName().equalsIgnoreCase(sName)){
 			return i;
@@ -138,6 +172,7 @@ this.save();
 		this.cfg=cfg;
 		sName=cfg.getName();
 	displayName = (String)cfg.get("displayName");
+	autoDisplayName = cfg.getBoolean("autoDisplayName");
 	hp.setMax(cfg.getInt("hp_max"));
 	hp.setMin( cfg.getInt("hp_min"));
 	dmg.setMin(cfg.getInt("dmg_min"));
@@ -147,8 +182,14 @@ this.save();
 	type=EntityType.fromName( (String)cfg.get("type"));
 	dropType = cfg.getInt("dropType");
 	isAttrCover=cfg.getBoolean("isAttrCover");
+	rider=cfg.getString("rider");
+
 	
 	
+	ConfigurationSection effs=	cfg.getConfigurationSection("potionEffect");
+	Set<String> effset = effs.getKeys(false);
+	for(int i=0;i<effset.size();i++)
+		potionEffect.put((String) effset.toArray()[i], effs.getInt((String) effset.toArray()[i]));
 	
 	ConfigurationSection dp = cfg.getConfigurationSection("drop");
 	if(dp!=null)
@@ -198,7 +239,6 @@ this.save();
 			if(mobModel.get(i).getsName().equalsIgnoreCase(mm.getsName()))
 				{mobModel.set(i,mm);
 				return;}
-		
 		mobModel.add(mm);
 	}
 	
@@ -251,26 +291,33 @@ this.save();
 	
 	
 	public void save() throws IOException{
+		cfg.set("displayName",displayName);
+		cfg.set("autoDisplayName",autoDisplayName);
+		cfg.set("hp_max",hp.getMax());
+		cfg.set("hp_min"	,hp.getMin());
+		cfg.set("dmg_min",dmg.getMin());
+		cfg.set("dmg_max",dmg.getMax());
+		cfg.set("exp_min",exp.getMin());
+		cfg.set("exp_max",exp.getMax());
+		cfg.set("type",type.getName());
+		cfg.set("dropType",dropType);
+		cfg.set("rider",rider);
+		cfg.set("isAttrCover", isAttrCover);
 cfg.createSection("SurvivalLimit");
 cfg.getConfigurationSection("SurvivalLimit").set("isNight", survivalLimit.isNight());
 cfg.getConfigurationSection("SurvivalLimit").set("isRain",  survivalLimit.isRain());
 cfg.getConfigurationSection("SurvivalLimit").set("isThundering",  survivalLimit.isThundering());
-cfg.set("displayName",displayName);
-cfg.set("hp_max",hp.getMax());
-cfg.set("hp_min"	,hp.getMin());
-cfg.set("dmg_min",dmg.getMin());
-cfg.set("dmg_max",dmg.getMax());
-cfg.set("exp_min",exp.getMin());
-cfg.set("exp_max",exp.getMax());
-cfg.set("type",type.getName());
-cfg.set("dropType",dropType);
-cfg.set("isAttrCover", isAttrCover);
 cfg.createSection("eqpt");
 cfg.getConfigurationSection("eqpt").set("Helmet", eqpt.getHelmet());
 cfg.getConfigurationSection("eqpt").set("Chestplate", eqpt.getChestplate());
 cfg.getConfigurationSection("eqpt").set("Leggings", eqpt.getLeggings());
 cfg.getConfigurationSection("eqpt").set("Boots", eqpt.getBoots());
 cfg.getConfigurationSection("eqpt").set("Hand", eqpt.getHand());
+cfg.createSection("potionEffect");
+Object[] effc = potionEffect.keySet().toArray();
+for(int i=0;i<effc.length;i++){
+	cfg.getConfigurationSection("potionEffect").set((String) effc[i], potionEffect.get(effc[i]));
+}
 cfg.createSection("drop");
 for(int i=0;i<drop.size();i++){
 	List<ItemStack> l = (List<ItemStack>) cfg.getConfigurationSection("drop").getList(drop.get(i).getI()+"");
@@ -289,6 +336,9 @@ cfg.set("skills", skillStr);
 	}
 	
 	
+	public String getrider() {
+		return rider;
+	}
 public Mob spawnMob(Location loc){
 if(survivalLimit.isNight()){
 	if(loc.getWorld().getTime()<12000){
@@ -311,7 +361,19 @@ if(survivalLimit.isThundering()){
 }
 
 	LivingEntity e = (LivingEntity) loc.getWorld().spawnEntity(loc, type);
-	
+	Object[] pea = potionEffect.keySet().toArray();
+	for(int i=0;i<pea.length;i++){
+		if(PotionEffectType.getByName((String) pea[i])==null)
+			continue;
+		
+	e.addPotionEffect(new PotionEffect(PotionEffectType.getByName((String) pea[i]),
+			0,potionEffect.get((String) pea[i]),true), false);
+	}
+	if(isMobModel(rider)!=-1)
+	{MobModel riderMob=getMobModels().get(isMobModel(rider));
+	Mob riderM = riderMob.spawnMob(e.getLocation());
+	e.setPassenger(riderM.getE());		
+	}
 	e.setCustomName(displayName.replaceAll("&","§"));
 	double hp = 0;
 	if(isAttrCover){
@@ -353,6 +415,7 @@ else if(dropType==2)
 		}
 	}
 	}
+
 Mob m = new Mob(dmg.getInt(),e,isl,getSkills(),exp.getInt(),isAttrCover);
 if(m!=null)
 	mobs.add(m);

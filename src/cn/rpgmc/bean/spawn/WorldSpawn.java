@@ -162,10 +162,13 @@ public double getChance() {
 
 @Override
 public Mob spawnMob(Location loc) {
+if(getMobModel()==null)
+	return null;
+
 	Entity[] es = loc.getChunk().getEntities();
 	int l=0;
 	for(int i=0;i<es.length;i++){
-		if( getMm().isMob(es[i].getEntityId())){
+		if( getMobModel().isMob(es[i].getEntityId())){
 			l++;
 		}
 	}

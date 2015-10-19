@@ -41,11 +41,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 
 
+
 import com.avaje.ebeaninternal.api.ClassUtil;
 
-import cn.rpgmc.bean.integer.Damage;
-import cn.rpgmc.bean.integer.EXP;
-import cn.rpgmc.bean.integer.HP;
 import cn.rpgmc.bean.mob.DropItemStack;
 import cn.rpgmc.bean.mob.Eqpt;
 import cn.rpgmc.bean.mob.Mob;
@@ -54,6 +52,9 @@ import cn.rpgmc.bean.skill.Skill;
 import cn.rpgmc.bean.spawn.PointSpawn;
 import cn.rpgmc.bean.spawn.Spawn;
 import cn.rpgmc.bean.spawn.WorldSpawn;
+import cn.rpgmc.bean.utils.Damage;
+import cn.rpgmc.bean.utils.EXP;
+import cn.rpgmc.bean.utils.HP;
 
 public class Cmd {
 	
@@ -84,13 +85,13 @@ if(args[0].equalsIgnoreCase("spawn")){
 
 	if(args.length==1){
 		if(p.getItemInHand()==null|p.getItemInHand().getType().getId()==Material.AIR.getId()){
-			p.sendMessage("§c[怪物生成器]§f您将一个物品拿在手上之后再执行该命令.");
+			p.sendMessage("§c[Mobs]§f您将一个物品拿在手上之后再执行该命令.");
 			return true;	
 			
 		}
 		
 		Main.setClickItem(p.getItemInHand().getTypeId());
-		p.sendMessage("§c[怪物生成器]§f您已经将"+p.getItemInHand().getType().name()+"作为点选择器.");
+		p.sendMessage("§c[Mobs]§f您已经将"+p.getItemInHand().getType().name()+"作为点选择器.");
 		return true;
 	}else{
 		return false;
@@ -143,10 +144,10 @@ if(args[0].equalsIgnoreCase("spawn")){
 		
 		try {
 			Main.saveYml();
-			p.sendMessage("§c[怪物生成器]§f设置成功.");
+			p.sendMessage("§c[Mobs]§f设置成功.");
 			return true;
 		} catch (IOException e) {
-			p.sendMessage("§c[怪物生成器]§f配置保存失败.");
+			p.sendMessage("§c[Mobs]§f配置保存失败.");
 			return true;
 		}
 
@@ -180,10 +181,11 @@ if(args[0].equalsIgnoreCase("spawn")){
 			Main.getCfg().load(Main.getF());
 			Main.getCfg().set("Version",Main.getV());
 			Main.loadYml();
-			p.sendMessage("§c[怪物生成器]§f配置重载成功.");
+			Mob.killAll();
+			p.sendMessage("§c[Mobs]§f配置重载成功.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			p.sendMessage("§c[怪物生成器]§f配置重载失败,您可以尝试删除配置重启服务器重新生成配置文件.");
+			p.sendMessage("§c[Mobs]§f配置重载失败,您可以尝试删除配置重启服务器重新生成配置文件.");
 		}
 	}else{
 		return false;
@@ -191,7 +193,7 @@ if(args[0].equalsIgnoreCase("spawn")){
 	return true ;
 }else if(args[0].equalsIgnoreCase("help")){
 	if(args.length==1){
-		p.sendMessage("§c[怪物生成器]§f/Mobs help [main/mob/skill/spawn] (spawn)<Point/World> 查看[主命令/怪物命令/技能命令/刷新点命令]的帮助文本");
+		p.sendMessage("§c[Mobs]§f/Mobs help [main/mob/skill/spawn] (spawn)<Point/World> 查看[主命令/怪物命令/技能命令/刷新点命令]的帮助文本");
 	return true;
 	}
 if(args.length!=2){
@@ -208,11 +210,11 @@ mobHelp(p);
 	}else if(args[1].equalsIgnoreCase("spawn")){
 
 if(args.length==2){
-	p.sendMessage("§c[怪物生成器]§f/Mobs help spawn <Point/World> 查看[刷新点命令]的帮助文本");
+	p.sendMessage("§c[Mobs]§f/Mobs help spawn <Point/World> 查看[刷新点命令]的帮助文本");
 	return true;
 }
 if(!args[2].equalsIgnoreCase("point")&!args[2].equalsIgnoreCase("world")){
-	p.sendMessage("§c[怪物生成器]§f/Mobs help spawn <Point/World> 查看[刷新点命令]的帮助文本");
+	p.sendMessage("§c[Mobs]§f/Mobs help spawn <Point/World> 查看[刷新点命令]的帮助文本");
 	return true;
 }
 	//所有刷新点	
@@ -279,7 +281,7 @@ public static void mobHelp(Player p) {
 	p.sendMessage("§a  /Mobs mob see 查看一个怪物的详细信息");
 	p.sendMessage("§a  /Mobs mob list  查看怪物列表");
 	p.sendMessage("§a  /Mobs mob modify del 删除一个怪物");
-	p.sendMessage("§a  /Mobs mob modify drops [add/list/del] 增加掉落物和掉落几率");
+	p.sendMessage("§a  /Mobs mob modify drop [add/list/del] 增加掉落物和掉落几率");
 	p.sendMessage("§a  /Mobs mob modify droptype [方式(All,Invalid,Random)] 设置掉落方式");
 	p.sendMessage("§a  /Mobs mob modify name [Name] 设置名称");
 	p.sendMessage("§a  /Mobs mob modify hp [HighHP] <LowHP>设置血量");
@@ -287,6 +289,7 @@ public static void mobHelp(Player p) {
 	p.sendMessage("§a  /Mobs mob modify damage [HighDamage] <LowDamage> 设置伤害");
 	p.sendMessage("§a  /Mobs mob modify exp [HighEXP] <LowEXP> 设置死亡掉落的经验");
 	p.sendMessage("§a  /Mobs mob modify type [Type] 设置怪物类型");
+	p.sendMessage("§a  /Mobs mob modify rider [sName] 让这个怪物附带一个驾驶者(其他的怪物模板)");
 	p.sendMessage("§a  /Mobs mob modify eqpt 设置装备为当前穿戴的装备和手拿的武器");
 	p.sendMessage("§a  /Mobs mob modify skill [add/list/del] 增删查技能列表");
 	p.sendMessage("§a  /Mobs mob modify sl [Day/Night/Sun/Rain/Thunder] [true/false] 设置怪物刷新对环境的需求");
@@ -323,16 +326,16 @@ private static boolean skill(String[] args, Player p) {
 			return false;
 		
 		if(Skill.isSkill(args[2])!=-1)
-		{p.sendMessage("§c[怪物生成器]§f名称已存在.");
+		{p.sendMessage("§c[Mobs]§f名称已存在.");
 			return true;
 		}
 		
 	Skill skill=	Skill.newSkill(args[3],args[2]);
 	if(skill==null){
-		p.sendMessage("§c[怪物生成器]§f该技能类型不存在,或程序内部错误.");
+		p.sendMessage("§c[Mobs]§f该技能类型不存在,或程序内部错误.");
 		return true;
 	}
-	p.sendMessage("§c[怪物生成器]§f操作成功.");
+	p.sendMessage("§c[Mobs]§f操作成功.");
 	Main.setsSkill(skill);
 	try {
 		Main.saveYml();
@@ -347,12 +350,12 @@ private static boolean skill(String[] args, Player p) {
 			return false;
 		
 		if(Skill.isSkill(args[2])==-1){
-			p.sendMessage("§c[怪物生成器]§f该技能不存在.");
+			p.sendMessage("§c[Mobs]§f该技能不存在.");
 			return true;
 		}
 		
 		Main.setsSkill(Skill.getSkills().get(Skill.isSkill(args[2])));
-		p.sendMessage("§c[怪物生成器]§f选择成功.");
+		p.sendMessage("§c[Mobs]§f选择成功.");
 		return true;
 		
 		
@@ -381,7 +384,7 @@ private static boolean skill(String[] args, Player p) {
 	
 	
 	else if(Main.getsSkill()==null)
-	{p.sendMessage("§c[怪物生成器]§f请先选择一个技能.");
+	{p.sendMessage("§c[Mobs]§f请先选择一个技能.");
 	return true;}
 	else if(args[1].equalsIgnoreCase("see")){
 	p.sendMessage(Main.getsSkill().see());
@@ -410,11 +413,11 @@ private static boolean mob(Player p, String[] args) {
 	ConfigurationSection section = Main.getCfg().getConfigurationSection("MobModel").getConfigurationSection(args[2]);
 			if(section==null)
 			{
-				p.sendMessage("§c[怪物生成器]§f该怪物不存在.");
+				p.sendMessage("§c[Mobs]§f该怪物不存在.");
 				return true;
 			}
 			Main.setsMobModel(new MobModel(section));
-			p.sendMessage("§c[怪物生成器]§f已经选择怪物:"+args[2]+".");
+			p.sendMessage("§c[Mobs]§f已经选择怪物:"+args[2]+".");
 			return true;
 		
 	}else if(args[1].equalsIgnoreCase("new")){
@@ -424,16 +427,16 @@ private static boolean mob(Player p, String[] args) {
 		if(MobModel.isMobModel(args[2])!=-1)
 		{
 
-			p.sendMessage("§c[怪物生成器]§f名称已存在.");
+			p.sendMessage("§c[Mobs]§f名称已存在.");
 
 			
 		}else{
 		try {
 			Main.setsMobModel(new MobModel(args[2],Main.getCfg().getConfigurationSection("MobModel")));
 			Main.saveYml();
-			p.sendMessage("§c[怪物生成器]§f创建成功.");
+			p.sendMessage("§c[Mobs]§f创建成功.");
 		} catch (IOException e) {
-			p.sendMessage("§c[怪物生成器]§f创建失败.");
+			p.sendMessage("§c[Mobs]§f创建失败.");
 		}
 		}
 		return true;
@@ -449,7 +452,7 @@ private static boolean mob(Player p, String[] args) {
 		p.sendMessage(s);
 		return true;
 	}else if(Main.getsMobModel()==null){
-		 p.sendMessage("§c[怪物生成器]§f请先使用/Mobs mob select [怪物名] 选中某个怪物进行修改.");
+		 p.sendMessage("§c[Mobs]§f请先使用/Mobs mob select [怪物名] 选中某个怪物进行修改.");
 return true;
 	}
 	 MobModel mm=Main.getsMobModel();
@@ -462,7 +465,7 @@ return true;
 			return false;
 		
 		mm.spawnMob(p.getEyeLocation());
-		p.sendMessage("§c[怪物生成器]§f创建成功.");
+		p.sendMessage("§c[Mobs]§f创建成功.");
 		return true;
 		
 	}else if(args[1].equalsIgnoreCase("modify"))	{
@@ -477,18 +480,18 @@ private static boolean mobModify(Player p, String[] args) {
 	MobModel mm=Main.getsMobModel();
 	 if(args[2].equalsIgnoreCase("del")){
 		if(!mm.remove())
-			p.sendMessage("§c[怪物生成器]§f该怪物不存在.");	
+			p.sendMessage("§c[Mobs]§f该怪物不存在.");	
 		Main.setsMobModel(null);
-		p.sendMessage("§c[怪物生成器]§f操作成功.");
+		p.sendMessage("§c[Mobs]§f操作成功.");
 	 }	 
-else if(args[2].equalsIgnoreCase("drops")){
+else if(args[2].equalsIgnoreCase("drop")){
 		 if(args.length<4){
 			 return false;	
 			 }
 		 if(args[3].equalsIgnoreCase("add")){
 			 
-			 if(p.getItemInHand()==null)
-			 {	 p.sendMessage("§c[怪物生成器]§f请手持一件装备.");
+			 if(p.getItemInHand()==null||p.getItemInHand().getType().name().equalsIgnoreCase(Material.AIR.name()))
+			 {	 p.sendMessage("§c[Mobs]§f请手持一件装备.");
 			 return true;
 			 	}
 			 
@@ -503,14 +506,14 @@ else if(args[2].equalsIgnoreCase("drops")){
 			 String s="掉落物列表:";
 			 ArrayList<DropItemStack> a = mm.getDrop();
 			 for(int i=0;i<a.size();i++){
-				 s+=i+":"+a.get(i).getItem().getType().name()+"|"+a.get(i).getI();
+				 s+=i+":[类型-"+a.get(i).getItem().getType().name()+"|"+a.get(i).getI()+"%|"+a.get(i).getItem().getAmount()+"个]";
 				 if(i!=a.size()-1){
 					 s+=",";
 				 }
 			 }
 			 
 			 p.sendMessage(s);
-			 
+			 return true;
 			 
 			 
 		 }else if(args[3].equalsIgnoreCase("del")){
@@ -519,7 +522,7 @@ else if(args[2].equalsIgnoreCase("drops")){
 			 }
 			 
 			 if(!mm.delDrop( Integer.parseInt(args[4]))){
-				 p.sendMessage("§c[怪物生成器]§f该掉落物不存在.");
+				 p.sendMessage("§c[Mobs]§f该掉落物不存在.");
 				 return true;
 			 }
 		 }
@@ -572,6 +575,22 @@ else if(args[2].equalsIgnoreCase("drops")){
 		 }else
 			 return false;
 		
+	 }else if(args[2].equalsIgnoreCase("pe")){
+		 
+	 }else if(args[2].equalsIgnoreCase("rider")){
+		 if(args.length!=4)
+			 return false;
+		 
+		if(MobModel.isMobModel(args[3])==-1)
+			{p.sendMessage("§c[Mobs]§f该怪物不存在.");
+			return true;}
+		if(Main.getsMobModel().getsName().equalsIgnoreCase(MobModel.getMobModel(args[3]).getsName()))
+		{
+			p.sendMessage("§c[Mobs]§f你不可以骑自己.");
+			return true;
+		}
+		
+		 mm.setRider(args[3]);
 	 }else if(args[2].equalsIgnoreCase("name")){
 		 if(args.length!=4)
 			 return false;
@@ -627,7 +646,7 @@ else if(args[2].equalsIgnoreCase("drops")){
 			 if(skill==null)
 			 {
 				 
-				 p.sendMessage("§c[怪物生成器]§f该技能不存在.");
+				 p.sendMessage("§c[Mobs]§f该技能不存在.");
 				 return true;
 				 
 			 }else
@@ -638,7 +657,7 @@ else if(args[2].equalsIgnoreCase("drops")){
 			 if(args.length!=5)
 				 return false;
 			 if(!mm.delSkills(Integer.parseInt(args[4])))
-			 {p.sendMessage("§c[怪物生成器]§f该技能不存在.");
+			 {p.sendMessage("§c[Mobs]§f该技能不存在.");
 			 return false;}
 			 
 			 
@@ -667,9 +686,9 @@ else if(args[2].equalsIgnoreCase("drops")){
 	
 try {
 	saveMobModel(mm, p);
-	 p.sendMessage("§c[怪物生成器]§f操作成功.");
+	 p.sendMessage("§c[Mobs]§f操作成功.");
 } catch (IOException e) {
-	 p.sendMessage("§c[怪物生成器]§f保存失败.");
+	 p.sendMessage("§c[Mobs]§f保存失败.");
 } 
 return true;
 }
@@ -686,21 +705,21 @@ private static boolean spawn(Player p, String[] args) {
 			section = Main.getCfg().getConfigurationSection("PointSpawn").getConfigurationSection(args[3]);
 			if(section==null)
 			{
-				p.sendMessage("§c[怪物生成器]§f该点不存在.");
+				p.sendMessage("§c[Mobs]§f该点不存在.");
 				return true;
 			}
 			Main.setsSpawn(new PointSpawn(section));
-			p.sendMessage("§c[怪物生成器]§f已经选择点:"+args[3]+".");
+			p.sendMessage("§c[Mobs]§f已经选择点:"+args[3]+".");
 			return true;
 		}else if(args[2].equalsIgnoreCase("World")){
 			section = Main.getCfg().getConfigurationSection("WorldSpawn").getConfigurationSection(args[3]);
 			if(section==null)
 			{
-				p.sendMessage("§c[怪物生成器]§f该点不存在.");
+				p.sendMessage("§c[Mobs]§f该点不存在.");
 				return true;
 			}
 			Main.setsSpawn(new WorldSpawn(section));
-			p.sendMessage("§c[怪物生成器]§f已经选择点:"+args[3]+".");
+			p.sendMessage("§c[Mobs]§f已经选择点:"+args[3]+".");
 			return true;
 		}
 	}else if(args[1].equalsIgnoreCase("new")){
@@ -710,22 +729,22 @@ private static boolean spawn(Player p, String[] args) {
 	if(args[2].equalsIgnoreCase("Point")){
 		if(Main.getO()==null)
 		{
-			p.sendMessage("§c[怪物生成器]§f请先选择一个点.");
+			p.sendMessage("§c[Mobs]§f请先选择一个点.");
 			return true;
 		}
 		
 		if(PointSpawn.isPSpawn(args[3])!=-1)
 		{
-			p.sendMessage("§c[怪物生成器]§f名称已存在.");
+			p.sendMessage("§c[Mobs]§f名称已存在.");
 			return true;
 		}
 		Main.setsSpawn(new PointSpawn(args[3],Main.getCfg().getConfigurationSection("PointSpawn"),Main.getO()));
 		Main.getsSpawn().save();
-		p.sendMessage("§c[怪物生成器]§f创建成功.");
+		p.sendMessage("§c[Mobs]§f创建成功.");
 		try {
 			Main.saveYml();
 		} catch (IOException e) {
-			p.sendMessage("§c[怪物生成器]§f保存失败.");
+			p.sendMessage("§c[Mobs]§f保存失败.");
 		}
 	return true;
 	
@@ -735,18 +754,18 @@ private static boolean spawn(Player p, String[] args) {
 	}else if(args[2].equalsIgnoreCase("World")){
 		if(WorldSpawn.isWSpawn(args[3])!=-1)
 		{
-			p.sendMessage("§c[怪物生成器]§f名称已存在.");
+			p.sendMessage("§c[Mobs]§f名称已存在.");
 			return true;
 		}
 		ArrayList<World> w = new ArrayList<World>();
 		w.add(p.getWorld());
 		Main.setsSpawn(new WorldSpawn(args[3],Main.getCfg().getConfigurationSection("WorldSpawn"),w));
 		Main.getsSpawn().save();
-		p.sendMessage("§c[怪物生成器]§f创建成功.");
+		p.sendMessage("§c[Mobs]§f创建成功.");
 		try {
 			Main.saveYml();
 		} catch (IOException e) {
-			p.sendMessage("§c[怪物生成器]§f保存失败.");
+			p.sendMessage("§c[Mobs]§f保存失败.");
 		}
 		return true;
 	}
@@ -784,7 +803,7 @@ private static boolean spawn(Player p, String[] args) {
 		 return true;
 
 	}else if(Main.getsSpawn()==null){
-		 p.sendMessage("§c[怪物生成器]§f请先使用/Mobs spawn select [Point/World] [刷新点名] 选中某个刷新点进行修改.");
+		 p.sendMessage("§c[Mobs]§f请先使用/Mobs spawn select [Point/World] [刷新点名] 选中某个刷新点进行修改.");
 		 return true;
 	 }
 	
@@ -798,7 +817,7 @@ private static boolean spawn(Player p, String[] args) {
 	}else if(args[1].equalsIgnoreCase("killall")){
 	
 			Main.getsSpawn().killAll();
-			p.sendMessage("§c[怪物生成器]§f执行成功.");
+			p.sendMessage("§c[Mobs]§f执行成功.");
 			return true;
 		
 		
@@ -826,13 +845,13 @@ private static boolean spawnModify(Player p, String[] args) {
 if(args[2].equalsIgnoreCase("point")){
 	if(Main.getO()==null){
 
-		p.sendMessage("§c[怪物生成器]§f请先使用选择器选择一个点.");
+		p.sendMessage("§c[Mobs]§f请先使用选择器选择一个点.");
 		return true;
 		///
 	}
 	
 	pSpawn.setP(Main.getO());
-	p.sendMessage("§c[怪物生成器]§f您已经设置了新的刷新点.");
+	p.sendMessage("§c[Mobs]§f您已经设置了新的刷新点.");
 	saveSpawn(pSpawn,p);
 	return true;
 }else 	if(args[2].equalsIgnoreCase("single")){
@@ -840,7 +859,7 @@ if(args[2].equalsIgnoreCase("point")){
 		return false;
 	}
 	pSpawn.setOne(Integer.parseInt(args[3]));
-	p.sendMessage("§c[怪物生成器]§f设置成功.");
+	p.sendMessage("§c[Mobs]§f设置成功.");
 	return true;
 
 }else if(args[2].equalsIgnoreCase("range")){
@@ -848,18 +867,18 @@ if(args[2].equalsIgnoreCase("point")){
 		return false;
 	}
 	pSpawn.setRange(Integer.parseInt(args[3]));
-	p.sendMessage("§c[怪物生成器]§f您已经设置了新的活动半径.");
+	p.sendMessage("§c[Mobs]§f您已经设置了新的活动半径.");
 	saveSpawn(pSpawn,p);
 	return true;
 }else if(args[2].equalsIgnoreCase("center")){
 	if(Main.getO()==null){
 
-		p.sendMessage("§c[怪物生成器]§f请先使用选择器选择一个点.");
+		p.sendMessage("§c[Mobs]§f请先使用选择器选择一个点.");
 		return true;
 		///
 	}
 pSpawn.setO(Main.getO());
-p.sendMessage("§c[怪物生成器]§f您已经设置了新的圆心点.");
+p.sendMessage("§c[Mobs]§f您已经设置了新的圆心点.");
 saveSpawn(pSpawn,p);
 return true;
 }
@@ -874,26 +893,26 @@ return true;
 			if(args[3].equalsIgnoreCase("add")){
 				for(int i=0;i<wSpawn.getWorld().size();i++){
 					if(wSpawn.getWorld().get(i).getName().equalsIgnoreCase(args[4])){
-						p.sendMessage("§c[怪物生成器]§f该世界已存在.");
+						p.sendMessage("§c[Mobs]§f该世界已存在.");
 						return true;
 					}
 				}
 				if(Bukkit.getWorld(args[4])!=null){
 				wSpawn.getWorld().add(Bukkit.getWorld(args[4]));
-				p.sendMessage("§c[怪物生成器]§f操作成功.");}
+				p.sendMessage("§c[Mobs]§f操作成功.");}
 				else {
-					p.sendMessage("§c[怪物生成器]§f该世界不存在.");
+					p.sendMessage("§c[Mobs]§f该世界不存在.");
 				}
 			}else if(args[3].equalsIgnoreCase("del")){
 				for(int i=0;i<wSpawn.getWorld().size();i++){
 					if(wSpawn.getWorld().get(i).getName().equalsIgnoreCase(args[4])){
 						wSpawn.getWorld().remove(i);
-						p.sendMessage("§c[怪物生成器]§f操作成功.");
+						p.sendMessage("§c[Mobs]§f操作成功.");
 						return true;
 					}
 				}
 				
-				p.sendMessage("§c[怪物生成器]§f该世界不存在.");
+				p.sendMessage("§c[Mobs]§f该世界不存在.");
 				return true;
 			}else if(args[3].equalsIgnoreCase("list")){
 				String s="刷新世界列表:\n";
@@ -906,7 +925,7 @@ return true;
 			}
 			p.sendMessage("§a  /Mobs spawn modify world [add/list/del] 修改刷新的世界");
 		
-			p.sendMessage("§c[怪物生成器]§f.");
+			p.sendMessage("§c[Mobs]§f.");
 			saveSpawn(wSpawn,p);
 			return true;
 		}else if(args[2].equalsIgnoreCase("chance")){
@@ -914,7 +933,7 @@ return true;
 			return false;
 		}
 		wSpawn.setChance(Double.parseDouble(args[3]));
-			p.sendMessage("§c[怪物生成器]§f您已经设置了新的刷新几率.");
+			p.sendMessage("§c[Mobs]§f您已经设置了新的刷新几率.");
 			saveSpawn(wSpawn,p);
 			return true;
 		}else if(args[2].equalsIgnoreCase("playerNearby")){
@@ -924,7 +943,7 @@ return true;
 			
 			
 			wSpawn.setPlayerNearby(Integer.parseInt(args[3]));
-			p.sendMessage("§c[怪物生成器]§f设置成功.");
+			p.sendMessage("§c[Mobs]§f设置成功.");
 			saveSpawn(wSpawn,p);
 			return true;
 			
@@ -944,30 +963,30 @@ return true;
 	if(args[2].equalsIgnoreCase("del")){
 		spawn.remove();
 		Main.setsSpawn(null);
-		p.sendMessage("§c[怪物生成器]§f您已经删除了该点.");
+		p.sendMessage("§c[Mobs]§f您已经删除了该点.");
 	}else 		if(args[2].equalsIgnoreCase("lag")){
 		if(args.length!=4){
 			return false;
 		}
 		spawn.setTime(Integer.parseInt(args[3]));
-		p.sendMessage("§c[怪物生成器]§f设置成功.");
+		p.sendMessage("§c[Mobs]§f设置成功.");
 	}else 		if(args[2].equalsIgnoreCase("max")){
 		if(args.length!=4){
 			return false;
 		}
 		spawn.setAll(Integer.parseInt(args[3]));
-		p.sendMessage("§c[怪物生成器]§f设置成功.");
+		p.sendMessage("§c[Mobs]§f设置成功.");
 	}else 	if(args[2].equalsIgnoreCase("Mob")){
 		
 		if(args.length!=4){
 			return false;
 		}
 		if(MobModel.isMobModel(args[3])==-1){
-			p.sendMessage("§c[怪物生成器]§f怪物不存在.");
+			p.sendMessage("§c[Mobs]§f怪物不存在.");
 			return true;
 		}
-		Main.getsSpawn().setMm(MobModel.getMobModels().get(MobModel.isMobModel(args[3])));
-		p.sendMessage("§c[怪物生成器]§f设置成功.");
+		Main.getsSpawn().setMobModel(MobModel.getMobModels().get(MobModel.isMobModel(args[3])));
+		p.sendMessage("§c[Mobs]§f设置成功.");
 	}else
 		return false;
 	
@@ -980,9 +999,9 @@ return true;
 private static void saveSpawn(Spawn pSpawn, Player p) {
 	pSpawn.save();
 	try {
-		Main.saveYml();
+		Main.getCfg().save(Main.getF());
 	} catch (IOException e) {
-		p.sendMessage("§c[怪物生成器]§f配置保存失败.");
+		p.sendMessage("§c[Mobs]§f配置保存失败.");
 	}
 	
 }
@@ -991,11 +1010,11 @@ private static void saveSpawn(Spawn pSpawn, Player p) {
 private static void saveMobModel(MobModel mm, Player p) throws IOException {
 	mm.save();
 	try {
-		Main.saveYml();
+		Main.getCfg().save(Main.getF());
 	} catch (IOException e) {
-		p.sendMessage("§c[怪物生成器]§f配置保存失败.");
+		p.sendMessage("§c[Mobs]§f配置保存失败.");
 	}
-	
+
 }
 }
 

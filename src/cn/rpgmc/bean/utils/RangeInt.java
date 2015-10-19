@@ -1,4 +1,4 @@
-package cn.rpgmc.bean.integer;
+package cn.rpgmc.bean.utils;
 
 public class RangeInt {
 	private int max=0;
@@ -38,6 +38,11 @@ x = min-max;
 	}
 		
 		return auto+((int)(Math.random()*(x+1)));
+	}
+	
+	@Override
+	public String toString() {
+return getMin()+"-"+getMax();
 	}
 
 }
