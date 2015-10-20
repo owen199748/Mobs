@@ -38,6 +38,7 @@ public abstract class Skill {
 	public static final String TRIGGER_DYING="TRIGGER_DYING";//濒死
 	public static final String TRIGGER_TARGET="TRIGGER_TARGET";//瞄准
 	public static final String TRIGGER_BETARGET="TRIGGER_BETARGET";//被瞄准
+	public static final String TRIGGER_BESPAWN="TRIGGER_BESPAWN";//被产生
 	private String trigger = TRIGGER_CYCLE;
 	public static final String RANGE_WORLD="RANGE_WORLD";
 	public static final String RANGE_TARGET="RANGE_TARGET";
@@ -149,6 +150,7 @@ public static boolean isTrigger(String trigger) {
 				if(!trigger.equalsIgnoreCase(TRIGGER_DYING))
 					if(!trigger.equalsIgnoreCase(TRIGGER_TARGET))
 						if(!trigger.equalsIgnoreCase(TRIGGER_BETARGET))
+							if(!trigger.equalsIgnoreCase(TRIGGER_BESPAWN))
 			return false;
 	return true;
 }
@@ -389,6 +391,7 @@ public static String help() {
 				"    TRIGGER_DYING 濒死\n"+
 				"    TRIGGER_TARGET 瞄准\n"+
 				"    TRIGGER_BETARGET 被瞄准\n"+
+				"    TRIGGER_BESPAWN 被产生(怪物出生)\n"+
 				"  /mobs skill modify range [触发范围] 触发后技能指向的对象,可选:\n"+
 				"    RANGE_WORLD 所在世界\n"+
 				"    RANGE_CHUNK 所在区块\n"+
@@ -567,7 +570,84 @@ return false;
 	public void setTrigger(String trigger) {
 		this.trigger = trigger;
 	}
+	
+	public void  runSkill(Mob mob,Object t,Object c,Object w){
+		if(t==null)
+			t=new ArrayList<Entity>();
+		if(c==null)
+			c=new ArrayList<Entity>();
+		if(w==null)
+			w=new ArrayList<Entity>();
+		List<Entity> tt=new ArrayList<Entity>();
+		List<Entity> cc=new ArrayList<Entity>();
+		List<Entity> ww=new ArrayList<Entity>();
+		
+		if(t instanceof List)
+		{
+			if(((List)t).size()!=0)
+			if(((List)t).get(0) instanceof Entity)
+			{
+				tt=(List<Entity>) t;
+			}
+			
+		}else if(t instanceof Entity){
+			 ArrayList<Entity> as = new ArrayList<Entity>();
+			 as.add((Entity) t);
+			 tt=as;
+			}
+		
+		if(c instanceof List)
+		{
+			if(((List)c).size()!=0)
+			if(((List)c).get(0) instanceof Entity)
+			{
+				cc=(List<Entity>) c;
+			}
+			
+		}else if(c instanceof Entity){
+			 ArrayList<Entity> as = new ArrayList<Entity>();
+			 as.add((Entity) c);
+			 cc=as;
+			}
+		
+		if(w instanceof List)
+		{
+			if(((List)w).size()!=0)
+			if(((List)w).get(0) instanceof Entity)
+			{
+				ww=(List<Entity>) w;
+			}
+			
+		}else if(w instanceof Entity){
+		 ArrayList<Entity> as = new ArrayList<Entity>();
+		 as.add((Entity) w);
+		 ww=as;
+		}
+		
+		
+		runSkill(mob, tt, cc, ww);
+		
+			
+	}
+
+
+	public void  runSkill(Mob mob,List<Entity> t,List<Entity> c,List<Entity> w){
+		
+		if(getRange().equalsIgnoreCase(RANGE_CHUNK))
+			runSkill(mob, c);
+		else if(getRange().equalsIgnoreCase(RANGE_WORLD))
+			runSkill(mob, w);
+		else if(getRange().equalsIgnoreCase(RANGE_TARGET))
+			runSkill(mob, t);
+	}
+	
+	
+	
 	public void runSkill(Mob mob,List<Entity> e) {
+		if(e==null)
+			return ;
+		
+		
 		if(chance>(Math.random()*100)){
 			long time=System.currentTimeMillis();
 			if(time-mob.getBeCooling(this)>cooling*50)

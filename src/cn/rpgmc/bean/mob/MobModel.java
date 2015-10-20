@@ -3,6 +3,7 @@ package cn.rpgmc.bean.mob;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -428,6 +429,11 @@ else if(dropType==2)
 Mob m = new Mob(dmg.getInt(),e,isl,getSkills(),exp.getInt(),isAttrCover);
 if(m!=null)
 	mobs.add(m);
+
+for(int i=0;i<m.getSkills().size();i++)
+if(m.getSkills().get(i).getTrigger().equalsIgnoreCase(Skill.TRIGGER_BESPAWN))
+	m.getSkills().get(i).runSkill(m, m.getE(),Arrays.asList(m.getE().getLocation().getChunk().getEntities()),m.getE().getWorld().getEntities() );
+
 return m;
 	
 }

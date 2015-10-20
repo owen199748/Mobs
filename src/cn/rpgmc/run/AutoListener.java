@@ -34,46 +34,22 @@ ls=this;
 	{
 		if(Mob.isMob(ete.getEntity().getEntityId())){
 			Mob m=Mob.getMob(ete.getEntity().getEntityId());
-			Entity e = ete.getEntity();
-			for(int i=0;i<Mob.getMob(e.getEntityId()).getSkills().size();i++){
-				Skill skill = Mob.getMob(e.getEntityId()).getSkills().get(i);
-				if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_TARGET))
-				if(skill.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-				m.runSkill(skill,Arrays.asList(e.getLocation().getChunk().getEntities()));
-				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
-					m.runSkill(skill,e.getWorld().getEntities());	
-				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
-					ArrayList<Entity> a = new ArrayList<Entity>();
-					a.add(ete.getTarget());
-					m.runSkill(skill,a);	
-				}
-				
-				
-			}
+			m.runSkill(Skill.TRIGGER_TARGET, ete.getTarget(),
+					m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
 			
 		}
+		
 		if(ete.getTarget()!=null)
 		if(Mob.isMob(ete.getTarget().getEntityId())){
 			Mob m=Mob.getMob(ete.getTarget().getEntityId());
-			Entity e = ete.getTarget();
-			for(int i=0;i<Mob.getMob(e.getEntityId()).getSkills().size();i++){
-				Skill skill = Mob.getMob(e.getEntityId()).getSkills().get(i);
-				if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_BETARGET))
-				if(skill.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-				m.runSkill(skill,Arrays.asList(e.getLocation().getChunk().getEntities()));
-				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
-					m.runSkill(skill,e.getWorld().getEntities());	
-				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
-					ArrayList<Entity> a = new ArrayList<Entity>();
-					a.add(ete.getEntity());
-					m.runSkill(skill,a);	
-				}
+			m.runSkill(Skill.TRIGGER_TARGET, ete.getEntity(),
+					m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
 				
 				
 			}
 			
 		}
-	}
+	
 	@EventHandler
 	public void pje(PlayerJoinEvent pje)
 	{
@@ -141,42 +117,17 @@ int dmg = mob.getDmg();
 		
 		if(Mob.isMob(edbee.getEntity().getEntityId())){
 			Mob m=Mob.getMob(edbee.getEntity().getEntityId());
-			Entity e = edbee.getEntity();
-			for(int i=0;i<Mob.getMob(e.getEntityId()).getSkills().size();i++){
-				Skill skill = Mob.getMob(e.getEntityId()).getSkills().get(i);
-				if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_HURT))
-				if(skill.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-				m.runSkill(skill,Arrays.asList(e.getLocation().getChunk().getEntities()));
-				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
-					m.runSkill(skill,e.getWorld().getEntities());	
-				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
-					ArrayList<Entity> a = new ArrayList<Entity>();
-					a.add(edbee.getDamager());
-					m.runSkill(skill,a);	
-				}
+			m.runSkill(Skill.TRIGGER_HURT, edbee.getDamager(),
+					m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
 
-			}
 			
 		}
 		
 		if(Mob.isMob(edbee.getDamager().getEntityId())){
 			Mob m=Mob.getMob(edbee.getDamager().getEntityId());
-			Entity e = edbee.getDamager();
-			for(int i=0;i<Mob.getMob(e.getEntityId()).getSkills().size();i++){
-				Skill skill = Mob.getMob(e.getEntityId()).getSkills().get(i);
-				if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_ATTACK))
-				if(skill.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-				m.runSkill(skill,Arrays.asList(e.getLocation().getChunk().getEntities()));
-				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
-					m.runSkill(skill,e.getWorld().getEntities());	
-				}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
-					ArrayList<Entity> a = new ArrayList<Entity>();
-					a.add(edbee.getEntity());
-					m.runSkill(skill,a);	
-				}
-				
-				
-			}
+			m.runSkill(Skill.TRIGGER_ATTACK, edbee.getEntity(),
+					m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
+
 			
 		}
 	}
@@ -194,19 +145,9 @@ int dmg = mob.getDmg();
 		ede.setDroppedExp(m.getExp());
 		else
 		ede.setDroppedExp(ede.getDroppedExp()+m.getExp());
-		for(int i=0;i<m.getSkills().size();i++){
-			Skill skill = m.getSkills().get(i);
-			if(skill.getTrigger().equalsIgnoreCase(Skill.TRIGGER_DYING))
-			if(skill.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-			m.runSkill(skill,Arrays.asList(e.getLocation().getChunk().getEntities()));
-			}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_WORLD)){
-				m.runSkill(skill,e.getWorld().getEntities());	
-			}else if(skill.getRange().equalsIgnoreCase(Skill.RANGE_TARGET)){
-				m.runSkill(skill,ede.getEntity().getKiller());	
-			}
-			
-			
-		}
+
+		m.runSkill(Skill.TRIGGER_HURT, ede.getEntity().getKiller(),
+				m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
 		
 		
 		

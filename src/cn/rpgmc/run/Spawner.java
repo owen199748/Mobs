@@ -158,22 +158,9 @@ locs.addAll(((WorldSpawn)spawn).getLoc());
 
 				pmob.test();
 			}
-			if(m.getSkills()!=null){
-				ArrayList<Skill> skill = m.getSkills();
-				for(int ii=0;ii<skill.size();ii++){
-					Skill	s=skill.get(ii);
-					if(s.getTrigger().equalsIgnoreCase(Skill.TRIGGER_CYCLE))
-					{
-						if(s.getRange().equalsIgnoreCase(Skill.RANGE_WORLD))
-						{
-							m.runSkill(s,m.getE().getWorld().getEntities());
-						}else if(s.getRange().equalsIgnoreCase(Skill.RANGE_CHUNK)){
-							m.runSkill(s,Arrays.asList(m.getE().getLocation().getChunk().getEntities()));
-						}
-						
-					}
-								}
-			}
+
+				m.runSkill(Skill.TRIGGER_CYCLE, null,
+						m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
 				
 			}
 			

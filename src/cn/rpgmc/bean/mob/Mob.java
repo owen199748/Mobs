@@ -1,18 +1,14 @@
 package cn.rpgmc.bean.mob;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
+
 import cn.rpgmc.bean.skill.Skill;
-import cn.rpgmc.bean.spawn.Spawn;
 
 public class Mob{
 	private LivingEntity e=null;
@@ -33,14 +29,25 @@ public ArrayList<Mob> getMobs() {
 	return mobs;
 }
 
-public void runSkill(Skill skill,List<Entity> e)  {
-	skill.runSkill(this, e);
+
+public void runSkill(String target,Entity t,Entity[] c,List<Entity> w)  {
+	if(skills==null)
+		return;
+	
+	for(int i=0;i<skills.keySet().toArray().length;i++)
+	{Skill sk = (Skill)skills.keySet().toArray()[i];
+		if(sk.getTrigger().equalsIgnoreCase(target))
+		{
+			if(target.equalsIgnoreCase(Skill.TRIGGER_CYCLE))
+				t=null;
+			
+			sk.runSkill(this, t,Arrays.asList(c),w);
+		}
+	}
+	
 	
 }
-public void runSkill(Skill skill,Entity e)  {
-	skill.runSkill(this, e);
-	
-}
+
 public void setExp(int exp) {
 	this.exp = exp;
 }
