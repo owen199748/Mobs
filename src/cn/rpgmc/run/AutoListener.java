@@ -1,165 +1,154 @@
 package cn.rpgmc.run;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.util.Vector;
 
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.skill.Skill;
 import cn.rpgmc.bean.spawn.Spawn;
 
 public class AutoListener implements Listener {
-	private static AutoListener ls=null;
+	private static AutoListener ls = null;
+
 	public static AutoListener getLs() {
 		return ls;
 	}
-	AutoListener(){
-ls=this;
+
+	AutoListener() {
+		ls = this;
 
 	}
 
 	@EventHandler
-	public void ete(EntityTargetEvent ete)
-	{
-		if(Mob.isMob(ete.getEntity().getEntityId())){
-			Mob m=Mob.getMob(ete.getEntity().getEntityId());
-			m.runSkill(Skill.TRIGGER_TARGET, ete.getTarget(),
-					m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
-			
+	public void ete(EntityTargetEvent ete) {
+		if (Mob.isMob(ete.getEntity().getEntityId())) {
+			Mob m = Mob.getMob(ete.getEntity().getEntityId());
+			m.runSkill(Skill.TRIGGER_TARGET, ete.getTarget(), m.getE()
+					.getLocation().getChunk().getEntities(), m.getE()
+					.getWorld().getEntities());
+
 		}
-		
-		if(ete.getTarget()!=null)
-		if(Mob.isMob(ete.getTarget().getEntityId())){
-			Mob m=Mob.getMob(ete.getTarget().getEntityId());
-			m.runSkill(Skill.TRIGGER_TARGET, ete.getEntity(),
-					m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
-				
-				
+
+		if (ete.getTarget() != null)
+			if (Mob.isMob(ete.getTarget().getEntityId())) {
+				Mob m = Mob.getMob(ete.getTarget().getEntityId());
+				m.runSkill(Skill.TRIGGER_TARGET, ete.getEntity(), m.getE()
+						.getLocation().getChunk().getEntities(), m.getE()
+						.getWorld().getEntities());
+
 			}
-			
-		}
-	
+
+	}
+
 	@EventHandler
-	public void pje(PlayerJoinEvent pje)
-	{
-		if(pje.getPlayer().isOp()){
-			if(!Main.getCfg().getString("Version").equalsIgnoreCase(Main.getV())){
-				
-				pje.getPlayer().sendMessage("§c[Mobs]§f插件与存在的配置版本不统一,请删除配置并重载插件.");
-				pje.getPlayer().sendMessage("§c[Mobs]§如果确认老版本配置支持当前版本请输入 /Mobs reload 转换为新版本配置.");
+	public void pje(PlayerJoinEvent pje) {
+		if (pje.getPlayer().isOp()) {
+			if (!Main.getCfg().getString("Version")
+					.equalsIgnoreCase(Main.getV())) {
+
+				pje.getPlayer().sendMessage(
+						"§c[Mobs]§f插件与存在的配置版本不统一,请删除配置并重载插件.");
+				pje.getPlayer().sendMessage(
+						"§c[Mobs]§如果确认老版本配置支持当前版本请输入 /Mobs reload 转换为新版本配置.");
 			}
-			
-			
+
 		}
 
 	}
 
-	
-	
-	
-	
 	@EventHandler
-	public void bpe(PlayerInteractEvent bpe){
-		if(bpe.getClickedBlock()==null){
+	public void bpe(PlayerInteractEvent bpe) {
+		if (bpe.getClickedBlock() == null) {
 			return;
 		}
-		if(bpe.getPlayer().isOp())
-		if(bpe.getAction().name().equalsIgnoreCase(Action.LEFT_CLICK_BLOCK.name()))
+		if (bpe.getPlayer().isOp())
+			if (bpe.getAction().name()
+					.equalsIgnoreCase(Action.LEFT_CLICK_BLOCK.name()))
 
+			{
+				if (bpe.getItem() != null)
+					if (bpe.getItem().getTypeId() == Main.getClickItem()) {
 
-		{
-			if(bpe.getItem()!=null)
-			if(bpe.getItem().getTypeId()==Main.getClickItem()){
+						Main.setO(bpe.getClickedBlock().getLocation());
+						bpe.getPlayer().sendMessage(
+								"§c[Mobs]§6您已经选定了一个点:"
+										+ bpe.getClickedBlock().getX()
+										+ "x,"
+										+ bpe.getClickedBlock().getY()
+										+ "y,"
+										+ bpe.getClickedBlock().getZ()
+										+ "z,"
+										+ "位于世界:"
+										+ bpe.getClickedBlock().getWorld()
+												.getName());
 
-				Main.setO(bpe.getClickedBlock().getLocation());
-				bpe.getPlayer().sendMessage("§c[Mobs]§6您已经选定了一个点:"+
-						bpe.getClickedBlock().getX()+"x,"+
-						bpe.getClickedBlock().getY()+"y,"+
-						bpe.getClickedBlock().getZ()+"z,"+"位于世界:"+
-						bpe.getClickedBlock().getWorld().getName()
-						);
-				
-				bpe.setCancelled(true);
+						bpe.setCancelled(true);
+					}
+
 			}
-			
-			
-			
-		}
 
-		
-		
 	}
-	
-	
+
 	@EventHandler
-	public void edbee(EntityDamageByEntityEvent edbee){
+	public void edbee(EntityDamageByEntityEvent edbee) {
 		Mob mob = Mob.getMob(edbee.getDamager().getEntityId());
-		if(mob!=null){
-int dmg = mob.getDmg();
-		if(dmg!=-1){
-	if(mob.isAttrCover())
-			edbee.setDamage(dmg);
-	else
-		edbee.setDamage(edbee.getDamage()+dmg);
+		if (mob != null) {
+			int dmg = mob.getDmg();
+			if (dmg != -1) {
+				if (mob.isAttrCover())
+					edbee.setDamage(dmg);
+				else
+					edbee.setDamage(edbee.getDamage() + dmg);
+			}
 		}
-		}
-		
-		if(Mob.isMob(edbee.getEntity().getEntityId())){
-			Mob m=Mob.getMob(edbee.getEntity().getEntityId());
-			m.runSkill(Skill.TRIGGER_HURT, edbee.getDamager(),
-					m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
 
-			
-		}
-		
-		if(Mob.isMob(edbee.getDamager().getEntityId())){
-			Mob m=Mob.getMob(edbee.getDamager().getEntityId());
-			m.runSkill(Skill.TRIGGER_ATTACK, edbee.getEntity(),
-					m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
+		if (Mob.isMob(edbee.getEntity().getEntityId())) {
+			Mob m = Mob.getMob(edbee.getEntity().getEntityId());
+			m.runSkill(Skill.TRIGGER_HURT, edbee.getDamager(), m.getE()
+					.getLocation().getChunk().getEntities(), m.getE()
+					.getWorld().getEntities());
 
-			
+		}
+
+		if (Mob.isMob(edbee.getDamager().getEntityId())) {
+			Mob m = Mob.getMob(edbee.getDamager().getEntityId());
+			m.runSkill(Skill.TRIGGER_ATTACK, edbee.getEntity(), m.getE()
+					.getLocation().getChunk().getEntities(), m.getE()
+					.getWorld().getEntities());
+
 		}
 	}
-	
-	
+
 	@EventHandler
-	public void ede(EntityDeathEvent ede){
-	Spawn.removeEntity(ede.getEntity());
-	if(Mob.isMob(ede.getEntity().getEntityId())){
-		Entity e = ede.getEntity();
-		Mob m = Mob.getMob(e.getEntityId());
+	public void ede(EntityDeathEvent ede) {
+		Spawn.removeEntity(ede.getEntity());
+		if (Mob.isMob(ede.getEntity().getEntityId())) {
+			Entity e = ede.getEntity();
+			Mob m = Mob.getMob(e.getEntityId());
 
-		
-		if(m.isAttrCover())
-		ede.setDroppedExp(m.getExp());
-		else
-		ede.setDroppedExp(ede.getDroppedExp()+m.getExp());
+			if (m.isAttrCover())
+				ede.setDroppedExp(m.getExp());
+			else
+				ede.setDroppedExp(ede.getDroppedExp() + m.getExp());
 
-		m.runSkill(Skill.TRIGGER_HURT, ede.getEntity().getKiller(),
-				m.getE().getLocation().getChunk().getEntities(), m.getE().getWorld().getEntities());
-		
-		
-		
-		
-		if(m.getDrop()!=null){
-			ede.getDrops().clear();
-			ede.getDrops().addAll(m.getDrop());
+			m.runSkill(Skill.TRIGGER_HURT, ede.getEntity().getKiller(), m
+					.getE().getLocation().getChunk().getEntities(), m.getE()
+					.getWorld().getEntities());
+
+			if (m.getDrop() != null) {
+				ede.getDrops().clear();
+				ede.getDrops().addAll(m.getDrop());
+			}
+
+			m.remove();
 		}
-		
-		
-		m.remove();
+
 	}
-	
-}
 }
