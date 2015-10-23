@@ -50,9 +50,10 @@ public class Spawner extends BukkitRunnable {
 			a = 1;
 		}
 
-		if (a <= 0)
+		if (a <= 0) {
+			spawn.setNow(n);
 			return;
-		else if (a > rr)
+		} else if (a > rr)
 			a = rr;
 
 		ArrayList<Location> locs = new ArrayList<Location>();
@@ -82,7 +83,7 @@ public class Spawner extends BukkitRunnable {
 
 		}
 
-		if (spawn.getNow() < n / (spawn.getTime() * 50)) {
+		if (n - (spawn.getTime() * 50) > spawn.getNow()) {
 			// 达到这个进行一次刷怪
 
 			if (spawn.getMobModel() != null)
@@ -92,9 +93,9 @@ public class Spawner extends BukkitRunnable {
 					spawn.spawnMob(locs.get(x));
 				}
 
-		}
+			spawn.setNow(n);
 
-		spawn.setNow(n / (spawn.getTime() * 50));
+		}
 
 	}
 

@@ -7,18 +7,18 @@ import org.bukkit.entity.Player;
 
 import cn.rpgmc.bean.mob.Mob;
 
-public class Skill_Message extends Skill {
+public abstract class Skill_AttributeModify extends Skill {
 
 	private String msg;
 
-	public Skill_Message() {
+	public Skill_AttributeModify() {
 	}
 
-	public Skill_Message(ConfigurationSection cfg) {
+	public Skill_AttributeModify(ConfigurationSection cfg) {
 		super(cfg);
 	}
 
-	public Skill_Message(String sName2, ConfigurationSection cfg2) {
+	public Skill_AttributeModify(String sName2, ConfigurationSection cfg2) {
 		super(sName2, cfg2);
 	}
 

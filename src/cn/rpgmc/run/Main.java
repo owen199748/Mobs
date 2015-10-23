@@ -2,6 +2,7 @@ package cn.rpgmc.run;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -200,21 +201,25 @@ public class Main extends JavaPlugin {
 				+ File.separator + "Skills" + File.separator);
 		if (!skillFile.exists())
 			skillFile.mkdirs();
-
-		File[] skillList = skillFile.listFiles(new JarFilter());
+		File[] skillArray = skillFile.listFiles(new JarFilter());
+		List<File> skillList = new ArrayList<File>();
+		skillList.add(this.getFile());
+		for (int i = 0; i < skillArray.length; i++) {
+			skillList.add(skillArray[i]);
+		}
 		int s = 0;
 		int ss = 0;
-		for (int i = 0; i < skillList.length; i++) {
+		for (int i = 0; i < skillList.size(); i++) {
 			List<Class<? extends Skill>> l = null;
 			try {
-				l = getJarClass(skillList[i].getAbsolutePath());
+				l = getJarClass(skillList.get(i).getAbsolutePath());
 			} catch (ClassNotFoundException e) {
 				Bukkit.getLogger().info(
-						skillList[i].getAbsoluteFile().getName()
+						skillList.get(i).getAbsoluteFile().getName()
 								+ "技能包加载失败,原因:ClassNotFoundException.");
 			} catch (IOException e) {
 				Bukkit.getLogger().info(
-						skillList[i].getAbsoluteFile().getName()
+						skillList.get(i).getAbsoluteFile().getName()
 								+ "技能包加载失败,原因:IOException.");
 			}
 
@@ -225,19 +230,19 @@ public class Main extends JavaPlugin {
 				Skill.registerSkill(l.get(r));
 				Bukkit.getLogger()
 						.info("[技能包装载器]"
-								+ skillList[i].getAbsoluteFile().getName()
+								+ skillList.get(i).getAbsoluteFile().getName()
 								+ "<" + l.get(r).getName() + ".class" + ">装载成功");
 				ss++;
 			}
 
 			Bukkit.getLogger().info(
-					"[技能包装载完成]" + skillList[i].getAbsoluteFile().getName());
+					"[技能包装载完成]" + skillList.get(i).getAbsoluteFile().getName());
 			s++;
 		}
 
 		Bukkit.getLogger().info(
-				"检测到的技能包共" + skillList.length + "个!" + s + "成功,"
-						+ (skillList.length - s) + "失败.");
+				"检测到的技能包共" + skillList.size() + "个!" + s + "成功,"
+						+ (skillList.size() - s) + "失败.");
 
 		Bukkit.getLogger().info("共加载了" + ss + "个技能包技能!");
 
@@ -264,11 +269,13 @@ public class Main extends JavaPlugin {
 			Class<?> cla = cl.loadClass(name);
 			if (cla == null)
 				continue;
+			if (!cla.isInterface())
+				if (!Modifier.isAbstract(cla.getModifiers()))
+					if (cla.getSuperclass() == Skill.class) {
 
-			if (cla.getSuperclass() == Skill.class) {
-				l.add((Class<? extends Skill>) cla);
-				l1.add(cla.getSimpleName());
-			}
+						l.add((Class<? extends Skill>) cla);
+						l1.add(cla.getSimpleName());
+					}
 
 		}
 		return l;
@@ -438,59 +445,6 @@ public class Main extends JavaPlugin {
 		im.setDisplayName("§c掉落几率:" + i + "%");
 		zz.setItemMeta(im);
 		return zz;
-	}
-
-	// 该方法会抛出IO异常,类不存在异常.
-	public List<Class<?>> getJarAllClass(String jarFile, Class superClass)
-			throws IOException, ClassNotFoundException {
-		// 新建一个List用于储存获得的Class
-		ArrayList<Class<?>> l = new ArrayList<Class<?>>();
-		// 将输入的文件路径转换成URL路径
-		URL url = new URL("file:" + jarFile);
-		// 将文件加载成URLClassLoader,注意这里的this代表是继承JavaPlugin的类,使用BukkitApi本身提供的ClassLoader作为父加载器.
-		URLClassLoader cl = new URLClassLoader(new URL[] { url },
-				this.getClassLoader());
-		// 将文件用JarFile类载入
-		JarFile jar = new JarFile(jarFile);
-		// 使用迭代器遍历jar内所有元素
-		Enumeration<JarEntry> e = jar.entries();
-		while (e.hasMoreElements()) {
-			// 加载元素路径为Java包路径格式
-			String name = isPathToClass(e.nextElement().getName());
-			// 如果name==null则不是class元素路径,进入下个遍历
-			if (name == null)
-				continue;
-
-			// 用之前创建的URLClassLoader加载确认的元素获得其Class
-			Class<?> cla = cl.loadClass(name);
-			// 如果ClassLoader没有取到类,跳到下个遍历(基本是Jar包内包含.class后戳的其他编码文件)
-			if (cla == null)
-				continue;
-
-			// 判断这个Class是否继承该超类为父类,如果是或没有指定父类则加入列表.
-			if (superClass == null || cla.getSuperclass() == superClass)
-				l.add(cla);
-
-		}
-		return l;
-	}
-
-	private static String isPathToClass(String n) {
-
-		// 如果长度大于6符合class文件路径标准
-		if (n.length() > 6)
-			if (n.substring(n.length() - 6, n.length()).equalsIgnoreCase(
-					".class"))
-			// 如果文件末端也为.class确定为class文件
-			{
-				// 返回时将.class去掉并将"/"替换为"."变成类似com.baidu.util.Math的包路径格式
-				return n.substring(0, n.length() - 6).replaceAll("/", ".");
-
-			}
-
-		// 不是class文件路径,返回NULL
-		return null;
-
 	}
 
 }

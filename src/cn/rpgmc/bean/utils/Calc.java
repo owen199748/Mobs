@@ -3,10 +3,33 @@ package cn.rpgmc.bean.utils;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 public class Calc {
+	private static ScriptEngine jse = new ScriptEngineManager()
+			.getEngineByName("JavaScript");
+
 	public static Integer c(String str) {
 
 		return calculate(getPostOrder(getStringList(str)));
+
+	}
+
+	public static Double calc(String str) {
+
+		try {
+			return Double.parseDouble((String) jse.eval(str));
+		} catch (NumberFormatException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		} catch (ScriptException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+
+		return null;
 
 	}
 

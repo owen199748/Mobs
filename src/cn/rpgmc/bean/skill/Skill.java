@@ -17,12 +17,7 @@ import cn.rpgmc.run.Main;
 /**
  * 
  * @author owen
- * @see 继承该类需要重写的方法:
- *      <P/>
- *      static String getType()
- *      <P/>
- *      static String help()
- *      <P/>
+ * @see 继承该类需要继承所有构造方法,否则报错:
  */
 
 public abstract class Skill {
@@ -45,10 +40,6 @@ public abstract class Skill {
 	public static final String RANGE_CHUNK = "RANGE_CHUNK";
 	private String range = RANGE_CHUNK;
 	private ArrayList<String> enemys = new ArrayList<String>();
-	static {
-
-		Skill.registerSkill(Skill_Message.class);
-	}
 
 	public static void setSkills(ArrayList<Skill> skills) {
 		Skill.skills = skills;
@@ -212,7 +203,7 @@ public abstract class Skill {
 			if (args.length != 4)
 				return false;
 			if (!isRange(args[3])) {
-				p.sendMessage("§c[Mobs]§f触发类型不存在.");
+				p.sendMessage("§c[Mobs]§f作用类型不存在.");
 				return true;
 
 			}
@@ -302,7 +293,7 @@ public abstract class Skill {
 		str += "  名字:" + getsName() + "\n";
 		str += "  几率:" + getChance() + "\n";
 		str += "  触发类型:" + getTrigger() + "\n";
-		str += "  触发范围:" + getRange() + "\n";
+		str += "  作用范围:" + getRange() + "\n";
 		str += "  冷却时间:" + getCooling() + "\n";
 		String s = "";
 		for (int i = 0; i < getEnemys().size(); i++) {
@@ -396,13 +387,15 @@ public abstract class Skill {
 				+ "    TRIGGER_TARGET 瞄准\n"
 				+ "    TRIGGER_BETARGET 被瞄准\n"
 				+ "    TRIGGER_BESPAWN 被产生(怪物出生)\n"
-				+ "  /mobs skill modify range [触发范围] 触发后技能指向的对象,可选:\n"
+				+ "  /mobs skill modify range [作用范围] 触发后技能指向的对象,可选:\n"
 				+ "    RANGE_WORLD 所在世界\n"
 				+ "    RANGE_CHUNK 所在区块\n"
-				+ "    RANGE_TARGET 触发者(该类型触发方式不可为周期.)\n"
-				+ "  /mobs skill modify enemys [add/del/list] 可触发实体列表(不填视为全部触发),例子:"
-				+ "    /mobs skill modify enemys add PLAYER (该技能可以被所有玩家触发)"
-				+ "    /mobs skill modify enemys add ZOMBIE (该技能可以被所有僵尸触发)";
+				+ "    RANGE_TARGET 触发者(该类型作用方式不可为周期.)\n"
+				+ "  /mobs skill modify enemys [add/del/list] 可作用实体列表(不填视为除了怪物自身全部作用),例子:"
+				+ "    /mobs skill modify enemys add PLAYER (该技能可以作用于所有玩家)"
+				+ "    /mobs skill modify enemys add ZOMBIE (该技能可以作用于所有僵尸)"
+				+ "    /mobs skill modify enemys add ALL (该技能可以作用于所有生物)"
+				+ "    /mobs skill modify enemys add ME (该技能可以作用于自己)";
 
 	}
 
@@ -650,9 +643,16 @@ public abstract class Skill {
 				mob.setBeCooling(this, System.currentTimeMillis());
 
 				for (int i = 0; i < e.size(); i++) {
-					if (isEnemy(e.get(i).getType().name()))
+					if (!isEnemy("ALL")) {
+						if (isEnemy(e.get(i).getType().name()))
+							this.run(mob, e.get(i));
+					} else {
 						this.run(mob, e.get(i));
+					}
+
 				}
+				if (isEnemy("ME"))
+					this.run(mob, mob.getE());
 
 			}
 
@@ -663,7 +663,7 @@ public abstract class Skill {
 	public void runSkill(Mob mob, Entity e) {
 		ArrayList<Entity> a = new ArrayList<Entity>();
 		a.add(e);
-		runSkill(mob, e);
+		runSkill(mob, a);
 
 	}
 
