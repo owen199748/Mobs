@@ -625,6 +625,12 @@ public class Cmd {
 				return true;
 			}
 
+			if (MobModel.getMobModel(args[3]).getrider()
+					.equalsIgnoreCase(Main.getsMobModel().getsName())) {
+				p.sendMessage("§c[Mobs]§f这两个怪物已经有骑♂乘关系.");
+				return true;
+			}
+
 			mm.setRider(args[3]);
 		} else if (args[2].equalsIgnoreCase("name")) {
 			if (args.length != 4)

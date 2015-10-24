@@ -30,6 +30,7 @@ public class Mob {
 
 	public ArrayList<Mob> getMobs() {
 		return mobs;
+
 	}
 
 	public void runSkill(String target, Entity t, Entity[] c, List<Entity> w) {
