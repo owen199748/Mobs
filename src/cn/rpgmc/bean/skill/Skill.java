@@ -18,6 +18,12 @@ import cn.rpgmc.run.Main;
  * 
  * @author owen
  * @see 继承该类需要继承所有构造方法,否则报错:
+ *      <P/>
+ *      super(String,ConfigurationSection)
+ *      <P/>
+ *      super(ConfigurationSection)
+ *      <P/>
+ *      super()
  */
 
 public abstract class Skill {

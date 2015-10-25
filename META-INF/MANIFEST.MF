@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Rsrc-Class-Path: ./ substance.jar
+Class-Path: .
+Rsrc-Main-Class: cn.rpgmc.ui.UI
+Main-Class: org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader
+

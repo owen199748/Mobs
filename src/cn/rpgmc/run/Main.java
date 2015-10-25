@@ -2,6 +2,7 @@ package cn.rpgmc.run;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -21,8 +22,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -107,15 +106,6 @@ public class Main extends JavaPlugin {
 		return f;
 	}
 
-	public void start() {
-		Server server = getServer();
-
-		PluginManager manager = server.getPluginManager();
-
-		Logger logger = getLogger();
-
-	}
-
 	public static Main getMain() {
 		return main;
 	}
@@ -129,7 +119,9 @@ public class Main extends JavaPlugin {
 
 		main = this;
 		classLoader = this.getClassLoader();
-		start();
+		Server server = getServer();
+		PluginManager manager = server.getPluginManager();
+		Logger logger = getLogger();
 		V = this.getDescription().getVersion();
 		Logger lg = getLogger();
 		Bukkit.getServer().getWorld("world").setSpawnFlags(false, false);
@@ -173,16 +165,11 @@ public class Main extends JavaPlugin {
 		}
 		loadSkills();
 		loadYml();
-		lg.info("---加载成功>>>");
-		lg.info("||||||||||||||||||||||||||||||");
-		lg.info("||||||\\\\|||||||||||//|||||||||");
-		lg.info("|||||||\\\\|||||||||//||||||||||");
-		lg.info("||||||||\\\\|||||||//|||||||||||");
-		lg.info("|||||||||\\\\|||||//||||||||||||");
-		lg.info("||||||||||\\\\|||//|||||||||||||");
-		lg.info("|||||||||||\\\\|//||||||||||||||");
-		lg.info("||||||||||||\\\\/|||||||||||||||");
-		lg.info("||||||||||||||||||||||||||||||");
+		lg.info("┏一一一一一一一一一一一┓");
+		lg.info(" --->>>>>>>>>>>>>>>>>>---");
+		lg.info(" --->>>>>加载成功>>>>>---");
+		lg.info(" --->>>>>>>>>>>>>>>>>>---");
+		lg.info("┗一一一一一一一一一一一┛");
 
 		for (int i = 0; i < Spawn.getTHREADS(); i++) {
 			tid.add(Bukkit
@@ -228,8 +215,15 @@ public class Main extends JavaPlugin {
 
 			for (int r = 0; r < l.size(); r++) {
 				Skill.registerSkill(l.get(r));
+				String skillName = "null";
+				try {
+					skillName = l.get(r).newInstance().getType();
+				} catch (Exception e) {
+
+				}
+
 				Bukkit.getLogger()
-						.info("[技能包装载器]"
+						.info("[技能:" + skillName + "]"
 								+ skillList.get(i).getAbsoluteFile().getName()
 								+ "<" + l.get(r).getName() + ".class" + ">装载成功");
 				ss++;
@@ -238,6 +232,38 @@ public class Main extends JavaPlugin {
 			Bukkit.getLogger().info(
 					"[技能包装载完成]" + skillList.get(i).getAbsoluteFile().getName());
 			s++;
+
+			String info = "[" + skillList.get(i).getAbsoluteFile().getName()
+					+ "]技能包信息:";
+			String infoNext = "无";
+			try {
+				JarFile j = new JarFile(skillList.get(i).getAbsolutePath());
+				if (j.getJarEntry("main.info") != null) {
+
+					InputStream is = j.getInputStream(j
+							.getJarEntry("main.info"));
+
+					if (is != null) {
+
+						byte[] ccc = new byte[is.available()];
+						is.read(ccc);
+						is.close();
+						infoNext = new String(ccc);
+
+					}
+
+				}
+				j.close();
+			} catch (IOException e) {
+
+			}
+			String[] infoNexts = infoNext.split("\n");
+			Bukkit.getLogger().info(info);
+			for (int aa = 0; aa < infoNexts.length; aa++) {
+				Bukkit.getLogger().info(
+						"[" + skillList.get(i).getAbsoluteFile().getName()
+								+ "]" + ">>>" + infoNexts[aa]);
+			}
 		}
 
 		Bukkit.getLogger().info(
@@ -278,6 +304,7 @@ public class Main extends JavaPlugin {
 					}
 
 		}
+		jar.close();
 		return l;
 	}
 
@@ -398,7 +425,11 @@ public class Main extends JavaPlugin {
 	public void onDisable() {
 		Mob.killAll();
 		Logger lg = getLogger();
-		lg.info("<<<卸载成功---");
+		lg.info("┏一一一一一一一一一一一┓");
+		lg.info(" ---<<<<<<<<<<<<<<<<<<---");
+		lg.info(" ---<<<<<卸载成功<<<<<---");
+		lg.info(" ---<<<<<<<<<<<<<<<<<<---");
+		lg.info("┗一一一一一一一一一一一┛");
 	}
 
 	@Override
@@ -429,22 +460,6 @@ public class Main extends JavaPlugin {
 
 		sender.sendMessage("本插件不支持控制台操作!");
 		return true;
-	}
-
-	public static ItemStack getVoidim() {
-		ItemStack zz = new ItemStack(8);
-		ItemMeta im = zz.getItemMeta();
-		im.setDisplayName(" ");
-		zz.setItemMeta(im);
-		return zz;
-	}
-
-	public static ItemStack getDropI(int i) {
-		ItemStack zz = new ItemStack(362);
-		ItemMeta im = zz.getItemMeta();
-		im.setDisplayName("§c掉落几率:" + i + "%");
-		zz.setItemMeta(im);
-		return zz;
 	}
 
 }
