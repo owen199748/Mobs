@@ -3,6 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="I:/桌面/5.2/substance.jar"/>
-	<classpathentry kind="lib" path="E:/spigot-1.8.3.jar"/>
+	<classpathentry kind="lib" path="E:/bukkit-1.7.2-R0.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
