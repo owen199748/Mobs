@@ -13,7 +13,7 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import cn.rpgmc.bean.utils.ResourceManager;
+import cn.rpgmc.utils.ResourceManager;
 
 public class AcListener implements ActionListener {
 

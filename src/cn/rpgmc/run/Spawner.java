@@ -115,13 +115,12 @@ public class Spawner extends BukkitRunnable {
 					pmob.test();
 				}
 
-				m.runSkill(Skill.TRIGGER_CYCLE, null, m.getE().getLocation()
-						.getChunk().getEntities(), m.getE().getWorld()
-						.getEntities());
+				m.runSkill(Skill.TRIGGER_CYCLE, null);
 
 			}
 
 		}
+
 
 	}
 

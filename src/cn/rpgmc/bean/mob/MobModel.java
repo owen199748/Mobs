@@ -3,7 +3,6 @@ package cn.rpgmc.bean.mob;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -18,10 +17,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import cn.rpgmc.bean.skill.Skill;
-import cn.rpgmc.bean.utils.Damage;
-import cn.rpgmc.bean.utils.EXP;
-import cn.rpgmc.bean.utils.HP;
 import cn.rpgmc.run.Main;
+import cn.rpgmc.utils.rangeint.Damage;
+import cn.rpgmc.utils.rangeint.EXP;
+import cn.rpgmc.utils.rangeint.HP;
 
 public class MobModel {
 	private static FileConfiguration MAIN_CFG;
@@ -29,7 +28,7 @@ public class MobModel {
 	private static ArrayList<MobModel> mobModel = new ArrayList<MobModel>();
 	private String sName;
 	private String displayName = null;
-	private boolean autoDisplayName = false;
+	private BossName bossName = new BossName();
 	private HP hp = new HP(0);
 	private EXP exp = new EXP(0);
 	private Eqpt eqpt = new Eqpt();
@@ -149,14 +148,13 @@ public class MobModel {
 		return null;
 	}
 
-	public void setAutoDisplayName(boolean autoDisplayName) {
-		this.autoDisplayName = autoDisplayName;
+	public void setBossName(BossName bossName) {
+		this.bossName = bossName;
 	}
 
-	public boolean isAutoDisplayName() {
-		return autoDisplayName;
+	public BossName getBossName() {
+		return bossName;
 	}
-
 	public static int isMobModel(String sName) {
 		if (sName == null)
 			return -1;
@@ -180,6 +178,7 @@ public class MobModel {
 		exp.setMax(10);
 		type = EntityType.ZOMBIE;
 		dropType = 2;
+		bossName = new BossName();
 		cfg.createSection(sName);
 		this.cfg = cfg.getConfigurationSection(sName);
 		addMobModel(this);
@@ -191,7 +190,12 @@ public class MobModel {
 		this.cfg = cfg;
 		sName = cfg.getName();
 		displayName = (String) cfg.get("displayName");
-		autoDisplayName = cfg.getBoolean("autoDisplayName");
+		ConfigurationSection boss = cfg.getConfigurationSection("bossName");
+		if (boss != null) {
+			bossName = new BossName(boss.getBoolean("isEnable"),
+					boss.getString("value"), boss.getInt("nearby"));
+		}
+
 		hp.setMax(cfg.getInt("hp_max"));
 		hp.setMin(cfg.getInt("hp_min"));
 		dmg.setMin(cfg.getInt("dmg_min"));
@@ -317,14 +321,23 @@ public class MobModel {
 
 	public void save() throws IOException {
 		cfg.set("displayName", displayName);
-		cfg.set("autoDisplayName", autoDisplayName);
+		cfg.createSection("bossName");
+		cfg.getConfigurationSection("bossName").set("isEnable",
+				bossName.isEnable());
+		cfg.getConfigurationSection("bossName").set("value",
+				bossName.getValue());
+		cfg.getConfigurationSection("bossName").set("nearby",
+				bossName.getNearby());
 		cfg.set("hp_max", hp.getMax());
 		cfg.set("hp_min", hp.getMin());
 		cfg.set("dmg_min", dmg.getMin());
 		cfg.set("dmg_max", dmg.getMax());
 		cfg.set("exp_min", exp.getMin());
 		cfg.set("exp_max", exp.getMax());
+		if (type != null)
 		cfg.set("type", type.getName());
+		else
+			cfg.set("type", "Zombie");
 		cfg.set("dropType", dropType);
 		cfg.set("rider", rider);
 		cfg.set("isAttrCover", isAttrCover);
@@ -449,7 +462,7 @@ public class MobModel {
 		}
 
 		Mob m = new Mob(dmg.getInt(), e, isl, getSkills(), exp.getInt(),
-				isAttrCover);
+				isAttrCover, bossName);
 		if (m != null)
 			mobs.add(m);
 
@@ -460,10 +473,7 @@ public class MobModel {
 						.get(i)
 						.runSkill(
 								m,
-								m.getE(),
-								Arrays.asList(m.getE().getLocation().getChunk()
-										.getEntities()),
-								m.getE().getWorld().getEntities());
+ m.getE());
 
 		return m;
 

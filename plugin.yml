@@ -1,9 +1,9 @@
 name: Mobs
 main: cn.rpgmc.run.Main
-version: 2.3.0
+version: 3.0.0
 commands:
   Mobs:
     description: by owen
-    usage: §c[Mobs]§5参数错误,您可以使用/Mobs help命令排查错误.
+    usage: §c§l[Mobs]§5参数错误,您可以使用/Mobs help命令排查错误.
     permission: mobs
-    permission-message: §c[Mobs]§5您没有<mobs>权限
+    permission-message: §c§l[Mobs]§5您没有<mobs>权限

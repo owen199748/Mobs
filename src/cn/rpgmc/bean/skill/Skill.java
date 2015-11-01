@@ -3,6 +3,7 @@ package cn.rpgmc.bean.skill;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.run.Main;
+import cn.rpgmc.utils.Send;
 
 /**
  * 
@@ -44,6 +46,7 @@ public abstract class Skill {
 	public static final String RANGE_WORLD = "RANGE_WORLD";
 	public static final String RANGE_TARGET = "RANGE_TARGET";
 	public static final String RANGE_CHUNK = "RANGE_CHUNK";
+	public static final String RANGE_NEARBY = "RANGE_NEARBY";
 	private String range = RANGE_CHUNK;
 	private ArrayList<String> enemys = new ArrayList<String>();
 
@@ -178,6 +181,7 @@ public abstract class Skill {
 		if (!range.equalsIgnoreCase(RANGE_WORLD))
 			if (!range.equalsIgnoreCase(RANGE_TARGET))
 				if (!range.equalsIgnoreCase(RANGE_CHUNK))
+					if (!range.startsWith(RANGE_NEARBY))
 					return false;
 		return true;
 	}
@@ -200,7 +204,7 @@ public abstract class Skill {
 			if (args.length != 4)
 				return false;
 			if (!isTrigger(args[3])) {
-				p.sendMessage("§c[Mobs]§f触发类型不存在.");
+				Send.sendPluginMessage(p, "触发类型不存在.");
 				return true;
 			}
 			setTrigger(args[3]);
@@ -209,7 +213,7 @@ public abstract class Skill {
 			if (args.length != 4)
 				return false;
 			if (!isRange(args[3])) {
-				p.sendMessage("§c[Mobs]§f作用类型不存在.");
+				Send.sendPluginMessage(p, "作用类型不存在.");
 				return true;
 
 			}
@@ -255,23 +259,23 @@ public abstract class Skill {
 			boolean b = cmdElse(al.toArray(new String[al.size()]), p);
 			save();
 			if (b)
-				p.sendMessage("§c[Mobs]§f设置成功.");
+				Send.sendPluginMessage(p, "设置成功.");
 
 			try {
 				Main.saveYml();
 			} catch (IOException e) {
-				p.sendMessage("§c[Mobs]§f保存失败.");
+				Send.sendPluginMessage(p, "保存失败.");
 			}
 
 			return b;
 		}
 
 		save();
-		p.sendMessage("§c[Mobs]§f设置成功.");
+		Send.sendPluginMessage(p, "设置成功.");
 		try {
 			Main.saveYml();
 		} catch (IOException e) {
-			p.sendMessage("§c[Mobs]§f保存失败.");
+			Send.sendPluginMessage(p, "保存失败.");
 		}
 
 		return true;
@@ -288,7 +292,7 @@ public abstract class Skill {
 	 * 执行技能实例
 	 * 
 	 */
-	protected abstract void run(Mob mob, Entity entity);
+	public abstract void run(Mob mob, Entity entity);
 
 	/**
 	 * 返回技能实例属性
@@ -396,6 +400,7 @@ public abstract class Skill {
 				+ "  /mobs skill modify range [作用范围] 触发后技能指向的对象,可选:\n"
 				+ "    RANGE_WORLD 所在世界\n"
 				+ "    RANGE_CHUNK 所在区块\n"
+				+ "    RANGE_NEARBY_X 附近,X需要换为附近的范围,必须是正整数. "
 				+ "    RANGE_TARGET 触发者(该类型作用方式不可为周期.)\n"
 				+ "  /mobs skill modify enemys [add/del/list] 可作用实体列表(不填视为除了怪物自身全部作用),例子:"
 				+ "    /mobs skill modify enemys add PLAYER (该技能可以作用于所有玩家)"
@@ -578,16 +583,10 @@ public abstract class Skill {
 		this.trigger = trigger;
 	}
 
-	public void runSkill(Mob mob, Object t, Object c, Object w) {
+	public void runSkill(Mob mob, Object t) {
 		if (t == null)
 			t = new ArrayList<Entity>();
-		if (c == null)
-			c = new ArrayList<Entity>();
-		if (w == null)
-			w = new ArrayList<Entity>();
 		List<Entity> tt = new ArrayList<Entity>();
-		List<Entity> cc = new ArrayList<Entity>();
-		List<Entity> ww = new ArrayList<Entity>();
 
 		if (t instanceof List) {
 			if (((List) t).size() != 0)
@@ -601,45 +600,37 @@ public abstract class Skill {
 			tt = as;
 		}
 
-		if (c instanceof List) {
-			if (((List) c).size() != 0)
-				if (((List) c).get(0) instanceof Entity) {
-					cc = (List<Entity>) c;
-				}
 
-		} else if (c instanceof Entity) {
-			ArrayList<Entity> as = new ArrayList<Entity>();
-			as.add((Entity) c);
-			cc = as;
-		}
-
-		if (w instanceof List) {
-			if (((List) w).size() != 0)
-				if (((List) w).get(0) instanceof Entity) {
-					ww = (List<Entity>) w;
-				}
-
-		} else if (w instanceof Entity) {
-			ArrayList<Entity> as = new ArrayList<Entity>();
-			as.add((Entity) w);
-			ww = as;
-		}
-
-		runSkill(mob, tt, cc, ww);
+		runSkill(mob, tt);
 
 	}
 
-	public void runSkill(Mob mob, List<Entity> t, List<Entity> c, List<Entity> w) {
 
-		if (getRange().equalsIgnoreCase(RANGE_CHUNK))
-			runSkill(mob, c);
-		else if (getRange().equalsIgnoreCase(RANGE_WORLD))
-			runSkill(mob, w);
-		else if (getRange().equalsIgnoreCase(RANGE_TARGET))
-			runSkill(mob, t);
+
+	private List<Entity> getNearby(Entity e, String str) {
+		int i = 20;
+		if (str.startsWith(RANGE_NEARBY + "_")) {
+			String[] strs = str.split("_");
+			if (strs.length >= 3)
+				if (Integer.parseInt(strs[2]) > 0)
+					i = Integer.parseInt(strs[2]);
+
+		}
+		return e.getNearbyEntities(i, i, i);
 	}
 
 	public void runSkill(Mob mob, List<Entity> e) {
+		if (getRange().equalsIgnoreCase(RANGE_CHUNK))
+			e = Arrays
+					.asList(mob.getE().getLocation().getChunk().getEntities());
+		else if (getRange().equalsIgnoreCase(RANGE_WORLD))
+			e = mob.getE().getWorld().getEntities();
+		else if (getRange().equalsIgnoreCase(RANGE_TARGET)) {
+		} else if (getRange().startsWith(RANGE_NEARBY))
+			e = getNearby(mob.getE(), getRange());
+		else
+			return;
+
 		if (e == null)
 			return;
 

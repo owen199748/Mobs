@@ -13,12 +13,15 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.skill.Skill;
 import cn.rpgmc.bean.spawn.Spawn;
+import cn.rpgmc.utils.Send;
 
 public class AutoListener implements Listener {
 	private static AutoListener ls = null;
 
 	public static AutoListener getLs() {
+
 		return ls;
+
 	}
 
 	AutoListener() {
@@ -28,20 +31,18 @@ public class AutoListener implements Listener {
 
 	@EventHandler
 	public void ete(EntityTargetEvent ete) {
+
+
 		if (Mob.isMob(ete.getEntity().getEntityId())) {
 			Mob m = Mob.getMob(ete.getEntity().getEntityId());
-			m.runSkill(Skill.TRIGGER_TARGET, ete.getTarget(), m.getE()
-					.getLocation().getChunk().getEntities(), m.getE()
-					.getWorld().getEntities());
+			m.runSkill(Skill.TRIGGER_TARGET, ete.getTarget());
 
 		}
 
 		if (ete.getTarget() != null)
 			if (Mob.isMob(ete.getTarget().getEntityId())) {
 				Mob m = Mob.getMob(ete.getTarget().getEntityId());
-				m.runSkill(Skill.TRIGGER_TARGET, ete.getEntity(), m.getE()
-						.getLocation().getChunk().getEntities(), m.getE()
-						.getWorld().getEntities());
+				m.runSkill(Skill.TRIGGER_TARGET, ete.getEntity());
 
 			}
 
@@ -52,11 +53,10 @@ public class AutoListener implements Listener {
 		if (pje.getPlayer().isOp()) {
 			if (!Main.getCfg().getString("Version")
 					.equalsIgnoreCase(Main.getV())) {
-
-				pje.getPlayer().sendMessage(
-						"§c[Mobs]§f插件与存在的配置版本不统一,请删除配置并重载插件.");
-				pje.getPlayer().sendMessage(
-						"§c[Mobs]§如果确认老版本配置支持当前版本请输入 /Mobs reload 转换为新版本配置.");
+				Send.sendPluginMessage(pje.getPlayer(),
+						"插件与存在的配置版本不统一,请删除配置并重载插件.");
+				Send.sendPluginMessage(pje.getPlayer(),
+						"如果确认老版本配置支持当前版本请输入 /Mobs reload 转换为新版本配置.");
 			}
 
 		}
@@ -77,8 +77,8 @@ public class AutoListener implements Listener {
 					if (bpe.getItem().getTypeId() == Main.getClickItem()) {
 
 						Main.setO(bpe.getClickedBlock().getLocation());
-						bpe.getPlayer().sendMessage(
-								"§c[Mobs]§6您已经选定了一个点:"
+						Send.sendPluginMessage(bpe.getPlayer(),
+								"§6您已经选定了一个点:"
 										+ bpe.getClickedBlock().getX()
 										+ "x,"
 										+ bpe.getClickedBlock().getY()
@@ -111,17 +111,13 @@ public class AutoListener implements Listener {
 
 		if (Mob.isMob(edbee.getEntity().getEntityId())) {
 			Mob m = Mob.getMob(edbee.getEntity().getEntityId());
-			m.runSkill(Skill.TRIGGER_HURT, edbee.getDamager(), m.getE()
-					.getLocation().getChunk().getEntities(), m.getE()
-					.getWorld().getEntities());
+			m.runSkill(Skill.TRIGGER_HURT, edbee.getDamager());
 
 		}
 
 		if (Mob.isMob(edbee.getDamager().getEntityId())) {
 			Mob m = Mob.getMob(edbee.getDamager().getEntityId());
-			m.runSkill(Skill.TRIGGER_ATTACK, edbee.getEntity(), m.getE()
-					.getLocation().getChunk().getEntities(), m.getE()
-					.getWorld().getEntities());
+			m.runSkill(Skill.TRIGGER_ATTACK, edbee.getEntity());
 
 		}
 	}
@@ -138,9 +134,7 @@ public class AutoListener implements Listener {
 			else
 				ede.setDroppedExp(ede.getDroppedExp() + m.getExp());
 
-			m.runSkill(Skill.TRIGGER_HURT, ede.getEntity().getKiller(), m
-					.getE().getLocation().getChunk().getEntities(), m.getE()
-					.getWorld().getEntities());
+			m.runSkill(Skill.TRIGGER_HURT, ede.getEntity().getKiller());
 
 			if (m.getDrop() != null) {
 				ede.getDrops().clear();

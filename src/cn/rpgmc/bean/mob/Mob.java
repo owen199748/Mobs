@@ -1,15 +1,16 @@
 package cn.rpgmc.bean.mob;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import cn.rpgmc.bean.skill.Skill;
+import cn.rpgmc.run.Main;
 
 public class Mob {
 	private LivingEntity e = null;
@@ -19,6 +20,7 @@ public class Mob {
 	private HashMap<Skill, Long> skills = new HashMap<Skill, Long>();
 	private ArrayList<ItemStack> drop;
 	private static final ArrayList<Mob> mobs = new ArrayList<Mob>();
+	private BossName bossName = new BossName();
 
 	public boolean isAttrCover() {
 		return isAttrCover;
@@ -33,7 +35,7 @@ public class Mob {
 
 	}
 
-	public void runSkill(String target, Entity t, Entity[] c, List<Entity> w) {
+	public void runSkill(String target, Entity t) {
 		if (skills == null)
 			return;
 
@@ -43,7 +45,7 @@ public class Mob {
 				if (target.equalsIgnoreCase(Skill.TRIGGER_CYCLE))
 					t = null;
 
-				sk.runSkill(this, t, Arrays.asList(c), w);
+				sk.runSkill(this, t);
 			}
 		}
 
@@ -105,7 +107,8 @@ public class Mob {
 	}
 
 	public Mob(int dmg, LivingEntity e, ArrayList<ItemStack> drop,
-			ArrayList<Skill> skills, int exp, boolean isAttrCover) {
+			ArrayList<Skill> skills, int exp, boolean isAttrCover,
+			BossName bossName) {
 		HashMap<Skill, Long> h = new HashMap<Skill, Long>();
 		for (int i = 0; i < skills.size(); i++)
 			h.put(skills.get(i), new Long(0));
@@ -115,8 +118,18 @@ public class Mob {
 		this.drop = drop;
 		this.exp = exp;
 		this.isAttrCover = isAttrCover;
+		this.bossName = bossName;
 		mobs.add(this);
 	}
+
+	public void showName(Player p) {
+		if (!this.bossName.isEnable())
+			return;
+
+		new TitleShows(p, this, bossName.getValue(), bossName.getNearby())
+				.runTaskAsynchronously(Main.getMain());
+	}
+
 
 	public static void killAll() {
 		for (int i = 0; i < mobs.size(); i++) {
@@ -138,7 +151,45 @@ public class Mob {
 	}
 
 	public void remove() {
+		getE().remove();
 		mobs.remove(this);
+
+	}
+
+	public static List<Mob> getMob(List<Entity> l) {
+		ArrayList<Mob> s = new ArrayList<Mob>();
+		for (int i = 0; i < l.size(); i++)
+			if (isMob(l.get(i).getEntityId()))
+				s.add(getMob(l.get(i).getEntityId()));
+		if (s.size() == 0)
+			return null;
+		else
+			return s;
+	}
+
+	public static boolean isMob(List<Entity> l) {
+		for (int i = 0; i < l.size(); i++)
+			if (isMob(l.get(i).getEntityId()))
+				return true;
+
+		return false;
+	}
+
+	public static Mob getNearbyBoss(Player p, double x, double y, double z) {
+		List<Entity> es = p.getNearbyEntities(x, y, z);
+		for (int i = 0; i < es.size(); i++)
+			if (isMob(es.get(i).getEntityId()))
+				return getMob(es.get(i).getEntityId());
+
+		return null;
+	}
+
+	public static void checkAll() {
+		for (int i = 0; i < mobs.size(); i++) {
+			if (mobs.get(mobs.size() - 1 - i).getE().isDead())
+				mobs.get(mobs.size() - 1 - i).remove();
+
+		}
 
 	}
 

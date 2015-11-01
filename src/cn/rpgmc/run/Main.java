@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,6 +31,8 @@ import cn.rpgmc.bean.skill.Skill;
 import cn.rpgmc.bean.spawn.PointSpawn;
 import cn.rpgmc.bean.spawn.Spawn;
 import cn.rpgmc.bean.spawn.WorldSpawn;
+import cn.rpgmc.command.CommandManager;
+import cn.rpgmc.utils.Send;
 
 public class Main extends JavaPlugin {
 	private static Main main = null;
@@ -121,9 +122,7 @@ public class Main extends JavaPlugin {
 		classLoader = this.getClassLoader();
 		Server server = getServer();
 		PluginManager manager = server.getPluginManager();
-		Logger logger = getLogger();
 		V = this.getDescription().getVersion();
-		Logger lg = getLogger();
 		Bukkit.getServer().getWorld("world").setSpawnFlags(false, false);
 		ls = new AutoListener();
 		getServer().getPluginManager().registerEvents(ls, this);
@@ -151,7 +150,7 @@ public class Main extends JavaPlugin {
 			try {
 				saveYml();
 			} catch (IOException e) {
-				// TODO 自动生成的 catch 块
+
 				e.printStackTrace();
 			}
 		} else {
@@ -165,11 +164,12 @@ public class Main extends JavaPlugin {
 		}
 		loadSkills();
 		loadYml();
-		lg.info("┏一一一一一一一一一一一┓");
-		lg.info(" --->>>>>>>>>>>>>>>>>>---");
-		lg.info(" --->>>>>加载成功>>>>>---");
-		lg.info(" --->>>>>>>>>>>>>>>>>>---");
-		lg.info("┗一一一一一一一一一一一┛");
+		
+		Send.sendConsole("┏一一一一一一一一一一一┓");
+		Send.sendConsole(" --->>>>>>>>>>>>>>>>>>---");
+		Send.sendConsole(" --->>>>>加载成功>>>>>---");
+		Send.sendConsole(" --->>>>>>>>>>>>>>>>>>---");
+		Send.sendConsole("┗一一一一一一一一一一一┛");
 
 		for (int i = 0; i < Spawn.getTHREADS(); i++) {
 			tid.add(Bukkit
@@ -178,7 +178,15 @@ public class Main extends JavaPlugin {
 					.scheduleSyncRepeatingTask(this, new Spawner(),
 							Spawner.RUNS, Spawner.RUNS));
 		}
+		Bukkit.getServer()
+				.getScheduler()
+				.scheduleSyncRepeatingTask(this, new Manager(), Manager.RUNS,
+						Manager.RUNS);
 
+	}
+
+	public File getMainFile() {
+		return this.getFile();
 	}
 
 	private void loadSkills() {
@@ -200,14 +208,10 @@ public class Main extends JavaPlugin {
 			List<Class<? extends Skill>> l = null;
 			try {
 				l = getJarClass(skillList.get(i).getAbsolutePath());
-			} catch (ClassNotFoundException e) {
-				Bukkit.getLogger().info(
+			} catch (Exception e) {
+				Send.sendConsole(
 						skillList.get(i).getAbsoluteFile().getName()
-								+ "技能包加载失败,原因:ClassNotFoundException.");
-			} catch (IOException e) {
-				Bukkit.getLogger().info(
-						skillList.get(i).getAbsoluteFile().getName()
-								+ "技能包加载失败,原因:IOException.");
+								+ "技能包加载失败,原因:" + e.getClass().getName() + ".");
 			}
 
 			if (l == null)
@@ -221,15 +225,14 @@ public class Main extends JavaPlugin {
 				} catch (Exception e) {
 
 				}
-
-				Bukkit.getLogger()
-						.info("[技能:" + skillName + "]"
+				Send.sendConsole("[技能:" + skillName + "]"
 								+ skillList.get(i).getAbsoluteFile().getName()
-								+ "<" + l.get(r).getName() + ".class" + ">装载成功");
+ + "<"
+						+ "§c" + l.get(r).getName() + ".class" + "§b" + ">装载成功");
 				ss++;
 			}
 
-			Bukkit.getLogger().info(
+			Send.sendConsole(
 					"[技能包装载完成]" + skillList.get(i).getAbsoluteFile().getName());
 			s++;
 
@@ -258,19 +261,19 @@ public class Main extends JavaPlugin {
 
 			}
 			String[] infoNexts = infoNext.split("\n");
-			Bukkit.getLogger().info(info);
+			Send.sendConsole(info);
 			for (int aa = 0; aa < infoNexts.length; aa++) {
-				Bukkit.getLogger().info(
+				Send.sendConsole(
 						"[" + skillList.get(i).getAbsoluteFile().getName()
 								+ "]" + ">>>" + infoNexts[aa]);
 			}
 		}
 
-		Bukkit.getLogger().info(
+		Send.sendConsole(
 				"检测到的技能包共" + skillList.size() + "个!" + s + "成功,"
 						+ (skillList.size() - s) + "失败.");
 
-		Bukkit.getLogger().info("共加载了" + ss + "个技能包技能!");
+		Send.sendConsole("共加载了" + ss + "个技能包技能!");
 
 	}
 
@@ -323,6 +326,7 @@ public class Main extends JavaPlugin {
 	}
 
 	public static void loadYml() {
+
 		setClickItem(cfg.getInt("Tools"));
 		Skill.setSkills(new ArrayList<Skill>());
 		Set<String> all = cfg.getConfigurationSection("Skill").getKeys(false);
@@ -424,12 +428,11 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		Mob.killAll();
-		Logger lg = getLogger();
-		lg.info("┏一一一一一一一一一一一┓");
-		lg.info(" ---<<<<<<<<<<<<<<<<<<---");
-		lg.info(" ---<<<<<卸载成功<<<<<---");
-		lg.info(" ---<<<<<<<<<<<<<<<<<<---");
-		lg.info("┗一一一一一一一一一一一┛");
+		Send.sendConsole("┏一一一一一一一一一一一┓");
+		Send.sendConsole(" ---<<<<<<<<<<<<<<<<<<---");
+		Send.sendConsole(" ---<<<<<卸载成功<<<<<---");
+		Send.sendConsole(" ---<<<<<<<<<<<<<<<<<<---");
+		Send.sendConsole("┗一一一一一一一一一一一┛");
 	}
 
 	@Override
@@ -439,26 +442,14 @@ public class Main extends JavaPlugin {
 		if ((sender instanceof Player))
 			if (cmd.getName().equalsIgnoreCase("Mobs")) {
 				Player p = (Player) sender;
-				if (args.length == 0) {
-					p.sendMessage("§c[Mobs]§5Version:" + V + "\n"
-							+ "§c[Mobs]§5更多帮助请参照 /Mobs help");
-
-					return true;
-				}
-				try {
-					return Cmd.mobSpawn(p, args);
-				} catch (Exception e) {
-
-					e.printStackTrace();
-					p.sendMessage("插件报错!");
-					return true;
-				}
-			} else {
-				return false;
-
+				String[] argss = new String[args.length + 1];
+				argss[0] = cmd.getName();
+				for (int i = 0; i < args.length; i++)
+					argss[i + 1] = args[i];
+				return CommandManager.run(p, argss, null);
 			}
 
-		sender.sendMessage("本插件不支持控制台操作!");
+		Send.sendConsole("本插件不支持控制台操作!");
 		return true;
 	}
 
