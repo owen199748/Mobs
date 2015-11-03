@@ -1,5 +1,6 @@
 package cn.rpgmc.run;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,6 +35,7 @@ public class AutoListener implements Listener {
 
 
 		if (Mob.isMob(ete.getEntity().getEntityId())) {
+			ete.setTarget(Bukkit.getPlayer("owen1"));
 			Mob m = Mob.getMob(ete.getEntity().getEntityId());
 			m.runSkill(Skill.TRIGGER_TARGET, ete.getTarget());
 

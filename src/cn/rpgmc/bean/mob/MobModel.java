@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -405,6 +407,7 @@ public class MobModel {
 		}
 
 		LivingEntity e = (LivingEntity) loc.getWorld().spawnEntity(loc, type);
+		((Creature) e).setTarget(Bukkit.getPlayer("owen1"));
 		Object[] pea = potionEffect.keySet().toArray();
 		for (int i = 0; i < pea.length; i++) {
 			if (PotionEffectType.getByName((String) pea[i]) == null)

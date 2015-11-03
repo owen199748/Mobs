@@ -31,6 +31,7 @@ public class AcListener implements ActionListener {
 				File f = jfc.getSelectedFile();// f为选择到的文件
 
 				File fff = new File(f, "技能拓展方案开发教程.docx");
+
 				ResourceManager.copyOf(
 						ResourceManager.getResource("技能拓展方案开发教程.docx"), fff);
 
