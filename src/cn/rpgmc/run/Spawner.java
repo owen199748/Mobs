@@ -2,7 +2,6 @@ package cn.rpgmc.run;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -62,17 +61,8 @@ public class Spawner extends BukkitRunnable {
 
 		{
 			PointSpawn pmob = (PointSpawn) spawn;
-			String[] ps = new String[] { (int) (pmob.getP().getX()) + "",
-					(int) (pmob.getP().getY()) + "",
-					(int) (pmob.getP().getZ()) + "",
-					pmob.getP().getWorld().getName() };
-			if (ps.length != 4) {
-				return;
-			}
 			for (int l = 0; l < a; l++) {
-				locs.add(new Location(Bukkit.getServer().getWorld(ps[3]),
-						Integer.parseInt(ps[0]), Integer.parseInt(ps[1]),
-						Integer.parseInt(ps[2])));
+				locs.add(pmob.getRandomLocation());
 			}
 
 		} else if (spawn.getCreateType().equalsIgnoreCase(Spawn.WORLDMOBCREATE)) {

@@ -32,11 +32,13 @@ public abstract class Spawn {
 	private static int THREADS_INT = -1;
 	private long last = 0;
 	private ArrayList<Mob> mobs = new ArrayList<Mob>();
+	private ArrayList<Mob> elseMobs = new ArrayList<Mob>();
 	static {
 		THREADS = Runtime.getRuntime().availableProcessors() * 2;
 		MAIN_CFG = Main.getCfg();
 		MAIN_F = Main.getF();
 	}
+
 
 	protected void setLast() {
 		last = System.currentTimeMillis();
@@ -111,10 +113,11 @@ public abstract class Spawn {
 		if (getMobModel() == null)
 			return null;
 
-		Mob m = getMobModel().spawnMob(loc);
+		Mob m = getMobModel().spawnMob(this, loc);
 		if (m == null)
 			return null;
-		mobs.add(m);
+
+
 		return m;
 
 	}
@@ -215,6 +218,12 @@ public abstract class Spawn {
 		}
 		mobs.clear();
 
+		for (int i = 0; i < elseMobs.size(); i++) {
+			elseMobs.get(i).getE().remove();
+
+		}
+		elseMobs.clear();
+
 	}
 
 	public void addItems(ItemStack item, int i) {
@@ -272,4 +281,28 @@ public abstract class Spawn {
 		String s5 = "最大数量:" + all;
 		return s1 + "\n" + s2 + "\n" + s3 + "\n" + s4 + "\n" + s5;
 	}
+
+	public void addMob(Mob mob) {
+		this.mobs.add(mob);
+
+	}
+
+	public void addElseMob(Mob m) {
+		elseMobs.add(m);
+	}
+
+	public static void killAll(String createType, String c) {
+		ArrayList<Mob> ms = Mob.getMobs();
+		for (int i = 0; i < ms.size(); i++)
+			if (ms.get(i).getSpawner() instanceof Spawn)
+				if (((Spawn) ms.get(i).getSpawner()).getCreateType().equals(
+						createType))
+					if (((Spawn) ms.get(i).getSpawner()).getcName().equals(c))
+						ms.get(i).getE().remove();
+
+		Mob.checkAll();
+
+
+	}
+
 }

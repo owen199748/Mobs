@@ -15,7 +15,7 @@ public class Void_CMD implements PluginCommand {
 	}
 
 	@Override
-	public boolean run(Player p, String[] args, String auto) {
+	public boolean run(Player p, String[] args, String auto) throws Exception {
 		if (args.length == 0) {
 			Send.sendPluginMessage(p, "¡ì7¡ìlVersion:" + Main.getV());
 			Send.sendPluginMessage(p, "¡ì7¡ìl¸ü¶à°ïÖúÇë²ÎÕÕ /Mobs help");

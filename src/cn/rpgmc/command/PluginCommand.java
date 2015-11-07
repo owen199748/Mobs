@@ -6,6 +6,6 @@ public interface PluginCommand {
 
 	public String[] getBranch();
 
-	public boolean run(Player p, String[] args, String auto);
+	public boolean run(Player p, String[] args, String auto) throws Exception;
 
 }

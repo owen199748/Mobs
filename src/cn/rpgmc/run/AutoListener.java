@@ -1,6 +1,5 @@
 package cn.rpgmc.run;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,12 +29,11 @@ public class AutoListener implements Listener {
 
 	}
 
+
 	@EventHandler
 	public void ete(EntityTargetEvent ete) {
 
-
 		if (Mob.isMob(ete.getEntity().getEntityId())) {
-			ete.setTarget(Bukkit.getPlayer("owen1"));
 			Mob m = Mob.getMob(ete.getEntity().getEntityId());
 			m.runSkill(Skill.TRIGGER_TARGET, ete.getTarget());
 
@@ -59,6 +57,8 @@ public class AutoListener implements Listener {
 						"插件与存在的配置版本不统一,请删除配置并重载插件.");
 				Send.sendPluginMessage(pje.getPlayer(),
 						"如果确认老版本配置支持当前版本请输入 /Mobs reload 转换为新版本配置.");
+				Send.sendPluginMessage(pje.getPlayer(),
+						"插件与配置版本不一可能会导致恢复怪物时报错,输入/Mobs killall 杀死生物即可.");
 			}
 
 		}

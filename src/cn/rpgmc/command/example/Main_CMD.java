@@ -1,6 +1,5 @@
 package cn.rpgmc.command.example;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.bukkit.Material;
@@ -23,7 +22,7 @@ public class Main_CMD implements PluginCommand {
 	
 	
 	@Override
-	public boolean run(Player p, String[] args, String auto) {
+	public boolean run(Player p, String[] args, String auto) throws Exception {
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("set")) {
 
@@ -100,14 +99,11 @@ public class Main_CMD implements PluginCommand {
 						return false;
 					}
 
-					try {
+
 						Main.saveYml();
 						Send.sendPluginMessage(p, "设置成功.");
 						return true;
-					} catch (IOException e) {
-						Send.sendPluginMessage(p, "配置保存失败.");
-						return true;
-					}
+
 
 				}
 
@@ -158,20 +154,26 @@ public class Main_CMD implements PluginCommand {
 				return true;
 			} else if (args[0].equalsIgnoreCase("reload")) {
 				if (args.length == 1) {
-					try {
+
 						Main.getCfg().load(Main.getF());
 						Main.getCfg().set("Version", Main.getV());
 						Main.loadYml();
 						Mob.killAll();
 						Send.sendPluginMessage(p, "配置重载成功.");
-					} catch (Exception e) {
-						e.printStackTrace();
-						Send.sendPluginMessage(p,
-								"配置重载失败,您可以尝试删除配置重启服务器重新生成配置文件.");
-					}
+
 				} else {
 					return false;
 				}
+				return true;
+			} else if (args[0].equalsIgnoreCase("killall")) {
+				if (args.length == 1) {
+					Mob.killAll();
+					Send.sendPluginMessage(p, "操作成功.");
+
+			} else {
+					return false;
+				}
+
 				return true;
 			} else {
 

@@ -15,7 +15,7 @@ public class Help_CMD implements PluginCommand {
 	}
 
 	@Override
-	public boolean run(Player p, String[] args, String auto) {
+	public boolean run(Player p, String[] args, String auto) throws Exception {
 
 		if (args.length == 0) {
 			Send.sendPluginMessage(
@@ -74,10 +74,11 @@ public class Help_CMD implements PluginCommand {
 	}
 
 	public static void pointSpawnHelp(Player p) {
-		p.sendMessage("§a  /Mobs spawn modify point 设置刷新点位置");
+		p.sendMessage("§a  /Mobs spawn modify point 设置刷新点中心位置");
 		p.sendMessage("§a  /Mobs spawn modify single [Single] 设置每次刷新数量");
-		p.sendMessage("§a  /Mobs spawn modify range [Range] 设置活动半径(超出会被弹回原点)");
-		p.sendMessage("§a  /Mobs spawn modify center 设置活动半径的圆心点");
+		p.sendMessage("§a  /Mobs spawn modify range [Range] 设置刷新半径(如果onMove为True超出会被弹回原点)");
+		p.sendMessage("§a  /Mobs spawn modify onPoint 设置是否只在刷新点上刷新");
+		p.sendMessage("§a  /Mobs spawn modify onMove 设置是否只在刷新范围内活动");
 
 	}
 
@@ -100,6 +101,7 @@ public class Help_CMD implements PluginCommand {
 		p.sendMessage("§a  /Mobs mob spawn 在视线处创建一个该怪物");
 		p.sendMessage("§a  /Mobs mob see 查看一个怪物的详细信息");
 		p.sendMessage("§a  /Mobs mob list  查看怪物列表");
+		p.sendMessage("§a  /Mobs mob killall 移除该怪物类型的所有实体");
 		p.sendMessage("§a  /Mobs mob modify del 删除一个怪物");
 		p.sendMessage("§a  /Mobs mob modify drop [add/list/del] 增加掉落物和掉落几率");
 		p.sendMessage("§a  /Mobs mob modify droptype [方式(All,Invalid,Random)] 设置掉落方式");
@@ -134,6 +136,7 @@ public class Help_CMD implements PluginCommand {
 		p.sendMessage("§a  /Mobs spawn 设置刷新点的各种属性<重要命令>");
 		p.sendMessage("§a  /Mobs mob 设置怪物的各种属性<重要命令>");
 		p.sendMessage("§a  /Mobs skill 设置技能的各种属性<重要命令>");
+		p.sendMessage("§a  /Mobs killall 移除插件产生的所有实体");
 		p.sendMessage("§a  /Mobs setBan [Animal/Monster] [true/false] 设置你所在的世界是否禁用默认产生的动物/怪物");
 		p.sendMessage("§a  /Mobs listBan 查看你所在的世界是否禁用默认产生的动物/怪物");
 		p.sendMessage("§a  /Mobs listPotionEffectType 查看所有支持的药水类型");

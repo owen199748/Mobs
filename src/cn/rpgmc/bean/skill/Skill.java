@@ -187,53 +187,53 @@ public abstract class Skill {
 	}
 
 	public boolean cmdManager(String[] args, Player p) {
-		if (args.length < 3)
+		if (args.length < 2)
 			return false;
 
-		if (args[2].equalsIgnoreCase("chance")) {
-			if (args.length != 4)
+		if (args[1].equalsIgnoreCase("chance")) {
+			if (args.length != 3)
 				return false;
-			setChance(Double.parseDouble(args[3]));
+			setChance(Double.parseDouble(args[2]));
 
-		} else if (args[2].equalsIgnoreCase("cooling")) {
-			if (args.length != 4)
+		} else if (args[1].equalsIgnoreCase("cooling")) {
+			if (args.length != 3)
 				return false;
-			setCooling(Integer.parseInt(args[3]));
+			setCooling(Integer.parseInt(args[2]));
 
-		} else if (args[2].equalsIgnoreCase("trigger")) {
-			if (args.length != 4)
+		} else if (args[1].equalsIgnoreCase("trigger")) {
+			if (args.length != 3)
 				return false;
-			if (!isTrigger(args[3])) {
+			if (!isTrigger(args[2])) {
 				Send.sendPluginMessage(p, "触发类型不存在.");
 				return true;
 			}
-			setTrigger(args[3]);
+			setTrigger(args[2]);
 
-		} else if (args[2].equalsIgnoreCase("range")) {
-			if (args.length != 4)
+		} else if (args[1].equalsIgnoreCase("range")) {
+			if (args.length != 3)
 				return false;
-			if (!isRange(args[3])) {
+			if (!isRange(args[2])) {
 				Send.sendPluginMessage(p, "作用类型不存在.");
 				return true;
 
 			}
 
-			setRange(args[3]);
+			setRange(args[2]);
 
-		} else if (args[2].equalsIgnoreCase("enemys")) {
-			if (args.length < 4)
+		} else if (args[1].equalsIgnoreCase("enemys")) {
+			if (args.length < 3)
 				return false;
 
-			if (args[3].equalsIgnoreCase("add")) {
-				if (args.length != 5)
+			if (args[2].equalsIgnoreCase("add")) {
+				if (args.length != 4)
 					return false;
-				enemys.add(args[4]);
+				enemys.add(args[3]);
 
-			} else if (args[3].equalsIgnoreCase("del")) {
-				if (args.length != 5)
+			} else if (args[2].equalsIgnoreCase("del")) {
+				if (args.length != 4)
 					return false;
-				enemys.remove(Integer.parseInt(args[4]));
-			} else if (args[3].equalsIgnoreCase("list")) {
+				enemys.remove(Integer.parseInt(args[3]));
+			} else if (args[2].equalsIgnoreCase("list")) {
 				String str = "";
 				for (int i = 0; i < enemys.size(); i++) {
 					if (i != 0)
@@ -252,7 +252,7 @@ public abstract class Skill {
 
 			List<String> al = new ArrayList<String>();
 			for (int i = 0; i < args.length; i++) {
-				if (i >= 2)
+				if (i != 0)
 					al.add(args[i]);
 			}
 

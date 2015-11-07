@@ -22,7 +22,7 @@ public class SpawnModify_CMD implements PluginCommand {
 	}
 
 	@Override
-	public boolean run(Player p, String[] args, String auto) {
+	public boolean run(Player p, String[] args, String auto) throws Exception {
 		if (args.length == 0)
 			return false;
 
@@ -55,14 +55,28 @@ public class SpawnModify_CMD implements PluginCommand {
 				}
 				pSpawn.setRange(Integer.parseInt(args[1]));
 
-			} else if (args[0].equalsIgnoreCase("center")) {
-				if (Main.getO() == null) {
-
-					Send.sendPluginMessage(p, "请先使用选择器选择一个点.");
-					return true;
-					// /
+			} else if (args[0].equalsIgnoreCase("onPoint")) {
+				if (args.length != 2) {
+					return false;
 				}
-				pSpawn.setO(Main.getO());
+				if (args[1].equalsIgnoreCase("true"))
+					pSpawn.setOnPoint(true);
+				else if (args[1].equalsIgnoreCase("false"))
+					pSpawn.setOnPoint(false);
+				else
+					return false;
+
+			} else if (args[0].equalsIgnoreCase("onMove")) {
+				if (args.length != 2) {
+					return false;
+				}
+				if (args[1].equalsIgnoreCase("true"))
+					pSpawn.setOnMove(true);
+				else if (args[1].equalsIgnoreCase("false"))
+					pSpawn.setOnMove(false);
+				else
+					return false;
+
 			} else {
 				b = false;
 			}
@@ -176,13 +190,9 @@ public class SpawnModify_CMD implements PluginCommand {
 		return true;
 	}
 
-	private static void saveSpawn(Spawn spawn, Player p) {
+	private static void saveSpawn(Spawn spawn, Player p) throws IOException {
 		spawn.save();
-		try {
 			Main.getCfg().save(Main.getF());
-		} catch (IOException e) {
-			Send.sendPluginMessage(p, "配置保存失败.");
-		}
 
 	}
 

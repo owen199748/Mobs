@@ -14,27 +14,34 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import sun.misc.JarFilter;
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.mob.MobModel;
+import cn.rpgmc.bean.mob.MobSave;
 import cn.rpgmc.bean.skill.Skill;
 import cn.rpgmc.bean.spawn.PointSpawn;
 import cn.rpgmc.bean.spawn.Spawn;
 import cn.rpgmc.bean.spawn.WorldSpawn;
 import cn.rpgmc.command.CommandManager;
 import cn.rpgmc.utils.Send;
+import cn.rpgmc.utils.StringEncrypt;
 
 public class Main extends JavaPlugin {
+	public static final String KEY = "7AD8B9A9C0E9F85EECB9A0DEA996CF9D88EE275EFAAE6E9A";
 	private static Main main = null;
 	private static int clickItem = 0;
 	private static MobModel sMobModel = null;
@@ -50,7 +57,15 @@ public class Main extends JavaPlugin {
 	private static ArrayList<String> MonsterSpawnBannedWorld = new ArrayList<String>();
 	private static ArrayList<String> AnimalSpawnBannedWorld = new ArrayList<String>();
 	private static ClassLoader classLoader;
+	private static YamlConfiguration mobYml = new YamlConfiguration();
+	private static File mobSaveFile = null;
+	public static YamlConfiguration getMobYml() {
+		return mobYml;
+	}
 
+	public static void setMobYml(YamlConfiguration mobYml) {
+		Main.mobYml = mobYml;
+	}
 	public static void setsMobModel(MobModel sMobModel) {
 		Main.sMobModel = sMobModel;
 	}
@@ -164,7 +179,7 @@ public class Main extends JavaPlugin {
 		}
 		loadSkills();
 		loadYml();
-		
+		loadAllMobs();
 		Send.sendConsole("┏一一一一一一一一一一一┓");
 		Send.sendConsole(" --->>>>>>>>>>>>>>>>>>---");
 		Send.sendConsole(" --->>>>>加载成功>>>>>---");
@@ -184,6 +199,66 @@ public class Main extends JavaPlugin {
 						Manager.RUNS);
 
 	}
+
+
+
+	private void loadAllMobs() {
+
+		mobSaveFile = new File(Bukkit.getPluginManager()
+				.getPlugin(this.getName()).getDataFolder().getAbsolutePath()
+				+ File.separator + "save.yml");
+
+		if (!mobSaveFile.exists()) {
+			try {
+				mobSaveFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		try {
+
+			mobYml.load(mobSaveFile);
+			if (mobYml.getConfigurationSection("Mobs") == null)
+				return;
+			ConfigurationSection s = mobYml.getConfigurationSection("Mobs");
+
+			Set<String> list = s.getKeys(false);
+
+			if (list == null)
+				return;
+
+			for (int i = 0; i < list.size(); i++) {
+				String key = ((String) list.toArray()[i]);
+				String key2 = StringEncrypt.getFromBase64(key);
+				if (key2.trim().equalsIgnoreCase(""))
+					continue;
+				MobSave save = MobSave.fromJson(key2);
+				save.BDrop((List<ItemStack>) s.getConfigurationSection(key)
+						.getList("Drop"));
+				save.BEQPT((List<ItemStack>) s.getConfigurationSection(key)
+						.getList("Eqpt"));
+				save.toMob();
+
+			}
+			Mob.checkRider();
+			Send.sendConsole(Send.COLOR.LIGHT_PURPLE + "成功恢复了" + list.size()
+					+ "个怪物.");
+
+
+
+		} catch (Exception e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		
+
+
+
+	}
+
+
 
 	public File getMainFile() {
 		return this.getFile();
@@ -427,6 +502,14 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		try {
+
+			Mob.saveAll();
+		} catch (IOException e) {
+			Send.sendConsole(Color.RED + "生物保存失败,现有生物有可能会被刷新.");
+			e.printStackTrace();
+
+		}
 		Mob.killAll();
 		Send.sendConsole("┏一一一一一一一一一一一┓");
 		Send.sendConsole(" ---<<<<<<<<<<<<<<<<<<---");
@@ -435,22 +518,38 @@ public class Main extends JavaPlugin {
 		Send.sendConsole("┗一一一一一一一一一一一┛");
 	}
 
+	public static File getMobSaveFile() {
+		return mobSaveFile;
+	}
+
+	public static void setMobSaveFile(File mobSaveFile) {
+		Main.mobSaveFile = mobSaveFile;
+	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
-
 		if ((sender instanceof Player))
 			if (cmd.getName().equalsIgnoreCase("Mobs")) {
 				Player p = (Player) sender;
-				String[] argss = new String[args.length + 1];
-				argss[0] = cmd.getName();
-				for (int i = 0; i < args.length; i++)
-					argss[i + 1] = args[i];
+				try {
+					String[] argss = new String[args.length + 1];
+					argss[0] = cmd.getName();
+					for (int i = 0; i < args.length; i++)
+						argss[i + 1] = args[i];
 				return CommandManager.run(p, argss, null);
+				} catch (Exception e) {
+					Send.sendPluginMessage(p, "§d插件异常:§c§l"
+							+ e.getClass().getName());
+					Send.sendPluginMessage(p, "§d详情查看控制台的错误信息.");
+					e.printStackTrace();
+					return true;
+				}
 			}
 
 		Send.sendConsole("本插件不支持控制台操作!");
 		return true;
 	}
+
+
 
 }

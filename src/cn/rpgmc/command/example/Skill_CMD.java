@@ -1,7 +1,5 @@
 package cn.rpgmc.command.example;
 
-import java.io.IOException;
-
 import org.bukkit.entity.Player;
 
 import cn.rpgmc.bean.skill.Skill;
@@ -18,7 +16,7 @@ public class Skill_CMD implements PluginCommand {
 	}
 
 	@Override
-	public boolean run(Player p, String[] args, String auto) {
+	public boolean run(Player p, String[] args, String auto) throws Exception {
 		if (args.length == 0)
 			return false;
 		if (args[0].equalsIgnoreCase("new")) {
@@ -37,12 +35,7 @@ public class Skill_CMD implements PluginCommand {
 			}
 			Send.sendPluginMessage(p, "操作成功.");
 			Main.setsSkill(skill);
-			try {
 				Main.saveYml();
-			} catch (IOException e) {
-				// TODO 自动生成的 catch 块
-				e.printStackTrace();
-			}
 			return true;
 
 		} else if (args[0].equalsIgnoreCase("select")) {

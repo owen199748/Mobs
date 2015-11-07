@@ -1,10 +1,8 @@
 package cn.rpgmc.command.example;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import cn.rpgmc.bean.spawn.PointSpawn;
@@ -23,7 +21,7 @@ public class Spawn_CMD implements PluginCommand{
 	}
 
 	@Override
-	public boolean run(Player p, String[] args, String auto) {
+	public boolean run(Player p, String[] args, String auto) throws Exception {
 		if (args.length == 0)
 			return false;
 
@@ -31,25 +29,24 @@ public class Spawn_CMD implements PluginCommand{
 			if (args.length != 3) {
 				return false;
 			}
-			ConfigurationSection section = null;
+
 			if (args[1].equalsIgnoreCase("Point")) {
-				section = Main.getCfg().getConfigurationSection("PointSpawn")
-						.getConfigurationSection(args[2]);
-				if (section == null) {
+				
+				PointSpawn pSpawn = PointSpawn.getPointSpawn(args[2]);
+				if (pSpawn == null) {
 					Send.sendPluginMessage(p, "该点不存在.");
 					return true;
 				}
-				Main.setsSpawn(new PointSpawn(section));
+				Main.setsSpawn(pSpawn);
 				Send.sendPluginMessage(p, "已经选择点:" + args[2] + ".");
 				return true;
 			} else if (args[1].equalsIgnoreCase("World")) {
-				section = Main.getCfg().getConfigurationSection("WorldSpawn")
-						.getConfigurationSection(args[2]);
-				if (section == null) {
+				WorldSpawn wSpawn = WorldSpawn.getWorldSpawn(args[2]);
+				if (wSpawn == null) {
 					Send.sendPluginMessage(p, "该点不存在.");
 					return true;
 				}
-				Main.setsSpawn(new WorldSpawn(section));
+				Main.setsSpawn(wSpawn);
 				Send.sendPluginMessage(p, "已经选择点:" + args[2] + ".");
 				return true;
 			}
@@ -71,11 +68,7 @@ public class Spawn_CMD implements PluginCommand{
 						.getConfigurationSection("PointSpawn"), Main.getO()));
 				Main.getsSpawn().save();
 				Send.sendPluginMessage(p, "创建成功.");
-				try {
 					Main.saveYml();
-				} catch (IOException e) {
-					Send.sendPluginMessage(p, "保存失败.");
-				}
 				return true;
 
 			} else if (args[1].equalsIgnoreCase("World")) {
@@ -89,11 +82,7 @@ public class Spawn_CMD implements PluginCommand{
 						.getConfigurationSection("WorldSpawn"), w));
 				Main.getsSpawn().save();
 				Send.sendPluginMessage(p, "创建成功.");
-				try {
 					Main.saveYml();
-				} catch (IOException e) {
-					Send.sendPluginMessage(p, "保存失败.");
-				}
 				return true;
 			}
 
@@ -137,7 +126,7 @@ public class Spawn_CMD implements PluginCommand{
 
 		if (args[0].equalsIgnoreCase("killall")) {
 
-			Main.getsSpawn().killAll();
+			spawn.killAll();
 			Send.sendPluginMessage(p, "执行成功.");
 			return true;
 

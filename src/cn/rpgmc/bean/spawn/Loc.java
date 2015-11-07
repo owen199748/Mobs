@@ -3,12 +3,21 @@ package cn.rpgmc.bean.spawn;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Loc {
+	@JsonProperty
 	private int x;
+	@JsonProperty
 	private int y;
+	@JsonProperty
 	private int z;
+	@JsonProperty
 	private String world;
 
+	public Loc() {
+		// TODO 自动生成的构造函数存根
+	}
 	public Loc(Location loc) {
 		world = loc.getWorld().getName();
 		x = loc.getBlockX();

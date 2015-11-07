@@ -194,4 +194,12 @@ public class WorldSpawn extends Spawn {
 		return getMainSee() + "\n" + s1 + "\n" + s2 + "\n" + s3;
 	}
 
+	public static WorldSpawn getWorldSpawn(String spawner) {
+		for (int i = 0; i < Wmobcreates.size(); i++)
+			if (Wmobcreates.get(i).getcName().equals(spawner))
+				return Wmobcreates.get(i);
+
+		return null;
+	}
+
 }

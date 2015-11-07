@@ -7,11 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -45,7 +43,6 @@ public class MobModel {
 	private ConfigurationSection cfg = null;
 	private ArrayList<Skill> skills = new ArrayList<Skill>();
 	private ArrayList<Mob> mobs = new ArrayList<Mob>();
-	// TODO:√˚≥∆œ‘ æ£®Boss√˚≥∆£©
 	static {
 		MAIN_CFG = Main.getCfg();
 		MAIN_F = Main.getF();
@@ -371,6 +368,7 @@ public class MobModel {
 			if (l == null) {
 				l = new ArrayList<ItemStack>();
 			}
+			// EntityType.ARROW
 			l.add(drop.get(i).getItem());
 			cfg.getConfigurationSection("drop").set(drop.get(i).getI() + "", l);
 		}
@@ -383,10 +381,12 @@ public class MobModel {
 	}
 
 	public String getrider() {
+		if (rider == null)
+			return "";
 		return rider;
 	}
 
-	public Mob spawnMob(Location loc) {
+	public Mob spawnMob(Object spawnOf, Location loc) {
 		if (survivalLimit.isNight()) {
 			if (loc.getWorld().getTime() < 12000) {
 				return null;
@@ -407,21 +407,23 @@ public class MobModel {
 		}
 
 		LivingEntity e = (LivingEntity) loc.getWorld().spawnEntity(loc, type);
-		((Creature) e).setTarget(Bukkit.getPlayer("owen1"));
 		Object[] pea = potionEffect.keySet().toArray();
 		for (int i = 0; i < pea.length; i++) {
 			if (PotionEffectType.getByName((String) pea[i]) == null)
 				continue;
-
 			e.addPotionEffect(
 					new PotionEffect(PotionEffectType
 							.getByName((String) pea[i]), Integer.MAX_VALUE,
 							potionEffect.get(pea[i]), true), false);
 		}
+		String ri = null;
 		if (isMobModel(rider) != -1) {
+
 			MobModel riderMob = getMobModels().get(isMobModel(rider));
-			Mob riderM = riderMob.spawnMob(e.getLocation());
+			Mob riderM = riderMob.spawnMob(e, e.getLocation());
+			ri = riderM.getId();
 			e.setPassenger(riderM.getE());
+
 		}
 		e.setCustomName(displayName.replaceAll("&", "°Ï"));
 		double hp = 0;
@@ -464,10 +466,15 @@ public class MobModel {
 			}
 		}
 
-		Mob m = new Mob(dmg.getInt(), e, isl, getSkills(), exp.getInt(),
-				isAttrCover, bossName);
+		
+
+		Mob m = new Mob(spawnOf, dmg.getInt(), e, isl, getSkills(),
+				exp.getInt(),
+				isAttrCover, bossName, sName, ri);
 		if (m != null)
+ {
 			mobs.add(m);
+		}
 
 		for (int i = 0; i < m.getSkills().size(); i++)
 			if (m.getSkills().get(i).getTrigger()
@@ -486,6 +493,9 @@ public class MobModel {
 		return dropType;
 	}
 
+	public void addMob(Mob m) {
+		mobs.add(m);
+	}
 	public ConfigurationSection getCfg() {
 		return cfg;
 	}
@@ -595,6 +605,17 @@ public class MobModel {
 				+ "\n" + s11 + "\n" + s12 + "\n" + s13 + "\n" + s14 + "\n"
 				+ s15 + "\n" + s16 + "\n" + s17 + "\n" + s18 + "\n" + s19
 				+ "\n" + s20;
+
+	}
+
+	public void killAll() {
+		for (int i = 0; i < Mob.getMobs().size(); i++) {
+			if (Mob.getMobs().get(i).getsName().equalsIgnoreCase(this.sName))
+				Mob.getMobs().get(i).getE().remove();
+
+		}
+		mobs = new ArrayList<Mob>();
+		Mob.checkAll();
 
 	}
 

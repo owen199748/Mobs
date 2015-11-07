@@ -1,16 +1,24 @@
 package cn.rpgmc.bean.mob;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import cn.rpgmc.bean.skill.Skill;
+import cn.rpgmc.bean.spawn.PointSpawn;
+import cn.rpgmc.bean.spawn.Spawn;
+import cn.rpgmc.bean.spawn.WorldSpawn;
 import cn.rpgmc.run.Main;
+import cn.rpgmc.utils.StringEncrypt;
+
 
 public class Mob {
 	private LivingEntity e = null;
@@ -21,16 +29,36 @@ public class Mob {
 	private ArrayList<ItemStack> drop;
 	private static final ArrayList<Mob> mobs = new ArrayList<Mob>();
 	private BossName bossName = new BossName();
+	private String sName;
+	private String id;
+	private String rider = null;
+	private Object spawner = null;
 
 	public boolean isAttrCover() {
 		return isAttrCover;
 	}
 
+	public BossName getBossName() {
+		return bossName;
+
+	}
+
+	public void setBossName(BossName bossName) {
+		this.bossName = bossName;
+	}
+
+	public void setSkills(HashMap<Skill, Long> skills) {
+		this.skills = skills;
+	}
+
+	public void setsName(String sName) {
+		this.sName = sName;
+	}
 	public void setAttrCover(boolean isAttrCover) {
 		this.isAttrCover = isAttrCover;
 	}
 
-	public ArrayList<Mob> getMobs() {
+	public static ArrayList<Mob> getMobs() {
 		return mobs;
 
 	}
@@ -71,7 +99,14 @@ public class Mob {
 	public static Mob getMob(int entityId) {
 		for (int i = 0; i < mobs.size(); i++) {
 			if (mobs.get(i).getE().getEntityId() == entityId) {
-				return mobs.get(i);
+
+				if (MobModel.getMobModel(mobs.get(i).getsName()) != null)
+ {
+					MobModel.getMobModel(mobs.get(i).getsName()).addMob(
+							mobs.get(i));
+					return mobs.get(i);
+				}
+
 			}
 		}
 		return null;
@@ -82,6 +117,10 @@ public class Mob {
 		return a;
 	}
 
+	public HashMap<Skill, Long> getSkills1() {
+
+		return skills;
+	}
 	public int getDmg() {
 		return dmg;
 	}
@@ -106,12 +145,46 @@ public class Mob {
 		this.e = e;
 	}
 
-	public Mob(int dmg, LivingEntity e, ArrayList<ItemStack> drop,
+	public String getsName() {
+		return sName;
+	}
+
+	public Mob(Object spawnOf, int dmg, LivingEntity e,
+			ArrayList<ItemStack> drop,
 			ArrayList<Skill> skills, int exp, boolean isAttrCover,
-			BossName bossName) {
+			BossName bossName, String sName, String rider) {
+		this(spawnOf, StringEncrypt
+				.getBase64(Math.random() + "/" + System.currentTimeMillis()
+						+ "/" + e.getLocation().toString()), dmg, e, drop,
+				skills, exp, isAttrCover, bossName, sName, rider);
+
+	}
+
+	public Mob(Object spawnOf, String id, int dmg, LivingEntity e,
+			ArrayList<ItemStack> drop,
+			ArrayList<Skill> skills, int exp, boolean isAttrCover,
+			BossName bossName, String sName, String rider) {
+
 		HashMap<Skill, Long> h = new HashMap<Skill, Long>();
 		for (int i = 0; i < skills.size(); i++)
 			h.put(skills.get(i), new Long(0));
+		this.spawner = spawnOf;
+		if (spawner instanceof Spawn)
+ {
+			String cn = ((Spawn) spawner).getcName();
+			Spawn sp = null;
+			if (spawner instanceof PointSpawn)
+				sp = PointSpawn.getPointSpawn(cn);
+		else if (spawner instanceof WorldSpawn)
+				sp = WorldSpawn.getWorldSpawn(cn);
+
+			if (sp != null) {
+				sp.addMob(this);
+				sp.addElseMob(Mob.getMob(rider));
+			}
+		}
+		this.rider = rider;
+		this.sName = sName;
 		this.skills = h;
 		this.dmg = dmg;
 		this.e = e;
@@ -119,8 +192,19 @@ public class Mob {
 		this.exp = exp;
 		this.isAttrCover = isAttrCover;
 		this.bossName = bossName;
+		this.id = id;
 		mobs.add(this);
+
 	}
+
+	public String getId() {
+		return id;
+	}
+
+	public Object getSpawner() {
+		return spawner;
+	}
+
 
 	public void showName(Player p) {
 		if (!this.bossName.isEnable())
@@ -184,6 +268,7 @@ public class Mob {
 		return null;
 	}
 
+
 	public static void checkAll() {
 		for (int i = 0; i < mobs.size(); i++) {
 			if (mobs.get(mobs.size() - 1 - i).getE().isDead())
@@ -192,5 +277,70 @@ public class Mob {
 		}
 
 	}
+
+	public static void saveAll() throws IOException {
+		Main.getMobYml().set("Mobs", null);
+		Main.getMobYml().createSection("Mobs");
+		ConfigurationSection section = Main.getMobYml()
+				.getConfigurationSection("Mobs");
+		for (int i = 0; i < mobs.size(); i++) {
+			if (mobs.get(i) == null)
+				continue;
+			if (mobs.get(i).getE().isDead())
+				continue;
+
+			MobSave save = new MobSave(mobs.get(i));
+			String key = StringEncrypt.getBase64(save.toJson().replaceAll("\n",
+					""));
+
+			ConfigurationSection s1 = section.createSection(key);
+			s1.set("Drop", save.ADrop());
+			s1.set("Eqpt", Arrays.asList(save.AEQPT()));
+
+		}
+
+		
+
+		Main.getMobYml().save(Main.getMobSaveFile());
+
+
+	}
+
+	public static Mob getMob(String id) {
+		for (int i = 0; i < mobs.size(); i++) {
+			if (mobs.get(i).getId().equals(id))
+				return mobs.get(i);
+		}
+
+		return null;
+	}
+
+	public String getRider() {
+		return rider;
+	}
+	public static void checkRider() {
+
+		for (int i = 0; i < mobs.size(); i++)
+			if (mobs.get(i).getRider() != null)
+				mobs.get(i).ride();
+
+	}
+
+	private boolean ride() {
+		
+		if(id.equals(rider))
+			return false;
+
+		for(int i=0;i<mobs.size();i++)
+			if(mobs.get(i).getId().equals(rider))
+ {
+				this.getE().setPassenger(mobs.get(i).getE());
+				return true;
+			}
+		return false;
+
+					}
+
+
 
 }

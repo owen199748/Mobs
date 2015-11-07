@@ -1,5 +1,6 @@
 package cn.rpgmc.run;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.bukkit.Bukkit;
@@ -8,10 +9,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.mob.TitleShows;
+import cn.rpgmc.utils.Send;
 
 public class Manager extends BukkitRunnable {
-	private long g = 0;
+
 	private long startTime = 0;
+
 	public static final int RUNS = 10;
 
 	public Manager() {
@@ -22,12 +25,32 @@ public class Manager extends BukkitRunnable {
 	@Override
 	public void run() {
 
+		long g = 0;
+
 		g++;
 		if (g % 10 == 0)
 			g = 0;
 
 		if (g == 0)
 			low();
+
+		long g1 = 0;
+		g1++;
+		if (g1 % (60 * 2) == 0)
+			g1 = 0;
+
+		if (g1 == 0)
+			low1();
+
+	}
+
+	private void low1() {
+		Mob.checkAll();
+		try {
+			Mob.saveAll();
+		} catch (IOException e) {
+			Send.sendConsole(Send.COLOR.RED + "π÷ŒÔ∂ØÃ¨±£¥Ê ß∞‹.");
+		}
 
 	}
 
@@ -44,9 +67,9 @@ public class Manager extends BukkitRunnable {
 			m.showName(p);
 		}
 
-		Mob.checkAll();
 		
 		
+
 
 	}
 

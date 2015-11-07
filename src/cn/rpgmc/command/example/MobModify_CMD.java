@@ -1,6 +1,5 @@
 package cn.rpgmc.command.example;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.bukkit.Material;
@@ -28,7 +27,7 @@ public class MobModify_CMD implements PluginCommand {
 	}
 
 	@Override
-	public boolean run(Player p, String[] args, String auto) {
+	public boolean run(Player p, String[] args, String auto) throws Exception {
 		if (args.length == 0)
 			return false;
 		MobModel mm = Main.getsMobModel();
@@ -315,22 +314,14 @@ public class MobModify_CMD implements PluginCommand {
 			return false;
 		}
 
-		try {
+
 			saveMobModel(mm, p);
 			Send.sendPluginMessage(p, "≤Ÿ◊˜≥…π¶.");
-		} catch (IOException e) {
-			Send.sendPluginMessage(p, "±£¥Ê ß∞‹.");
-		}
 		return true;
 	}
 
-	private static void saveMobModel(MobModel mm, Player p) throws IOException {
+	private static void saveMobModel(MobModel mm, Player p) throws Exception {
 		mm.save();
-		try {
 			Main.getCfg().save(Main.getF());
-		} catch (IOException e) {
-			Send.sendPluginMessage(p, "≈‰÷√±£¥Ê ß∞‹.");
-		}
-
 	}
 }

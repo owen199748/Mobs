@@ -1,7 +1,5 @@
 package cn.rpgmc.command.example;
 
-import java.io.IOException;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -19,7 +17,7 @@ public class Mob_CMD implements PluginCommand {
 	}
 
 	@Override
-	public boolean run(Player p, String[] args, String auto) {
+	public boolean run(Player p, String[] args, String auto) throws Exception {
 		if (args.length == 0)
 			return false;
 		if (args[0].equalsIgnoreCase("select")) {
@@ -52,14 +50,12 @@ public class Mob_CMD implements PluginCommand {
 				Send.sendPluginMessage(p, "名称已存在.");
 
 			} else {
-				try {
+
 					Main.setsMobModel(new MobModel(args[1], Main.getCfg()
 							.getConfigurationSection("MobModel")));
 					Main.saveYml();
 					Send.sendPluginMessage(p, "创建成功.");
-				} catch (IOException e) {
-					Send.sendPluginMessage(p, "创建失败.");
-				}
+
 			}
 			return true;
 
@@ -86,8 +82,15 @@ public class Mob_CMD implements PluginCommand {
 			if (args.length != 1)
 				return false;
 
-			mm.spawnMob(p.getEyeLocation());
+			mm.spawnMob(this, p.getEyeLocation());
 			Send.sendPluginMessage(p, "创建成功.");
+			return true;
+
+		} else if (args[0].equalsIgnoreCase("killall")) {
+			if (args.length != 1)
+				return false;
+			mm.killAll();
+			Send.sendPluginMessage(p, "操作成功.");
 			return true;
 
 		}

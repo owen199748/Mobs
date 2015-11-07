@@ -80,7 +80,8 @@ public class CommandManager {
 
 	}
 
-	public static boolean run(Player p, String[] args, String commandLabel) {
+	public static boolean run(Player p, String[] args, String commandLabel)
+			throws Exception {
 		for (int i = 0; i < cmds.size(); i++) {
 			PluginCommand cmd = cmds.get(i);
 			String[] branch = cmd.getBranch();
