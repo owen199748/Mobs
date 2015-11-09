@@ -641,11 +641,11 @@ public abstract class Skill {
 
 				for (int i = 0; i < e.size(); i++) {
 					if (!isEnemy("ALL")) {
+						if (e.get(i) != null)
 						if (isEnemy(e.get(i).getType().name()))
 							this.run(mob, e.get(i));
-					} else {
+					} else
 						this.run(mob, e.get(i));
-					}
 
 				}
 				if (isEnemy("ME"))

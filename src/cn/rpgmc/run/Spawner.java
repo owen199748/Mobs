@@ -24,7 +24,6 @@ public class Spawner extends BukkitRunnable {
 
 	@Override
 	public void run() {
-
 		g++;
 		if (g % 10 == 0)
 			g = 0;

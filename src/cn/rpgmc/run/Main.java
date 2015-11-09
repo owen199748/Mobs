@@ -3,6 +3,8 @@ package cn.rpgmc.run;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import sun.misc.JarFilter;
 import cn.rpgmc.bean.mob.Mob;
@@ -37,6 +40,8 @@ import cn.rpgmc.bean.spawn.PointSpawn;
 import cn.rpgmc.bean.spawn.Spawn;
 import cn.rpgmc.bean.spawn.WorldSpawn;
 import cn.rpgmc.command.CommandManager;
+import cn.rpgmc.utils.ErrorReport;
+import cn.rpgmc.utils.LoggerListener;
 import cn.rpgmc.utils.Send;
 import cn.rpgmc.utils.StringEncrypt;
 
@@ -59,9 +64,12 @@ public class Main extends JavaPlugin {
 	private static ClassLoader classLoader;
 	private static YamlConfiguration mobYml = new YamlConfiguration();
 	private static File mobSaveFile = null;
+	private static boolean autoErrorReporting = true;
+
 	public static YamlConfiguration getMobYml() {
 		return mobYml;
 	}
+
 
 	public static void setMobYml(YamlConfiguration mobYml) {
 		Main.mobYml = mobYml;
@@ -126,6 +134,14 @@ public class Main extends JavaPlugin {
 		return main;
 	}
 
+	public static void setAutoErrorReporting(boolean auto) {
+		autoErrorReporting = auto;
+	}
+
+	public static boolean isAutoErrorReporting() {
+		return autoErrorReporting;
+	}
+
 	public static ClassLoader getCLoader() {
 		return classLoader;
 	}
@@ -133,6 +149,15 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				Bukkit.getLogger().setFilter(new LoggerListener());
+
+			}
+		}.runTask(this);
+		Bukkit.getLogger().setFilter(new LoggerListener());
 		main = this;
 		classLoader = this.getClassLoader();
 		Server server = getServer();
@@ -145,6 +170,7 @@ public class Main extends JavaPlugin {
 		f = new File(Bukkit.getPluginManager().getPlugin(this.getName())
 				.getDataFolder().getAbsolutePath()
 				+ File.separator + "config.yml");
+		ErrorReport.setCfg(f);
 		file = new File(Bukkit.getPluginManager().getPlugin(this.getName())
 				.getDataFolder().getAbsolutePath());
 		file.mkdirs();
@@ -156,6 +182,7 @@ public class Main extends JavaPlugin {
 			}
 			cfg.set("Version", V);
 			cfg.set("Tools", 50);
+			cfg.set("AutoErrorReporting", true);
 			cfg.set("MonsterSpawnBannedWorld", MonsterSpawnBannedWorld);
 			cfg.set("AnimalSpawnBannedWorld", AnimalSpawnBannedWorld);
 			cfg.createSection("MobModel");
@@ -197,6 +224,9 @@ public class Main extends JavaPlugin {
 				.getScheduler()
 				.scheduleSyncRepeatingTask(this, new Manager(), Manager.RUNS,
 						Manager.RUNS);
+
+		String sss = null;
+		sss.hashCode();
 
 	}
 
@@ -265,7 +295,6 @@ public class Main extends JavaPlugin {
 	}
 
 	private void loadSkills() {
-
 		File skillFile = new File(Bukkit.getPluginManager()
 				.getPlugin(this.getName()).getDataFolder().getAbsolutePath()
 				+ File.separator + "Skills" + File.separator);
@@ -401,7 +430,12 @@ public class Main extends JavaPlugin {
 	}
 
 	public static void loadYml() {
-
+		if (cfg.get("AutoErrorReporting") != null)
+		setAutoErrorReporting(cfg.getBoolean("AutoErrorReporting"));
+		if (autoErrorReporting)
+			Send.sendConsole("插件已开启误报上交,如果想关闭本功能请在配置文件中修改AutoErrorReporting=false.");
+		else
+			Send.sendConsole("插件已关闭误报上交,如果想开启本功能请在配置文件中修改AutoErrorReporting=true.");
 		setClickItem(cfg.getInt("Tools"));
 		Skill.setSkills(new ArrayList<Skill>());
 		Set<String> all = cfg.getConfigurationSection("Skill").getKeys(false);
@@ -449,7 +483,6 @@ public class Main extends JavaPlugin {
 					.getList("MonsterSpawnBannedWorld");
 			AnimalSpawnBannedWorld = (ArrayList<String>) cfg
 					.getList("AnimalSpawnBannedWorld");
-
 			if (MonsterSpawnBannedWorld != null)
 				for (int r = 0; r < MonsterSpawnBannedWorld.size(); r++) {
 					if (MonsterSpawnBannedWorld.get(r).equalsIgnoreCase(
@@ -503,6 +536,11 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		try {
+			ErrorReport.update();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		try {
 
 			Mob.saveAll();
 		} catch (IOException e) {
@@ -538,6 +576,11 @@ public class Main extends JavaPlugin {
 						argss[i + 1] = args[i];
 				return CommandManager.run(p, argss, null);
 				} catch (Exception e) {
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					e.printStackTrace(pw);
+					String str = sw.toString();
+					ErrorReport.report(str);
 					Send.sendPluginMessage(p, "§d插件异常:§c§l"
 							+ e.getClass().getName());
 					Send.sendPluginMessage(p, "§d详情查看控制台的错误信息.");

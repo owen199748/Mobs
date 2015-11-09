@@ -24,7 +24,6 @@ public class Manager extends BukkitRunnable {
 
 	@Override
 	public void run() {
-
 		long g = 0;
 
 		g++;
@@ -55,6 +54,7 @@ public class Manager extends BukkitRunnable {
 	}
 
 	private void low() {
+
 		Collection<? extends Player> ps = Bukkit.getServer().getOnlinePlayers();
 
 		for (int i = 0; i < ps.size(); i++) {
