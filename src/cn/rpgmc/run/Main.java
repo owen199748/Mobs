@@ -40,6 +40,8 @@ import cn.rpgmc.bean.spawn.PointSpawn;
 import cn.rpgmc.bean.spawn.Spawn;
 import cn.rpgmc.bean.spawn.WorldSpawn;
 import cn.rpgmc.command.CommandManager;
+import cn.rpgmc.thread.Manager;
+import cn.rpgmc.thread.Spawner;
 import cn.rpgmc.utils.ErrorReport;
 import cn.rpgmc.utils.LoggerListener;
 import cn.rpgmc.utils.Send;
@@ -157,6 +159,7 @@ public class Main extends JavaPlugin {
 
 			}
 		}.runTask(this);
+
 		Bukkit.getLogger().setFilter(new LoggerListener());
 		main = this;
 		classLoader = this.getClassLoader();
@@ -225,8 +228,6 @@ public class Main extends JavaPlugin {
 				.scheduleSyncRepeatingTask(this, new Manager(), Manager.RUNS,
 						Manager.RUNS);
 
-		String sss = null;
-		sss.hashCode();
 
 	}
 

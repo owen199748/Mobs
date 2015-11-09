@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.mob.MobModel;
 import cn.rpgmc.run.Main;
-import cn.rpgmc.run.Spawner;
+import cn.rpgmc.thread.Spawner;
 
 public abstract class Spawn {
 	public static final String POINTMOBCREATE = "PointSpawn";

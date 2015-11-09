@@ -80,7 +80,6 @@ public class MobSave {
 	}
 	public String toJson() {
 		try {
-
 			ObjectMapper mapper = new ObjectMapper();
 			// mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance()
 			// .withFieldVisibility(Visibility.ANY));
@@ -147,6 +146,7 @@ public class MobSave {
 
 	public static MobSave fromJson(String s) {
 		try {
+
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
 					false);

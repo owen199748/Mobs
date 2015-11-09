@@ -1,4 +1,4 @@
-package cn.rpgmc.run;
+package cn.rpgmc.thread;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import cn.rpgmc.bean.mob.Mob;
-import cn.rpgmc.bean.mob.TitleShows;
 import cn.rpgmc.utils.Send;
 
 public class Manager extends BukkitRunnable {

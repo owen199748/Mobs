@@ -1,4 +1,4 @@
-package cn.rpgmc.run;
+package cn.rpgmc.thread;
 
 import java.util.ArrayList;
 

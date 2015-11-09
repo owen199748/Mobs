@@ -12,11 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
-import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.skin.AutumnSkin;
-import org.jvnet.substance.skin.SubstanceMistAquaLookAndFeel;
 
 public class UI extends JFrame {
 	JButton b1;
@@ -32,7 +28,7 @@ public class UI extends JFrame {
 
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		try {
-			UIManager.setLookAndFeel(new SubstanceMistAquaLookAndFeel());
+			// UIManager.setLookAndFeel(new SubstanceMistAquaLookAndFeel());
 		} catch (Exception e) {
 			System.out.println("Substance Raven Graphite failed to initialize");
 		}
@@ -58,7 +54,7 @@ public class UI extends JFrame {
 		this.setLocationRelativeTo(null);
 
 		ac = new AcListener();
-		SubstanceLookAndFeel.setSkin(new AutumnSkin());
+		// SubstanceLookAndFeel.setSkin(new AutumnSkin());
 
 		ui.setResizable(false);
 		ui.setSize(520, 128);

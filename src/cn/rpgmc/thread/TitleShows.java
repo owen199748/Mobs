@@ -1,4 +1,4 @@
-package cn.rpgmc.bean.mob;
+package cn.rpgmc.thread;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.utils.TitleAPI;
 
 public class TitleShows extends BukkitRunnable {
