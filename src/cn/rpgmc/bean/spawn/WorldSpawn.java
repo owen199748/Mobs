@@ -46,6 +46,7 @@ public class WorldSpawn extends Spawn {
 		super(cfg);
 		ArrayList<String> worlds = (ArrayList<String>) cfg.getList("world");
 		for (int i = 0; i < worlds.size(); i++) {
+			if (Bukkit.getWorld(worlds.get(i)) != null)
 			world.add(Bukkit.getWorld(worlds.get(i)));
 		}
 		chance = cfg.getDouble("chance");
@@ -99,6 +100,7 @@ public class WorldSpawn extends Spawn {
 		ArrayList<Location> loc = new ArrayList<Location>();
 		for (int s = 0; s < getWorld().size(); s++) {
 			World w = getWorld().get(s);
+			if (w != null)
 			for (int l = 0; l < w.getPlayers().size(); l++) {
 				Player p = w.getPlayers().get(l);
 				if (is()) {
