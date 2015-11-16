@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.skill.Skill;
@@ -171,7 +172,7 @@ public class Skill_Particle extends Skill {
 
 
 	@Override
-	public void run(Mob mob, Entity e) {
+	public void run(Mob mob, Entity e, Event event) {
 		ParticleEffect par = ParticleEffect.fromName(Ptype);
 		if (par == null)
 			return;

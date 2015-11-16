@@ -30,6 +30,11 @@ public class MobModify_CMD implements PluginCommand {
 	public boolean run(Player p, String[] args, String auto) throws Exception {
 		if (args.length == 0)
 			return false;
+
+		if (Main.getsMobModel() == null) {
+			Send.sendPluginMessage(p, "请先选择一个怪物在进行修改操作.");
+			return true;
+		}
 		MobModel mm = Main.getsMobModel();
 		if (args[0].equalsIgnoreCase("del")) {
 			if (!mm.remove())
@@ -52,8 +57,12 @@ public class MobModify_CMD implements PluginCommand {
 				if (args.length != 3) {
 					return false;
 				}
+				
 
-				mm.addDrop(p.getItemInHand(), Integer.parseInt(args[2]));
+					
+					mm.addDrop(p.getItemInHand(), Integer.parseInt(args[2]) );
+
+				
 
 			} else if (args[1].equalsIgnoreCase("list")) {
 
@@ -76,10 +85,12 @@ public class MobModify_CMD implements PluginCommand {
 					return false;
 				}
 
-				if (!mm.delDrop(Integer.parseInt(args[2]))) {
-					Send.sendPluginMessage(p, "该掉落物不存在.");
-					return true;
-				}
+
+					
+				mm.addDrop(p.getItemInHand(), Integer.parseInt(args[2]));
+				
+	
+				
 			}
 
 		} else if (args[0].equalsIgnoreCase("sl")) {

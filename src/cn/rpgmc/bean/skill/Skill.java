@@ -11,6 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.run.Main;
@@ -292,7 +293,7 @@ public abstract class Skill {
 	 * 执行技能实例
 	 * 
 	 */
-	public abstract void run(Mob mob, Entity entity);
+	public abstract void run(Mob mob, Entity entity, Event event);
 
 	/**
 	 * 返回技能实例属性
@@ -583,7 +584,7 @@ public abstract class Skill {
 		this.trigger = trigger;
 	}
 
-	public void runSkill(Mob mob, Object t) {
+	public void runSkill(Mob mob, Object t, Event event) {
 		if (t == null)
 			t = new ArrayList<Entity>();
 		List<Entity> tt = new ArrayList<Entity>();
@@ -601,7 +602,7 @@ public abstract class Skill {
 		}
 
 
-		runSkill(mob, tt);
+		runSkill(mob, tt, event);
 
 	}
 
@@ -619,7 +620,7 @@ public abstract class Skill {
 		return e.getNearbyEntities(i, i, i);
 	}
 
-	public void runSkill(Mob mob, List<Entity> e) {
+	public void runSkill(Mob mob, List<Entity> e, Event event) {
 		if (getRange().equalsIgnoreCase(RANGE_CHUNK))
 			e = Arrays
 					.asList(mob.getE().getLocation().getChunk().getEntities());
@@ -643,13 +644,13 @@ public abstract class Skill {
 					if (!isEnemy("ALL")) {
 						if (e.get(i) != null)
 						if (isEnemy(e.get(i).getType().name()))
-							this.run(mob, e.get(i));
+								this.run(mob, e.get(i), event);
 					} else
-						this.run(mob, e.get(i));
+						this.run(mob, e.get(i), event);
 
 				}
 				if (isEnemy("ME"))
-					this.run(mob, mob.getE());
+					this.run(mob, mob.getE(), event);
 
 			}
 
@@ -657,10 +658,10 @@ public abstract class Skill {
 
 	}
 
-	public void runSkill(Mob mob, Entity e) {
+	public void runSkill(Mob mob, Entity e, Event event) {
 		ArrayList<Entity> a = new ArrayList<Entity>();
 		a.add(e);
-		runSkill(mob, a);
+		runSkill(mob, a, event);
 
 	}
 

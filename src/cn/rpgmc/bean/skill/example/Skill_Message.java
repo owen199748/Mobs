@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.skill.Skill;
@@ -76,7 +77,7 @@ public class Skill_Message extends Skill {
 	}
 
 	@Override
-	public void run(Mob mob, Entity entity) {
+	public void run(Mob mob, Entity entity, Event event) {
 		if (entity instanceof Player)
 			((Player) entity).sendMessage(msg
 					.replaceAll("%a%",

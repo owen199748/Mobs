@@ -104,7 +104,7 @@ public class Spawner extends BukkitRunnable {
 					pmob.test();
 				}
 
-				m.runSkill(Skill.TRIGGER_CYCLE, null);
+				m.runSkill(Skill.TRIGGER_CYCLE, null, null);
 
 			}
 

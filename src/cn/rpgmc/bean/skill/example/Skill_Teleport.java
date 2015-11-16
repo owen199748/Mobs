@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.skill.Skill;
@@ -104,7 +105,7 @@ public class Skill_Teleport extends Skill {
 	}
 
 	@Override
-	public void run(Mob mob, Entity entity) {
+	public void run(Mob mob, Entity entity, Event event) {
 		World w = Bukkit.getWorld(world.replaceAll("%w%", entity.getWorld()
 				.getName()));
 		Double X = Calc.calc(x.replaceAll("%x1%",

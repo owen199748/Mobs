@@ -25,10 +25,14 @@ public class SpawnModify_CMD implements PluginCommand {
 	public boolean run(Player p, String[] args, String auto) throws Exception {
 		if (args.length == 0)
 			return false;
-
+		if (Main.getsSpawn() == null) {
+			Send.sendPluginMessage(p, "请先选择一个刷新点在进行修改操作.");
+			return true;
+		}
 
 		if (Main.getsSpawn() instanceof PointSpawn) {
 			boolean b = true;
+
 			PointSpawn pSpawn = (PointSpawn) Main.getsSpawn();
 			if (args[0].equalsIgnoreCase("point")) {
 				if (Main.getO() == null) {

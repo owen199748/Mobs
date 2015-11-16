@@ -575,19 +575,23 @@ public class Main extends JavaPlugin {
 					argss[0] = cmd.getName();
 					for (int i = 0; i < args.length; i++)
 						argss[i + 1] = args[i];
-				return CommandManager.run(p, argss, null);
+					return CommandManager.run(p, argss, null);
 				} catch (Exception e) {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					e.printStackTrace(pw);
-					String str = sw.toString();
-					ErrorReport.report(str);
+					ErrorReport.report(sw.toString());
 					Send.sendPluginMessage(p, "§d插件异常:§c§l"
 							+ e.getClass().getName());
+					if (e instanceof IllegalArgumentException)
+						Send.sendPluginMessage(p, "§d异常原因:§c§l参数异常");
+					else
+						Send.sendPluginMessage(p, "§d异常原因:§c§l未知");
 					Send.sendPluginMessage(p, "§d详情查看控制台的错误信息.");
 					e.printStackTrace();
 					return true;
 				}
+
 			}
 
 		Send.sendConsole("本插件不支持控制台操作!");

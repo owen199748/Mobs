@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import cn.rpgmc.bean.skill.Skill;
@@ -64,7 +65,7 @@ public class Mob {
 
 	}
 
-	public void runSkill(String target, Entity t) {
+	public void runSkill(String target, Entity t, Event event) {
 		if (skills == null)
 			return;
 
@@ -74,7 +75,7 @@ public class Mob {
 				if (target.equalsIgnoreCase(Skill.TRIGGER_CYCLE))
 					t = null;
 
-				sk.runSkill(this, t);
+				sk.runSkill(this, t, event);
 			}
 		}
 

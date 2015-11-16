@@ -35,14 +35,14 @@ public class AutoListener implements Listener {
 
 		if (Mob.isMob(ete.getEntity().getEntityId())) {
 			Mob m = Mob.getMob(ete.getEntity().getEntityId());
-			m.runSkill(Skill.TRIGGER_TARGET, ete.getTarget());
+			m.runSkill(Skill.TRIGGER_TARGET, ete.getTarget(), ete);
 
 		}
 
 		if (ete.getTarget() != null)
 			if (Mob.isMob(ete.getTarget().getEntityId())) {
 				Mob m = Mob.getMob(ete.getTarget().getEntityId());
-				m.runSkill(Skill.TRIGGER_TARGET, ete.getEntity());
+				m.runSkill(Skill.TRIGGER_TARGET, ete.getEntity(), ete);
 
 			}
 
@@ -113,13 +113,13 @@ public class AutoListener implements Listener {
 
 		if (Mob.isMob(edbee.getEntity().getEntityId())) {
 			Mob m = Mob.getMob(edbee.getEntity().getEntityId());
-			m.runSkill(Skill.TRIGGER_HURT, edbee.getDamager());
+			m.runSkill(Skill.TRIGGER_HURT, edbee.getDamager(), edbee);
 
 		}
 
 		if (Mob.isMob(edbee.getDamager().getEntityId())) {
 			Mob m = Mob.getMob(edbee.getDamager().getEntityId());
-			m.runSkill(Skill.TRIGGER_ATTACK, edbee.getEntity());
+			m.runSkill(Skill.TRIGGER_ATTACK, edbee.getEntity(), edbee);
 
 		}
 	}
@@ -136,7 +136,7 @@ public class AutoListener implements Listener {
 			else
 				ede.setDroppedExp(ede.getDroppedExp() + m.getExp());
 
-			m.runSkill(Skill.TRIGGER_HURT, ede.getEntity().getKiller());
+			m.runSkill(Skill.TRIGGER_HURT, ede.getEntity().getKiller(), ede);
 
 			if (m.getDrop() != null) {
 				ede.getDrops().clear();

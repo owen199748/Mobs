@@ -483,7 +483,7 @@ public class MobModel {
 						.get(i)
 						.runSkill(
 								m,
- m.getE());
+ m.getE(), null);
 
 		return m;
 

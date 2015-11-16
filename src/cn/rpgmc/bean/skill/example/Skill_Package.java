@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import cn.rpgmc.bean.mob.Mob;
 import cn.rpgmc.bean.skill.Skill;
@@ -112,13 +113,13 @@ public class Skill_Package extends Skill {
 	}
 
 	@Override
-	public void run(Mob mob, Entity entity) {
+	public void run(Mob mob, Entity entity, Event event) {
 		for (int i = 0; i < skills.size(); i++) {
 			if (Skill.isSkill(skills.get(i)) == -1)
 				continue;
 
 			Skill sk = Skill.getSkill(skills.get(i));
-			sk.run(mob, entity);
+			sk.run(mob, entity, event);
 		}
 
 	}
