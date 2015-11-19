@@ -1,16 +1,26 @@
 package cn.rpgmc.mobs.command.example;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import cn.rpgmc.mobs.bean.mob.Mob;
+import cn.rpgmc.mobs.bean.mob.MobModel;
+import cn.rpgmc.mobs.bean.skill.Skill;
+import cn.rpgmc.mobs.bean.spawn.PointSpawn;
+import cn.rpgmc.mobs.bean.spawn.WorldSpawn;
 import cn.rpgmc.mobs.command.PluginCommand;
 import cn.rpgmc.mobs.run.Main;
 import cn.rpgmc.mobs.utils.Send;
+
+import com.google.common.io.Files;
 
 public class Main_CMD implements PluginCommand {
 
@@ -156,10 +166,24 @@ public class Main_CMD implements PluginCommand {
 				if (args.length == 1) {
 
 						Main.getCfg().load(Main.getF());
-						Main.getCfg().set("Version", Main.getV());
+					// Main.getCfg().set("Version", Main.getV());
 						Main.loadYml();
 						Mob.killAll();
 						Send.sendPluginMessage(p, "配置重载成功.");
+
+				} else {
+					return false;
+				}
+				return true;
+			} else if (args[0].equalsIgnoreCase("update")) {
+				if (args.length == 1) {
+
+					Main.getCfg().load(Main.getF());
+					Main.getCfg().set("Version", Main.getV());
+					updateYml();
+					Main.loadYml();
+					Mob.killAll();
+					Send.sendPluginMessage(p, "配置升级成功.");
 
 				} else {
 					return false;
@@ -185,6 +209,78 @@ public class Main_CMD implements PluginCommand {
 
 	}
 
+	private void updateYml() throws Exception {
+		File f = new File(Main.getF().getAbsolutePath() + ".bak");
+		Files.copy(Main.getF(), f);
+		YamlConfiguration cfg1 = new YamlConfiguration();
+
+		cfg1.load(f);
+		FileConfiguration cfg = Main.getCfg();
+
+		ConfigurationSection m = Main.getCfg().getConfigurationSection(
+				"MobModel");
+		ConfigurationSection ws = Main.getCfg().getConfigurationSection(
+				"WorldSpawn");
+		ConfigurationSection ps = Main.getCfg().getConfigurationSection(
+				"PointSpawn");
+		ConfigurationSection skill = Main.getCfg().getConfigurationSection(
+				"Skill");
+		
+		Object[] key = m.getKeys(false).toArray();
+		for (int i = 0; i < key.length; i++) {
+			m.set((String) key[i], null);
+			new MobModel((String) key[i], m).save();
+		}
+
+		key = ws.getKeys(false).toArray();
+		for (int i = 0; i < key.length; i++) {
+			ws.set((String) key[i], null);
+			new WorldSpawn((String) key[i], ws, null)
+					.save();
+		}
+
+		key = ps.getKeys(false).toArray();
+		for (int i = 0; i < key.length; i++) {
+			ps.set((String) key[i], null);
+			new PointSpawn((String) key[i], ps, null)
+					.save();
+		}
+
+		key = skill.getKeys(false).toArray();
+		for (int i = 0; i < key.length; i++) {
+			String type = skill.getConfigurationSection(
+(String) key[i])
+					.getString(
+					"type");
+			skill.set((String) key[i], null);
+			Skill.newSkill(type, (String) key[i])
+					.save();
+		}
+
+		cfg.setDefaults(cfg1);
+		moveTo(cfg1, cfg);
+		f.delete();
+		cfg.save(Main.getF());
+
+	}
+
+
+	private void moveTo(ConfigurationSection a, ConfigurationSection b) {
+		Object[] key = a.getKeys(false).toArray();
+		for (int i = 0; i < key.length; i++) {
+			Object v = a.get((String) key[i]);
+			if (v instanceof ConfigurationSection) {
+				if (b.getConfigurationSection((String) key[i]) == null)
+					b.createSection((String) key[i]);
+				moveTo((ConfigurationSection) v,
+						b.getConfigurationSection((String) key[i]));
+
+			} else
+				b.set((String) key[i], v);
+
+		}
+
+	}
 	
 	
 

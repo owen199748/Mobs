@@ -57,7 +57,7 @@ public class AutoListener implements Listener {
 				Send.sendPluginMessage(pje.getPlayer(),
 						"插件与存在的配置版本不统一,请删除配置并重载插件.");
 				Send.sendPluginMessage(pje.getPlayer(),
-						"如果确认老版本配置支持当前版本请输入 /Mobs reload 转换为新版本配置.");
+						"如果确认老版本配置支持当前版本请输入 /Mobs update 转换为新版本配置.");
 				Send.sendPluginMessage(pje.getPlayer(),
 						"插件与配置版本不一可能会导致恢复怪物时报错,输入/Mobs killall 杀死生物即可.");
 			}

@@ -142,6 +142,7 @@ public class Help_CMD implements PluginCommand {
 		p.sendMessage("§a  /Mobs listBan 查看你所在的世界是否禁用默认产生的动物/怪物");
 		p.sendMessage("§a  /Mobs listPotionEffectType 查看所有支持的药水类型");
 		p.sendMessage("§a  /Mobs listEntityType 查看所有支持作为怪物的类型");
+		p.sendMessage("§a  /Mobs update 智能升级旧版配置");
 		p.sendMessage("§a  /Mobs reload 重载插件");
 		p.sendMessage("§a  /Mobs help 帮助");
 

@@ -629,4 +629,9 @@ public class MobModel {
 
 	}
 
+	public static void del(MobModel a) {
+		// TODO 自动生成的方法存根
+
+	}
+
 }
