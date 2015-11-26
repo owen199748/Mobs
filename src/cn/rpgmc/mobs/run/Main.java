@@ -167,7 +167,6 @@ public class Main extends JavaPlugin {
 		Server server = getServer();
 		PluginManager manager = server.getPluginManager();
 		V = this.getDescription().getVersion();
-		Bukkit.getServer().getWorld("world").setSpawnFlags(false, false);
 		ls = new AutoListener();
 		getServer().getPluginManager().registerEvents(ls, this);
 		cfg = Bukkit.getPluginManager().getPlugin(this.getName()).getConfig();
@@ -573,7 +572,7 @@ public class Main extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
-		if ((sender instanceof Player))
+		if (sender instanceof Player)
 			if (cmd.getName().equalsIgnoreCase("Mobs")) {
 				Player p = (Player) sender;
 				try {
