@@ -151,7 +151,7 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-
+		main = this;
 		new BukkitRunnable() {
 
 			@Override
@@ -162,7 +162,7 @@ public class Main extends JavaPlugin {
 		}.runTask(this);
 
 		Bukkit.getLogger().setFilter(new LoggerListener());
-		main = this;
+
 		classLoader = this.getClassLoader();
 		Server server = getServer();
 		PluginManager manager = server.getPluginManager();

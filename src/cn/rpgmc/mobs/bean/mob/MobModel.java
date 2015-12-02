@@ -44,6 +44,7 @@ public class MobModel {
 	private ConfigurationSection cfg = null;
 	private ArrayList<Skill> skills = new ArrayList<Skill>();
 	private ArrayList<Mob> mobs = new ArrayList<Mob>();
+
 	static {
 		MAIN_CFG = Main.getCfg();
 		MAIN_F = Main.getF();
@@ -446,6 +447,7 @@ public class MobModel {
 			hp = e.getMaxHealth() + getHp().getInt();
 			hp = e.getMaxHealth() + getHp().getInt();
 		}
+
 		e.setMaxHealth(hp);
 		e.setHealth(hp);
 		e.getEquipment().setHelmet(getEqpt().getHelmet());
@@ -610,11 +612,21 @@ public class MobModel {
 		String s18 = "    下雨才刷新:" + survivalLimit.isRain();
 		String s19 = "    打雷才刷新:" + survivalLimit.isThundering();
 		String s20 = "技能:" + skills.size() + "个";
+		String s21 = "骑乘者:" + rider;
+		String s22 = "抗击退:" + noRepel;
+		String s23 = "属性覆盖:" + isAttrCover;
+		String s24 = "  Boss名显示方式:";
+		String s25 = "    是否开启:" + bossName.isEnable();
+		String s26 = "    显示内容:" + bossName.getValue();
+		String s27 = "    显示范围:" + bossName.getNearby();
+		String s28 = "自带药水属性:" + potionEffect.size() + "种";
+
 		return s1 + "\n" + s1 + "\n" + s2 + "\n" + s3 + "\n" + s4 + "\n" + s5
 				+ "\n" + s6 + "\n" + s7 + "\n" + s8 + "\n" + s9 + "\n" + s10
 				+ "\n" + s11 + "\n" + s12 + "\n" + s13 + "\n" + s14 + "\n"
 				+ s15 + "\n" + s16 + "\n" + s17 + "\n" + s18 + "\n" + s19
-				+ "\n" + s20;
+				+ "\n" + s20 + "\n" + s21 + "\n" + s22 + "\n" + s23 + "\n"
+				+ s24 + "\n" + s25 + "\n" + s26 + "\n" + s27 + "\n" + s28;
 
 	}
 

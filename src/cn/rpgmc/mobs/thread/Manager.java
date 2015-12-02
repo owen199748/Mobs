@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -64,12 +65,17 @@ public class Manager extends BukkitRunnable {
 			
 			
 			int nb = m.getBossName().getNearby();
-			List<Entity> pss = m.getE().getNearbyEntities(nb,nb,nb);
-			List<Player>ps= new ArrayList<Player>();
+			List<Player> ps = new ArrayList<Player>();
+			if(nb==-1)
+				ps = new ArrayList<Player>(Bukkit.getOnlinePlayers());
+			else if(nb==0)
+				ps = m.getE().getWorld().getPlayers();
+			else
+			{List<Entity> pss =m.getE().getNearbyEntities(nb,nb,nb);
 			for(int l=0;l<pss.size();l++)
 				if(pss.get(l).getType()==EntityType.PLAYER)
 					ps.add((Player) pss.get(l));
-			
+			}
 			
 			for (int l = 0; l < ps.size(); l++)
  {

@@ -43,14 +43,38 @@ public abstract class Skill {
 	public static final String TRIGGER_TARGET = "TRIGGER_TARGET";// 瞄准
 	public static final String TRIGGER_BETARGET = "TRIGGER_BETARGET";// 被瞄准
 	public static final String TRIGGER_BESPAWN = "TRIGGER_BESPAWN";// 被产生
-	private String trigger = TRIGGER_CYCLE;
+	private String trigger = null;
 	public static final String RANGE_WORLD = "RANGE_WORLD";
 	public static final String RANGE_TARGET = "RANGE_TARGET";
 	public static final String RANGE_CHUNK = "RANGE_CHUNK";
 	public static final String RANGE_NEARBY = "RANGE_NEARBY";
-	private String range = RANGE_CHUNK;
+	public static final String RANGE_PLAYER = "RANGE_PLAYER";
+	private String range = null;
 	private ArrayList<String> enemys = new ArrayList<String>();
 
+	public abstract boolean canTriggerToCycle();
+
+	public abstract boolean canTriggerToAttack();
+
+	public abstract boolean canTriggerToHurt();
+
+	public abstract boolean canTriggerToDying();
+
+	public abstract boolean canTriggerToTarget();
+
+	public abstract boolean canTriggerToBeTarget();
+
+	public abstract boolean canTriggerToBeSpawn();
+
+	public abstract boolean canRangeToWorld();
+
+	public abstract boolean canRangeToTarget();
+
+	public abstract boolean canRangeToChunk();
+
+	public abstract boolean canRangeToPlayer();
+
+	public abstract boolean canRangeToNearby();
 	public static void setSkills(ArrayList<Skill> skills) {
 		Skill.skills = skills;
 	}
@@ -182,6 +206,7 @@ public abstract class Skill {
 		if (!range.equalsIgnoreCase(RANGE_WORLD))
 			if (!range.equalsIgnoreCase(RANGE_TARGET))
 				if (!range.equalsIgnoreCase(RANGE_CHUNK))
+					if (!range.equalsIgnoreCase(RANGE_PLAYER))
 					if (!range.startsWith(RANGE_NEARBY))
 					return false;
 		return true;
@@ -208,6 +233,12 @@ public abstract class Skill {
 				Send.sendPluginMessage(p, "触发类型不存在.");
 				return true;
 			}
+
+			if (!canRun(args[2], null)) {
+				Send.sendPluginMessage(p, "该技能不能使用这种触发类型.");
+				return true;
+			}
+
 			setTrigger(args[2]);
 
 		} else if (args[1].equalsIgnoreCase("range")) {
@@ -217,6 +248,11 @@ public abstract class Skill {
 				Send.sendPluginMessage(p, "作用类型不存在.");
 				return true;
 
+			}
+
+			if (!canRun(null, args[2])) {
+				Send.sendPluginMessage(p, "该技能不能使用这种作用类型.");
+				return true;
 			}
 
 			setRange(args[2]);
@@ -403,6 +439,7 @@ public abstract class Skill {
 				+ "    RANGE_CHUNK 所在区块\n"
 				+ "    RANGE_NEARBY_X 附近,X需要换为附近的范围,必须是正整数. "
 				+ "    RANGE_TARGET 触发者(该类型作用方式不可为周期.)\n"
+				+ "    RANGE_PLAYER 所有在线玩家\n"
 				+ "  /mobs skill modify enemys [add/del/list] 可作用实体列表(不填视为除了怪物自身全部作用),例子:"
 				+ "    /mobs skill modify enemys add PLAYER (该技能可以作用于所有玩家)"
 				+ "    /mobs skill modify enemys add ZOMBIE (该技能可以作用于所有僵尸)"
@@ -621,12 +658,19 @@ public abstract class Skill {
 	}
 
 	public void runSkill(Mob mob, List<Entity> e, Event event) {
+
+		if (!canRun())
+			return;
+
 		if (getRange().equalsIgnoreCase(RANGE_CHUNK))
 			e = Arrays
 					.asList(mob.getE().getLocation().getChunk().getEntities());
 		else if (getRange().equalsIgnoreCase(RANGE_WORLD))
 			e = mob.getE().getWorld().getEntities();
 		else if (getRange().equalsIgnoreCase(RANGE_TARGET)) {
+
+		} else if (getRange().equalsIgnoreCase(RANGE_PLAYER)) {
+			e = new ArrayList<Entity>(Bukkit.getOnlinePlayers());
 		} else if (getRange().startsWith(RANGE_NEARBY))
 			e = getNearby(mob.getE(), getRange());
 		else
@@ -658,9 +702,136 @@ public abstract class Skill {
 
 	}
 
-	public void runSkill(Mob mob, Entity e, Event event) {
+	public boolean canRun(String targer, String range) {
+		if (range != null)
+		if (!canRangeToChunk())
+			if (range.equalsIgnoreCase(RANGE_CHUNK))
+				return false;
+
+		if (range != null)
+		if (!canRangeToTarget())
+			if (range.equalsIgnoreCase(RANGE_TARGET))
+				return false;
+
+		if (range != null)
+		if (!canRangeToWorld())
+			if (range.equalsIgnoreCase(RANGE_WORLD))
+				return false;
+
+		if (range != null)
+			if (!canRangeToPlayer())
+				if (range.equalsIgnoreCase(RANGE_PLAYER))
+					return false;
+
+		if (range != null)
+		if (!canRangeToNearby())
+			if (range.toUpperCase().startsWith(RANGE_NEARBY.toUpperCase()))
+				return false;
+
+		if (targer != null)
+		if (!canTriggerToAttack())
+			if (targer.equalsIgnoreCase(TRIGGER_ATTACK))
+				return false;
+
+		if (targer != null)
+		if (!canTriggerToBeSpawn())
+			if (targer.equalsIgnoreCase(TRIGGER_BESPAWN))
+				return false;
+
+		if (targer != null)
+		if (!canTriggerToBeTarget())
+			if (targer.equalsIgnoreCase(TRIGGER_BETARGET))
+				return false;
+
+		if (targer != null)
+		if (!canTriggerToCycle())
+			if (targer.equalsIgnoreCase(TRIGGER_CYCLE))
+				return false;
+
+		if (targer != null)
+		if (!canTriggerToDying())
+			if (targer.equalsIgnoreCase(TRIGGER_DYING))
+				return false;
+
+		if (targer != null)
+		if (!canTriggerToHurt())
+			if (targer.equalsIgnoreCase(TRIGGER_HURT))
+				return false;
+
+		if (targer != null)
+		if (!canTriggerToTarget())
+			if (targer.equalsIgnoreCase(TRIGGER_TARGET))
+				return false;
+		return true;
+	}
+
+	public boolean canRun() {
+
+		if (getRange() != null)
+		if (!canRangeToChunk())
+			if (getRange().equalsIgnoreCase(RANGE_CHUNK))
+				return false;
+
+		if (getRange() != null)
+		if (!canRangeToTarget())
+			if (getRange().equalsIgnoreCase(RANGE_TARGET))
+				return false;
+
+		if (getRange() != null)
+		if (!canRangeToWorld())
+			if (getRange().equalsIgnoreCase(RANGE_WORLD))
+				return false;
+
+		if (getRange() != null)
+			if (!canRangeToPlayer())
+				if (getRange().equalsIgnoreCase(RANGE_PLAYER))
+					return false;
+
+		if (getRange() != null)
+		if (!canRangeToNearby())
+			if (getRange().toUpperCase().startsWith(RANGE_NEARBY.toUpperCase()))
+				return false;
+
+		if (getTrigger() != null)
+		if (!canTriggerToAttack())
+			if (getTrigger().equalsIgnoreCase(TRIGGER_ATTACK))
+				return false;
+
+		if (getTrigger() != null)
+		if (!canTriggerToBeSpawn())
+			if (getTrigger().equalsIgnoreCase(TRIGGER_BESPAWN))
+				return false;
+
+		if (getTrigger() != null)
+		if (!canTriggerToBeTarget())
+			if (getTrigger().equalsIgnoreCase(TRIGGER_BETARGET))
+				return false;
+
+		if (getTrigger() != null)
+		if (!canTriggerToCycle())
+			if (getTrigger().equalsIgnoreCase(TRIGGER_CYCLE))
+				return false;
+
+		if (getTrigger() != null)
+		if (!canTriggerToDying())
+			if (getTrigger().equalsIgnoreCase(TRIGGER_DYING))
+				return false;
+
+		if (getTrigger() != null)
+		if (!canTriggerToHurt())
+			if (getTrigger().equalsIgnoreCase(TRIGGER_HURT))
+				return false;
+
+		if (getTrigger() != null)
+		if (!canTriggerToTarget())
+			if (getTrigger().equalsIgnoreCase(TRIGGER_TARGET))
+				return false;
+		return true;
+	}
+
+	public void runSkill(Mob mob, Entity target, Event event) {
 		ArrayList<Entity> a = new ArrayList<Entity>();
-		a.add(e);
+		a.add(target);
 		runSkill(mob, a, event);
 
 	}

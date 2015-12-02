@@ -212,16 +212,16 @@ public abstract class Spawn {
 	}
 
 	public void killAll() {
-		for (int i = 0; i < mobs.size(); i++) {
+		for (int i = 0; i < mobs.size(); i++)
 			mobs.get(i).getE().remove();
 
-		}
 		mobs.clear();
 
-		for (int i = 0; i < elseMobs.size(); i++) {
+		for (int i = 0; i < elseMobs.size(); i++)
+			if (elseMobs.get(i) != null && elseMobs.get(i).getE() != null)
 			elseMobs.get(i).getE().remove();
 
-		}
+
 		elseMobs.clear();
 
 	}

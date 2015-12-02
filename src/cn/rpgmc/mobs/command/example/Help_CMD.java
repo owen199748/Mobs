@@ -117,7 +117,7 @@ public class Help_CMD implements PluginCommand {
 		p.sendMessage("§a  /Mobs mob modify eqpt 设置装备为当前穿戴的装备和手拿的武器");
 		p.sendMessage("§a  /Mobs mob modify skill [add/list/del] 增删查技能列表");
 		p.sendMessage("§a  /Mobs mob modify sl [Day/Night/Sun/Rain/Thunder] [true/false] 设置怪物刷新对环境的需求");
-		p.sendMessage("§a  /Mobs mob modify bossname [enable/show/nearby] 是否以boss方式显示名称");
+		p.sendMessage("§a  /Mobs mob modify bossname [enable/show/nearby] 是否以boss方式显示名称(nearby属性中,0代表boss所在世界全部玩家,-1代表所有玩家 )");
 
 	}
 

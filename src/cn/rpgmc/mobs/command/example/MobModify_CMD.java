@@ -2,8 +2,10 @@ package cn.rpgmc.mobs.command.example;
 
 import java.util.ArrayList;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
@@ -215,9 +217,37 @@ public class MobModify_CMD implements PluginCommand {
 		} else if (args[0].equalsIgnoreCase("hp")) {
 			if (args.length == 2) {
 				mm.setHp(new HP(Integer.parseInt(args[1])));
+
+				LivingEntity em = (LivingEntity) p.getWorld().spawnEntity(
+						new Location(p.getWorld(), 0, 0, 0), EntityType.COW);
+				try {
+					em.setMaxHealth(mm.getHp().getMax());
+					em.setMaxHealth(mm.getHp().getMin());
+
+				} catch (IllegalArgumentException eee) {
+					eee.printStackTrace();
+					Send.sendConsole("血量最大值超出上限,请到服务端根目录spigot.yml处修改maxHealth值,否则产生怪物时会报错.");
+				}
+				em.remove();
+				
+
+
 			} else if (args.length == 3) {
 				mm.setHp(new HP(Integer.parseInt(args[1]), Integer
 						.parseInt(args[2])));
+
+				LivingEntity em = (LivingEntity) p.getWorld().spawnEntity(
+						new Location(p.getWorld(), 0, 0, 0), EntityType.COW);
+				try {
+					em.setMaxHealth(mm.getHp().getMax());
+					em.setMaxHealth(mm.getHp().getMin());
+
+				} catch (IllegalArgumentException eee) {
+					eee.printStackTrace();
+					Send.sendConsole("血量最大值超出上限,请到服务端根目录spigot.yml处修改maxHealth值,否则产生怪物时会报错.");
+				}
+				em.remove();
+
 			} else {
 				return false;
 			}

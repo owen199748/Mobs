@@ -211,5 +211,76 @@ public class Skill_Particle extends Skill {
 
 	}
 
+	@Override
+	public boolean canTriggerToCycle() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canTriggerToAttack() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canTriggerToHurt() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canTriggerToDying() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canTriggerToTarget() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canTriggerToBeTarget() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canTriggerToBeSpawn() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canRangeToWorld() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canRangeToTarget() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canRangeToChunk() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canRangeToNearby() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
+
+	@Override
+	public boolean canRangeToPlayer() {
+		// TODO 自动生成的方法存根
+		return true;
+	}
 
 }

@@ -9,18 +9,18 @@ import org.bukkit.event.Event;
 import cn.rpgmc.mobs.bean.mob.Mob;
 import cn.rpgmc.mobs.bean.skill.Skill;
 
-public class Skill_Message extends Skill {
+public abstract class Skill_CoolSpawn extends Skill {
 
 	private String msg;
 
-	public Skill_Message() {
+	public Skill_CoolSpawn() {
 	}
 
-	public Skill_Message(ConfigurationSection cfg) {
+	public Skill_CoolSpawn(ConfigurationSection cfg) {
 		super(cfg);
 	}
 
-	public Skill_Message(String sName2, ConfigurationSection cfg2) {
+	public Skill_CoolSpawn(String sName2, ConfigurationSection cfg2) {
 		super(sName2, cfg2);
 	}
 
@@ -104,37 +104,37 @@ public class Skill_Message extends Skill {
 	@Override
 	public boolean canTriggerToCycle() {
 		// TODO 自动生成的方法存根
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean canTriggerToAttack() {
 		// TODO 自动生成的方法存根
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean canTriggerToHurt() {
 		// TODO 自动生成的方法存根
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean canTriggerToDying() {
 		// TODO 自动生成的方法存根
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean canTriggerToTarget() {
 		// TODO 自动生成的方法存根
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean canTriggerToBeTarget() {
 		// TODO 自动生成的方法存根
-		return true;
+		return false;
 	}
 
 	@Override
@@ -146,31 +146,25 @@ public class Skill_Message extends Skill {
 	@Override
 	public boolean canRangeToWorld() {
 		// TODO 自动生成的方法存根
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean canRangeToTarget() {
 		// TODO 自动生成的方法存根
-		return true;
-	}
-
-	@Override
-	public boolean canRangeToPlayer() {
-		// TODO 自动生成的方法存根
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean canRangeToChunk() {
 		// TODO 自动生成的方法存根
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean canRangeToNearby() {
 		// TODO 自动生成的方法存根
-		return true;
+		return false;
 	}
 
 }
