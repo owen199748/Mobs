@@ -4,10 +4,11 @@ import java.util.Collection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+
+import cn.rpgmc.mobs.utils.mobtype.MobType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -68,7 +69,7 @@ public class LivingEntitySave {
 		// TODO 自动生成的构造函数存根
 	}
 
-	public LivingEntitySave(LivingEntity e) {
+	public LivingEntitySave(LivingEntity e, MobType t) {
 		
 
 		 w = e.getLocation().getWorld().getName(); x = e.getLocation().getX();
@@ -91,7 +92,7 @@ public class LivingEntitySave {
 		remainingAir = e.getRemainingAir();
 		removeWhenFarAway = e.getRemoveWhenFarAway();
 		ticksLived = e.getTicksLived();
-		type = e.getType().name();
+		type = t.getName();
 
 		// velocity = e.getVelocity();
 		potionEffects = e.getActivePotionEffects();
@@ -100,9 +101,9 @@ public class LivingEntitySave {
 	}
 
 	public LivingEntity news() {
-		LivingEntity e = (LivingEntity) Bukkit.getWorld(w).spawnEntity(
-				new Location(Bukkit.getWorld(w), x, y, z),
-				EntityType.fromName(type));
+
+		LivingEntity e = MobType.create(MobType.fromName(type), new Location(
+				Bukkit.getWorld(w), x, y, z));
 
 		e.getEquipment().setArmorContents(eqpt);
 

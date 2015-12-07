@@ -5,14 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.bukkit.Bukkit;
@@ -44,9 +39,11 @@ import cn.rpgmc.mobs.thread.Manager;
 import cn.rpgmc.mobs.thread.Spawner;
 import cn.rpgmc.mobs.thread.TitleShows;
 import cn.rpgmc.mobs.utils.ErrorReport;
+import cn.rpgmc.mobs.utils.JarLoad;
 import cn.rpgmc.mobs.utils.LoggerListener;
 import cn.rpgmc.mobs.utils.Send;
 import cn.rpgmc.mobs.utils.StringEncrypt;
+import cn.rpgmc.mobs.utils.mobtype.MobType;
 
 public class Main extends JavaPlugin {
 	public static final String KEY = "7AD8B9A9C0E9F85EECB9A0DEA996CF9D88EE275EFAAE6E9A";
@@ -120,6 +117,7 @@ public class Main extends JavaPlugin {
 	public static Location getO() {
 		return o;
 	}
+
 
 	public static void setO(Location location) {
 		o = location;
@@ -205,9 +203,9 @@ public class Main extends JavaPlugin {
 
 				e.printStackTrace();
 			}
-
 		}
 		loadSkills();
+		MobType.values();
 		loadYml();
 		loadAllMobs();
 		Send.sendConsole("┏一一一一一一一一一一一┓");
@@ -315,9 +313,10 @@ public class Main extends JavaPlugin {
 		int s = 0;
 		int ss = 0;
 		for (int i = 0; i < skillList.size(); i++) {
-			List<Class<? extends Skill>> l = null;
+			List<Class<?>> l = null;
 			try {
-				l = getJarClass(skillList.get(i).getAbsolutePath());
+				l = JarLoad.getJarClass(skillList.get(i).getAbsolutePath(),
+						Skill.class, getClassLoader());
 			} catch (Exception e) {
 				Send.sendConsole(
 						skillList.get(i).getAbsoluteFile().getName()
@@ -328,10 +327,11 @@ public class Main extends JavaPlugin {
 				continue;
 
 			for (int r = 0; r < l.size(); r++) {
-				Skill.registerSkill(l.get(r));
+				Class<? extends Skill> sklr = (Class<? extends Skill>) l.get(r);
+				Skill.registerSkill(sklr);
 				String skillName = "null";
 				try {
-					skillName = l.get(r).newInstance().getType();
+					skillName = sklr.newInstance().getType();
 				} catch (Exception e) {
 
 				}
@@ -387,53 +387,8 @@ public class Main extends JavaPlugin {
 
 	}
 
-	public List<Class<? extends Skill>> getJarClass(String jarFile)
-			throws IOException, ClassNotFoundException {
-		ArrayList<Class<? extends Skill>> l = new ArrayList<Class<? extends Skill>>();
-		ArrayList<String> l1 = new ArrayList<String>();
 
-		URL url = new URL("file:" + jarFile);
-		URLClassLoader cl = new URLClassLoader(new URL[] { url },
-				this.getClassLoader());
 
-		JarFile jar = new JarFile(jarFile);
-		Enumeration<JarEntry> e = jar.entries();
-		while (e.hasMoreElements()) {
-			String name = isClass(e.nextElement().getName());
-			if (name == null)
-				continue;
-
-			if (l1.contains(name))
-				continue;
-			Class<?> cla = cl.loadClass(name);
-			if (cla == null)
-				continue;
-			if (!cla.isInterface())
-				if (!Modifier.isAbstract(cla.getModifiers()))
-					if (cla.getSuperclass() == Skill.class) {
-
-						l.add((Class<? extends Skill>) cla);
-						l1.add(cla.getSimpleName());
-					}
-
-		}
-		jar.close();
-		return l;
-	}
-
-	private static String isClass(String n) {
-
-		if (n.length() > 6)
-			if (n.substring(n.length() - 6, n.length()).equalsIgnoreCase(
-					".class")) {
-
-				return n.substring(0, n.length() - 6).replaceAll("/", ".");
-
-			}
-
-		return null;
-
-	}
 
 	public static void loadYml() {
 		if (cfg.get("AutoErrorReporting") != null)

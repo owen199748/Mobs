@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,6 +32,7 @@ import cn.rpgmc.mobs.utils.Send;
  */
 
 public abstract class Skill {
+	private Map<Mob, Long> skillRun = new HashMap<Mob, Long>();
 	private String sName = null;
 	private static ArrayList<Class<? extends Skill>> types = new ArrayList<Class<? extends Skill>>();
 	private static ArrayList<Skill> skills = new ArrayList<Skill>();
@@ -643,7 +646,27 @@ public abstract class Skill {
 
 	}
 
+	public void runSkillLater(Mob m, long time) {
+		skillRun.put(m, System.currentTimeMillis() + time);
+	}
 
+	public void skillRun() {
+		Object[] key = skillRun.keySet().toArray();
+for(int i=0;i<key.length;i++)
+			if (skillRun.get(key[i]) != null)
+	if(skillRun.get(key[i])<=System.currentTimeMillis())
+ {
+				((Mob) key[i]).runSkill(Skill.TRIGGER_CYCLE, null, null);
+				skillRun.remove(key[i]);
+			}
+
+	}
+
+	public static void skillRunAll() {
+		for (int i = 0; i < skills.size(); i++)
+			if (skills.get(i) != null)
+				skills.get(i).skillRun();
+	}
 
 	private List<Entity> getNearby(Entity e, String str) {
 		int i = 20;

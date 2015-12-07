@@ -13,6 +13,7 @@ import cn.rpgmc.mobs.utils.Send;
 
 public class Skill_Package extends Skill {
 	private ArrayList<String> skills;
+	private boolean isUnit;
 
 	public Skill_Package() {
 	}
@@ -32,26 +33,31 @@ public class Skill_Package extends Skill {
 
 	@Override
 	public String help() {
-		return "技能类型:技能包\n" + "技能介绍:同时执行多个技能,无视子技能冷却和几率.\n" + "指令:\n"
+		return "技能类型:技能包\n" + "技能介绍:同时执行多个技能(以本技能的触发方式和触发范围),无视子技能冷却和几率.\n"
+				+ "指令:\n"
 				+ "  /mobs skill modify skill add [技能名]  \n"
 				+ "  /mobs skill modify skill addtag [延迟]  \n"
 				+ "  /mobs skill modify skill del [列表序号] \n"
-				+ "  /mobs skill modify skill list \n";
+				+ "  /mobs skill modify skill list \n"
+				+ "  /mobs skill modify unit [true/false] 设置技能是否每次单独获取释放范围 \n";
 	}
 
 	@Override
 	protected void skillNext(ConfigurationSection cfg) {
 		this.skills = (ArrayList<String>) cfg.getList("skills");
+		this.isUnit = cfg.getBoolean("isUnit");
 	}
 
 	@Override
 	protected void newSkillNext() {
 		this.skills = new ArrayList<String>();
+		this.isUnit = false;
 	}
 
 	@Override
 	protected void saveNext() {
 		getCfg().set("skills", this.skills);
+		getCfg().set("isUnit", this.isUnit);
 
 	}
 
@@ -64,7 +70,7 @@ public class Skill_Package extends Skill {
 				str += "  " + skills.get(i) + "\n";
 			}
 
-		return str;
+		return str + "  是否单独获取释放范围:" + isUnit;
 	}
 
 	@Override
@@ -119,6 +125,13 @@ public class Skill_Package extends Skill {
 					}
 
 				}
+			} else if (args[0].equalsIgnoreCase("unit")) {
+				if (args.length == 2) {
+					isUnit = Boolean.parseBoolean(args[1]);
+					return true;
+				} else
+					return false;
+
 			}
 
 		return false;
@@ -126,6 +139,7 @@ public class Skill_Package extends Skill {
 
 	@Override
 	public void run(Mob mob, Entity entity, Event event) {
+		if (!isUnit)
 		for (int i = 0; i < skills.size(); i++) {
 			if (Skill.isSkill(skills.get(i)) == -1)
 				if (skills.get(i).startsWith("sleep:"))
@@ -143,7 +157,26 @@ public class Skill_Package extends Skill {
 
 			Skill sk = Skill.getSkill(skills.get(i));
 			sk.run(mob, entity, event);
-		}
+			}
+		else
+			for (int i = 0; i < skills.size(); i++) {
+				long rrr = System.currentTimeMillis();
+				if (Skill.isSkill(skills.get(i)) == -1)
+					if (skills.get(i).startsWith("sleep:"))
+						try {
+							rrr += Integer.parseInt(skills.get(i).replaceAll(
+									"sleep:", ""));
+							continue;
+						} catch (Exception e) {
+							// TODO 自动生成的 catch 块
+							e.printStackTrace();
+						}
+					else
+						continue;
+
+				Skill sk = Skill.getSkill(skills.get(i));
+				sk.runSkillLater(mob, rrr);
+			}
 
 	}
 

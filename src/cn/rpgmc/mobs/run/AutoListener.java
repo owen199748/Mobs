@@ -8,12 +8,16 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 import cn.rpgmc.mobs.bean.mob.Mob;
 import cn.rpgmc.mobs.bean.skill.Skill;
 import cn.rpgmc.mobs.bean.spawn.Spawn;
+import cn.rpgmc.mobs.thread.TitleShows;
 import cn.rpgmc.mobs.utils.Send;
 
 public class AutoListener implements Listener {
@@ -30,6 +34,22 @@ public class AutoListener implements Listener {
 
 	}
 
+	@EventHandler
+	public void ler(PlayerInteractEntityEvent e) {
+		if (Mob.getMob(e.getRightClicked().getEntityId()) != null)
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void ecc(ChunkUnloadEvent e) {
+		Entity[] es = e.getChunk().getEntities();
+		for (int i = 0; i < es.length; i++)
+			if (es[i].getMetadata("Mobs") != null
+					&& es[i].getMetadata("Mobs").size() != 0) {
+				e.setCancelled(true);
+				return;
+			}
+	}
 
 	@EventHandler
 	public void ete(EntityTargetEvent ete) {
@@ -97,6 +117,11 @@ public class AutoListener implements Listener {
 
 			}
 
+	}
+
+	@EventHandler
+	public void eceee(PlayerChangedWorldEvent e) {
+		TitleShows.close(e.getPlayer());
 	}
 
 	@EventHandler

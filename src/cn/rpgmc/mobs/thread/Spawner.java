@@ -15,7 +15,7 @@ import cn.rpgmc.mobs.bean.spawn.WorldSpawn;
 public class Spawner extends BukkitRunnable {
 	private long g = 0;
 	private long startTime = 0;
-	public static final int RUNS = 10;
+	public static final int RUNS = 20;
 
 	public Spawner() {
 
@@ -24,6 +24,7 @@ public class Spawner extends BukkitRunnable {
 
 	@Override
 	public void run() {
+
 		g++;
 		if (g % 10 == 0)
 			g = 0;
@@ -33,8 +34,10 @@ public class Spawner extends BukkitRunnable {
 			return;
 
 		if (g == 0)
+ {
 			lowSpawn(spawn);
-
+			Skill.skillRunAll();
+		}
 		long n = System.currentTimeMillis() - startTime;
 		if (spawn.getMobModel() == null)
 			return;
@@ -93,7 +96,6 @@ public class Spawner extends BukkitRunnable {
 		ArrayList<Mob> mobs = mob.getMobs();
 		for (int l = 0; l < mobs.size(); l++) {
 			Mob m = mobs.get(mobs.size() - (l + 1));
-
 			if (m.getE().isDead()) {
 				mobs.remove(mobs.size() - (l + 1));
 
@@ -104,7 +106,6 @@ public class Spawner extends BukkitRunnable {
 					pmob.test();
 				}
 
-				m.runSkill(Skill.TRIGGER_CYCLE, null, null);
 
 			}
 

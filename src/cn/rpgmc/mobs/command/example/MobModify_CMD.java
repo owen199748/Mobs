@@ -16,6 +16,8 @@ import cn.rpgmc.mobs.bean.skill.Skill;
 import cn.rpgmc.mobs.command.PluginCommand;
 import cn.rpgmc.mobs.run.Main;
 import cn.rpgmc.mobs.utils.Send;
+import cn.rpgmc.mobs.utils.mobtype.MobType;
+import cn.rpgmc.mobs.utils.potion.Potion;
 import cn.rpgmc.mobs.utils.rangeint.Damage;
 import cn.rpgmc.mobs.utils.rangeint.EXP;
 import cn.rpgmc.mobs.utils.rangeint.HP;
@@ -133,18 +135,19 @@ public class MobModify_CMD implements PluginCommand {
 			} else
 				return false;
 
-		} else if (args[0].equalsIgnoreCase("effect")) {
+		} else if (args[0].equalsIgnoreCase("potion")) {
 			if (args.length < 2)
 				return false;
 			if (args[1].equalsIgnoreCase("set")) {
 				if (args.length < 4)
 					return false;
 
-				if (PotionEffectType.getByName(args[2]) == null) {
+				if (Potion.fromCh(args[2]) == null
+						|| PotionEffectType.getByName(Potion.fromCh(args[2])) == null) {
 					Send.sendPluginMessage(p, "该药水类型不存在.");
 					return true;
 				} else {
-					Main.getsMobModel().addPotionEffect(args[2],
+					Main.getsMobModel().addPotion(args[2],
 							Integer.parseInt(args[3]));
 
 				}
@@ -152,25 +155,25 @@ public class MobModify_CMD implements PluginCommand {
 			} else if (args[1].equalsIgnoreCase("del")) {
 				if (args.length < 3)
 					return false;
-				if (Main.getsMobModel().delPotionEffect(args[2]) == false) {
+				if (Main.getsMobModel().delPotion(args[2]) == false) {
 					Send.sendPluginMessage(p, "该药水状态不存在.");
 					return true;
 				}
 
 			} else if (args[1].equalsIgnoreCase("list")) {
 				String str = "药水效果列表:";
-				for (int i = 0; i < Main.getsMobModel().getPotionEffectList()
+				for (int i = 0; i < Main.getsMobModel().getPotionList()
 						.size(); i++) {
 					if (i != 0)
 						str += ",";
 
-					str += (String) Main.getsMobModel().getPotionEffectList()
+					str += (String) Main.getsMobModel().getPotionList()
 							.toArray()[i]
 							+ ":"
 							+ Main.getsMobModel()
-									.getPotionEffectLv(
+.getPotionLv(
 											(String) Main.getsMobModel()
-													.getPotionEffectList()
+											.getPotionList()
 													.toArray()[i]) + "级";
 				}
 				Send.sendPluginMessage(p, str);
@@ -311,9 +314,22 @@ public class MobModify_CMD implements PluginCommand {
 
 		} else if (args[0].equalsIgnoreCase("type")) {
 			if (args.length != 2)
+				if (args.length != 3)
 				return false;
-			if (EntityType.fromName(args[1]) != null)
-			mm.setType(EntityType.fromName(args[1]));
+			if (MobType.fromName(args[1]) != null)
+
+			{
+				MobType t = MobType.fromName(args[1]);
+				if (args.length == 3)
+					if (!t.canSize()) {
+						Send.sendPluginMessage(p, "这个生物类型不支持设置大小");
+						return true;
+					} else {
+						mm.setType(t, Integer.parseInt(args[2]));
+					}
+				if (args.length == 2)
+					mm.setType(t);
+			}
 			else {
 				Send.sendPluginMessage(p, "请输入正确的生物类型");
 				return true;

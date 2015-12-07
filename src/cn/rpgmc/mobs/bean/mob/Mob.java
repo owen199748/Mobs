@@ -6,12 +6,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import cn.rpgmc.mobs.bean.skill.Skill;
 import cn.rpgmc.mobs.bean.spawn.PointSpawn;
@@ -20,6 +22,7 @@ import cn.rpgmc.mobs.bean.spawn.WorldSpawn;
 import cn.rpgmc.mobs.run.Main;
 import cn.rpgmc.mobs.thread.TitleShows;
 import cn.rpgmc.mobs.utils.StringEncrypt;
+import cn.rpgmc.mobs.utils.mobtype.MobType;
 
 
 public class Mob {
@@ -36,6 +39,7 @@ public class Mob {
 	private String rider = null;
 	private Object spawner = null;
 	private Boolean noRepel = false;
+	private MobType type;
 
 	public Boolean isNoRepel() {
 		return noRepel;
@@ -159,19 +163,19 @@ public class Mob {
 			ArrayList<ItemStack> drop,
 			ArrayList<Skill> skills, int exp, boolean isAttrCover,
  BossName bossName, String sName, String rider,
-			Boolean noRepel) {
+			Boolean noRepel, MobType type) {
 		this(spawnOf, StringEncrypt
 				.getBase64(Math.random() + "/" + System.currentTimeMillis()
 						+ "/" + e.getLocation().toString()), dmg, e, drop,
-				skills, exp, isAttrCover, bossName, sName, rider, noRepel);
+				skills, exp, isAttrCover, bossName, sName, rider, noRepel, type);
 
 	}
 
 	public Mob(Object spawnOf, String id, int dmg, LivingEntity e,
 			ArrayList<ItemStack> drop, ArrayList<Skill> skills, int exp,
 			boolean isAttrCover, BossName bossName, String sName, String rider,
-			Boolean noRepel) {
-
+			Boolean noRepel, MobType type) {
+		this.type = type;
 		HashMap<Skill, Long> h = new HashMap<Skill, Long>();
 		for (int i = 0; i < skills.size(); i++)
 			h.put(skills.get(i), new Long(0));
@@ -200,6 +204,7 @@ public class Mob {
 		this.isAttrCover = isAttrCover;
 		this.bossName = bossName;
 		this.id = id;
+		e.setMetadata("Mobs", new FixedMetadataValue(Main.getMain(), id));
 		this.noRepel = noRepel;
 		mobs.add(this);
 
@@ -224,7 +229,21 @@ public class Mob {
 			mobs.get(i).getE().remove();
 		}
 		mobs.clear();
-	}
+		List<Entity> rm = new ArrayList<Entity>();
+		for (int l = 0; l < Bukkit.getWorlds().size(); l++)
+			for (int i = 0; i < Bukkit.getWorlds().get(l).getEntities().size(); i++) {
+				Entity es = Bukkit.getWorlds().get(l).getEntities().get(i);
+				if (es.getMetadata("Mobs") != null
+						&& es.getMetadata("Mobs").size() != 0)
+					rm.add(es);
+			}
+		
+		for (int i = 0; i < rm.size(); i++)
+			rm.get(i).remove();
+			
+			}
+
+
 
 	public long getBeCooling(Skill skill) {
 		if (skills.get(skill) != null)
@@ -283,6 +302,9 @@ public class Mob {
 
 	}
 
+	public MobType getType() {
+		return type;
+	}
 	public static void saveAll() throws IOException {
 		Main.getMobYml().set("Mobs", null);
 		Main.getMobYml().createSection("Mobs");

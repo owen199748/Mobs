@@ -10,7 +10,6 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -18,6 +17,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import cn.rpgmc.mobs.bean.skill.Skill;
 import cn.rpgmc.mobs.run.Main;
+import cn.rpgmc.mobs.utils.mobtype.MobType;
+import cn.rpgmc.mobs.utils.mobtype.example.MobType_CanSize;
+import cn.rpgmc.mobs.utils.potion.Potion;
 import cn.rpgmc.mobs.utils.rangeint.Damage;
 import cn.rpgmc.mobs.utils.rangeint.EXP;
 import cn.rpgmc.mobs.utils.rangeint.HP;
@@ -33,17 +35,18 @@ public class MobModel {
 	private EXP exp = new EXP(0);
 	private Eqpt eqpt = new Eqpt();
 	private Damage dmg = new Damage(0);
-	private EntityType type = null;
+	private MobType type = null;
 	private Boolean isAttrCover = true;
 	private ArrayList<DropItemStack> drop = new ArrayList<DropItemStack>();
 	private Integer dropType = 0;
 	private Boolean noRepel = false;
 	private String rider = null;
-	private HashMap<String, Integer> potionEffect = new HashMap<String, Integer>();
+	private HashMap<String, Integer> potion = new HashMap<String, Integer>();
 	private SurvivalLimit survivalLimit = new SurvivalLimit();
 	private ConfigurationSection cfg = null;
 	private ArrayList<Skill> skills = new ArrayList<Skill>();
 	private ArrayList<Mob> mobs = new ArrayList<Mob>();
+	private int size;
 
 	static {
 		MAIN_CFG = Main.getCfg();
@@ -58,27 +61,27 @@ public class MobModel {
 		this.rider = rider;
 	}
 
-	public Set<String> getPotionEffectList() {
-		return potionEffect.keySet();
+	public Set<String> getPotionList() {
+		return potion.keySet();
 	}
 
-	public int getPotionEffectLv(String eff) {
-		if (potionEffect.get(eff) == null)
+	public int getPotionLv(String eff) {
+		if (potion.get(eff) == null)
 			return -1;
 
-		return potionEffect.get(eff);
+		return potion.get(eff);
 	}
 
-	public boolean delPotionEffect(String eff) {
-		if (potionEffect.get(eff) == null)
+	public boolean delPotion(String eff) {
+		if (potion.get(eff) == null)
 			return false;
 
-		potionEffect.remove(eff);
+		potion.remove(eff);
 		return true;
 	}
 
-	public void addPotionEffect(String eff, int lv) {
-		potionEffect.put(eff, lv);
+	public void addPotion(String eff, int lv) {
+		potion.put(eff, lv);
 	}
 
 	public MobModel() {
@@ -177,7 +180,8 @@ public class MobModel {
 		dmg.setMax(7);
 		exp.setMin(5);
 		exp.setMax(10);
-		type = EntityType.ZOMBIE;
+		size = 5;
+		type = MobType.fromName("僵尸");
 		dropType = 2;
 		bossName = new BossName();
 		cfg.createSection(sName);
@@ -203,7 +207,8 @@ public class MobModel {
 		dmg.setMax(cfg.getInt("dmg_max"));
 		exp.setMin(cfg.getInt("exp_min"));
 		exp.setMax(cfg.getInt("exp_max"));
-		type = EntityType.fromName((String) cfg.get("type"));
+		size = cfg.getInt("size");
+		type = MobType.fromName((String) cfg.get("type"));
 		dropType = cfg.getInt("dropType");
 		isAttrCover = cfg.getBoolean("isAttrCover");
 		rider = cfg.getString("rider");
@@ -211,7 +216,7 @@ public class MobModel {
 		ConfigurationSection effs = cfg.getConfigurationSection("potionEffect");
 		Set<String> effset = effs.getKeys(false);
 		for (int i = 0; i < effset.size(); i++)
-			potionEffect.put((String) effset.toArray()[i],
+			potion.put((String) effset.toArray()[i],
 					effs.getInt((String) effset.toArray()[i]));
 
 		ConfigurationSection dp = cfg.getConfigurationSection("drop");
@@ -306,7 +311,7 @@ public class MobModel {
 		this.hp = hp;
 	}
 
-	public void setType(EntityType type) {
+	public void setType(MobType type) {
 		this.type = type;
 	}
 
@@ -339,9 +344,10 @@ public class MobModel {
 		cfg.set("dmg_max", dmg.getMax());
 		cfg.set("exp_min", exp.getMin());
 		cfg.set("exp_max", exp.getMax());
+		cfg.set("size", size);
 		cfg.set("noRepel", noRepel);
 		if (type != null)
-		cfg.set("type", type.getName());
+			cfg.set("type", type.getName());
 		else
 			cfg.set("type", "Zombie");
 		cfg.set("dropType", dropType);
@@ -363,10 +369,10 @@ public class MobModel {
 		cfg.getConfigurationSection("eqpt").set("Hand", eqpt.getHand());
 		cfg.set("potionEffect", null);
 		cfg.createSection("potionEffect");
-		Object[] effc = potionEffect.keySet().toArray();
+		Object[] effc = potion.keySet().toArray();
 		for (int i = 0; i < effc.length; i++) {
 			cfg.getConfigurationSection("potionEffect").set((String) effc[i],
-					potionEffect.get(effc[i]));
+					potion.get(effc[i]));
 		}
 		cfg.createSection("drop");
 		for (int i = 0; i < drop.size(); i++) {
@@ -417,15 +423,21 @@ public class MobModel {
 		if (type == null)
 			return null;
 
-		LivingEntity e = (LivingEntity) loc.getWorld().spawnEntity(loc, type);
-		Object[] pea = potionEffect.keySet().toArray();
+		LivingEntity e = null;
+		if (type instanceof MobType_CanSize)
+			e = MobType.create(type, loc, size);
+		else
+			e = MobType.create(type, loc);
+		Object[] pea = potion.keySet().toArray();
 		for (int i = 0; i < pea.length; i++) {
-			if (PotionEffectType.getByName((String) pea[i]) == null)
+			if (PotionEffectType.getByName(Potion
+					.fromCh((String) pea[i])) == null)
 				continue;
 			e.addPotionEffect(
 					new PotionEffect(PotionEffectType
-							.getByName((String) pea[i]), Integer.MAX_VALUE,
-							potionEffect.get(pea[i]), true), false);
+.getByName(Potion
+							.fromCh((String) pea[i])), Integer.MAX_VALUE,
+							potion.get(pea[i]), true), false);
 		}
 		String ri = null;
 		if (isMobModel(rider) != -1) {
@@ -482,7 +494,7 @@ public class MobModel {
 
 		Mob m = new Mob(spawnOf, dmg.getInt(), e, isl, getSkills(),
 				exp.getInt(),
- isAttrCover, bossName, sName, ri, noRepel);
+ isAttrCover, bossName, sName, ri, noRepel, type);
 		if (m != null)
  {
 			mobs.add(m);
@@ -540,7 +552,7 @@ public class MobModel {
 		return sName;
 	}
 
-	public EntityType getType() {
+	public MobType getType() {
 		return type;
 	}
 
@@ -619,7 +631,7 @@ public class MobModel {
 		String s25 = "    是否开启:" + bossName.isEnable();
 		String s26 = "    显示内容:" + bossName.getValue();
 		String s27 = "    显示范围:" + bossName.getNearby();
-		String s28 = "自带药水属性:" + potionEffect.size() + "种";
+		String s28 = "自带药水属性:" + potion.size() + "种";
 
 		return s1 + "\n" + s1 + "\n" + s2 + "\n" + s3 + "\n" + s4 + "\n" + s5
 				+ "\n" + s6 + "\n" + s7 + "\n" + s8 + "\n" + s9 + "\n" + s10
@@ -643,6 +655,12 @@ public class MobModel {
 
 	public static void del(MobModel a) {
 		// TODO 自动生成的方法存根
+
+	}
+
+	public void setType(MobType t, int size) {
+		this.size = size;
+		setType(t);
 
 	}
 

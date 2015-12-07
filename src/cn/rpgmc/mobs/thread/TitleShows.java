@@ -39,8 +39,16 @@ public class TitleShows extends BukkitRunnable {
 				continue;
 			}
 
+			if (m.getBossName().getNearby() == 0
+					&& !m.getE().getWorld().getName()
+							.equals(p.getWorld().getName())) {
+				players.put(p, null);
+				setNull(p);
+				continue;
+			}
 
-			if (Math.abs(m.getE().getLocation()
+			if (m.getBossName().getNearby() > 0
+					&& Math.abs(m.getE().getLocation()
 					.distanceSquared(p.getLocation())) > m
 					.getBossName()
 							.getNearby())
@@ -61,7 +69,6 @@ public class TitleShows extends BukkitRunnable {
 
 	private void setNull(Player p) {
 		TitleAPI.sendActionBar(p, "");
-		// TODO 自动生成的方法存根
 
 	}
 
@@ -106,6 +113,12 @@ public class TitleShows extends BukkitRunnable {
 
 	public static void show(Player p, Mob m) {
 		players.put(p, m);
+
+	}
+
+	public static void close(Player p) {
+		players.put(p, null);
+		TitleAPI.sendActionBar(p, "");
 
 	}
 

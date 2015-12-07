@@ -15,6 +15,7 @@ import cn.rpgmc.mobs.bean.skill.Skill;
 import cn.rpgmc.mobs.bean.spawn.PointSpawn;
 import cn.rpgmc.mobs.bean.spawn.Spawn;
 import cn.rpgmc.mobs.bean.spawn.WorldSpawn;
+import cn.rpgmc.mobs.utils.mobtype.MobType;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -30,6 +31,8 @@ public class MobSave {
 
 	@JsonProperty
 	private LivingEntitySave e;
+	@JsonProperty
+	private String mobType;
 	@JsonProperty
 	private boolean isAttrCover = true;
 	@JsonProperty
@@ -56,7 +59,8 @@ public class MobSave {
 	private Boolean noRepel = false;
 
 	public MobSave(Mob mob) {
-		this.e = new LivingEntitySave((LivingEntity) mob.getE());
+		this.e = new LivingEntitySave((LivingEntity) mob.getE(), mob.getType());
+		this.mobType = mob.getType().getName();
 		this.isAttrCover = mob.isAttrCover();
 		this.dmg = mob.getDmg();
 		this.exp = mob.getExp();
@@ -115,8 +119,10 @@ public class MobSave {
 			}
 		}
 
+
 		Mob m = new Mob(spawn, id, dmg, e.news(), drop, asSkills(skills), exp,
-				isAttrCover, bossName, sName, rider, noRepel);
+				isAttrCover, bossName, sName, rider, noRepel,
+				MobType.fromName(mobType));
 
 		MobModel.getMobModel(sName).addMob(m);
 		return m;

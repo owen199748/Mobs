@@ -11,10 +11,11 @@ public class Send {
 
 public static void sendConsole(String s){
 		Bukkit.getConsoleSender().sendMessage(
-				"¡ìe[" + Main.getMain().getName() + "] ¡ìb" + s);
+				"¡ìe[" + Main.getMain().getName() + "] ¡ìb"
+						+ s.replaceAll("&", "¡ì"));
 }
 public static void sendPluginMessage(Player p,String s){
-		p.sendMessage("¡ìc¡ìl[Mobs]¡ìf" + s);
+		p.sendMessage("¡ìc¡ìl[Mobs]¡ìf" + s.replaceAll("&", "¡ì"));
 }
 
 }

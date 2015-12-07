@@ -2,12 +2,13 @@ package cn.rpgmc.mobs.command.example;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
@@ -19,6 +20,8 @@ import cn.rpgmc.mobs.bean.spawn.WorldSpawn;
 import cn.rpgmc.mobs.command.PluginCommand;
 import cn.rpgmc.mobs.run.Main;
 import cn.rpgmc.mobs.utils.Send;
+import cn.rpgmc.mobs.utils.mobtype.MobType;
+import cn.rpgmc.mobs.utils.potion.Potion;
 
 import com.google.common.io.Files;
 
@@ -138,26 +141,33 @@ public class Main_CMD implements PluginCommand {
 				Send.sendPluginMessage(p, s1);
 				Send.sendPluginMessage(p, s2);
 				return true;
-			} else if (args[0].equalsIgnoreCase("listPotionEffectType")) {
+			} else if (args[0].equalsIgnoreCase("PotionType")) {
 				String str = "支持的药水类型:";
 				for (int i = 0; i < PotionEffectType.values().length; i++) {
-					if (PotionEffectType.values()[i] != null) {
+					if (PotionEffectType.values()[i] != null)
+						if (Potion.fromEn(PotionEffectType.values()[i]
+								.getName()) != null) {
 						if (i != 0)
 						str += ",";
 
-					str += PotionEffectType.values()[i].getName();
+							str += Potion.fromEn(PotionEffectType.values()[i]
+									.getName());
 				}
 				}
 				Send.sendPluginMessage(p, str);
 
 				return true;
-			} else if (args[0].equalsIgnoreCase("listEntityType")) {
+			} else if (args[0].equalsIgnoreCase("MobType")) {
 				String str = "支持的怪物类型:";
-				for (int i = 0; i < EntityType.values().length; i++) {
+				List<String> ll = new ArrayList<String>();
+				for (int i = 0; i < MobType.values().length; i++)
+					ll.add(MobType.values()[i].getName());
+
+				Collections.sort(ll);
+				for (int i = 0; i < ll.size(); i++) {
 					if (i != 0)
 						str += ",";
-
-					str += EntityType.values()[i].name();
+					str += ll.get(i);
 				}
 				Send.sendPluginMessage(p, str);
 

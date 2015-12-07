@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import cn.rpgmc.mobs.bean.mob.Mob;
+import cn.rpgmc.mobs.bean.skill.Skill;
 import cn.rpgmc.mobs.utils.Send;
 
 public class Manager extends BukkitRunnable {
@@ -18,6 +19,7 @@ public class Manager extends BukkitRunnable {
 	private long startTime = 0;
 	private long g = 0;
 	private long g1 = 0;
+	private long g2 = 0;
 	public static final int RUNS = 10;
 
 	public Manager() {
@@ -36,6 +38,27 @@ public class Manager extends BukkitRunnable {
 
 		if (g1 == 0)
 			low1();
+
+		g2++;
+		if (g2 % 100 == 0)
+			g2 = 0;
+
+		if (g2 == 0)
+			low2();
+
+	}
+
+	private void low2() {
+		ArrayList<Mob> ms = Mob.getMobs();
+		for (int i = 0; i < ms.size(); i++) {
+			Mob m = ms.get(i);
+			if (m == null)
+				continue;
+			if (m.getE().isDead())
+				continue;
+
+			m.runSkill(Skill.TRIGGER_CYCLE, null, null);
+		}
 
 	}
 
@@ -57,6 +80,9 @@ public class Manager extends BukkitRunnable {
 				continue;
 			if (m.getE().isDead())
 				continue;
+
+			// m.runSkill(Skill.TRIGGER_CYCLE, null, null);
+
 			if(!m.getBossName().isEnable())
 				continue;
 			
