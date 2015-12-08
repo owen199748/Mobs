@@ -76,7 +76,11 @@ public abstract class Skill_CoolSpawn extends Skill {
 		return false;
 	}
 
-	@Override
+	public void run(Mob mob, Entity[] es, Event event) {
+		for (int i = 0; i < es.length; i++)
+			this.run(mob, es[i], event);
+	}
+
 	public void run(Mob mob, Entity entity, Event event) {
 		if (entity instanceof Player)
 			((Player) entity).sendMessage(msg

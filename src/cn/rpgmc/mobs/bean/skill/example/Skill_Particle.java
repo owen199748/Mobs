@@ -170,8 +170,11 @@ public class Skill_Particle extends Skill {
 		return true;
 	}
 
+	public void run(Mob mob, Entity[] es, Event event) {
+		for (int i = 0; i < es.length; i++)
+			this.run(mob, es[i], event);
+	}
 
-	@Override
 	public void run(Mob mob, Entity e, Event event) {
 		ParticleEffect par = ParticleEffect.fromName(Ptype);
 		if (par == null)

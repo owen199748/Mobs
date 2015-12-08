@@ -73,6 +73,9 @@ public class Mob {
 
 	}
 
+	public void runSkillAuto(Skill skill) {
+		skill.runSkill(this, new ArrayList<Entity>(), null);
+	}
 	public void runSkill(String target, Entity t, Event event) {
 		if (skills == null)
 			return;
@@ -367,6 +370,7 @@ public class Mob {
 		return false;
 
 					}
+
 
 
 

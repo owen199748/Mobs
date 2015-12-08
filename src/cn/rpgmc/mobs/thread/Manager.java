@@ -32,6 +32,8 @@ public class Manager extends BukkitRunnable {
 
 		low();
 
+		Skill.skillRunAll();
+
 		g1++;
 		if (g1 % (60 * 2) == 0)
 			g1 = 0;
@@ -39,12 +41,7 @@ public class Manager extends BukkitRunnable {
 		if (g1 == 0)
 			low1();
 
-		g2++;
-		if (g2 % 100 == 0)
-			g2 = 0;
-
-		if (g2 == 0)
-			low2();
+		low2();
 
 	}
 

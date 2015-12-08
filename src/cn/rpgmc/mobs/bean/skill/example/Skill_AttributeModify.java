@@ -2,7 +2,6 @@ package cn.rpgmc.mobs.bean.skill.example;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -77,13 +76,8 @@ public abstract class Skill_AttributeModify extends Skill {
 	}
 
 	@Override
-	public void run(Mob mob, Entity entity, Event event) {
-		if (entity instanceof Player)
-			((Player) entity).sendMessage(msg
-					.replaceAll("%a%",
-							((LivingEntity) mob.getE()).getCustomName())
-					.replaceAll("%b%", ((Player) entity).getDisplayName())
-					.replaceAll("&", "¡ì"));
+	public void run(Mob mob, Entity[] entity, Event event) {
+
 	}
 
 }

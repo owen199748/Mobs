@@ -12,7 +12,7 @@ import cn.rpgmc.mobs.bean.skill.Skill;
 import cn.rpgmc.mobs.utils.Send;
 
 public class Skill_Package extends Skill {
-	private ArrayList<String> skills;
+	private ArrayList<String> runskills;
 	private boolean isUnit;
 
 	public Skill_Package() {
@@ -44,19 +44,19 @@ public class Skill_Package extends Skill {
 
 	@Override
 	protected void skillNext(ConfigurationSection cfg) {
-		this.skills = (ArrayList<String>) cfg.getList("skills");
+		this.runskills = (ArrayList<String>) cfg.getList("skills");
 		this.isUnit = cfg.getBoolean("isUnit");
 	}
 
 	@Override
 	protected void newSkillNext() {
-		this.skills = new ArrayList<String>();
+		this.runskills = new ArrayList<String>();
 		this.isUnit = false;
 	}
 
 	@Override
 	protected void saveNext() {
-		getCfg().set("skills", this.skills);
+		getCfg().set("skills", this.runskills);
 		getCfg().set("isUnit", this.isUnit);
 
 	}
@@ -65,9 +65,9 @@ public class Skill_Package extends Skill {
 	public String seeNext() {
 
 		String str = "  技能列表:\n";
-		if (skills != null)
-			for (int i = 0; i < skills.size(); i++) {
-				str += "  " + skills.get(i) + "\n";
+		if (runskills != null)
+			for (int i = 0; i < runskills.size(); i++) {
+				str += "  " + runskills.get(i) + "\n";
 			}
 
 		return str + "  是否单独获取释放范围:" + isUnit;
@@ -86,14 +86,14 @@ public class Skill_Package extends Skill {
 				if (args[1].equalsIgnoreCase("del")) {
 
 					if (args.length == 3) {
-						skills.remove(Integer.parseInt(args[2]));
+						runskills.remove(Integer.parseInt(args[2]));
 						return true;
 					}
 				} else if (args[1].equalsIgnoreCase("add")) {
 
 					if (args.length == 3) {
 						if (Skill.isSkill(args[2]) != -1)
-							skills.add(args[2]);
+							runskills.add(args[2]);
 						else
 							Send.sendPluginMessage(p, "该技能不存在.");
 						return true;
@@ -103,7 +103,7 @@ public class Skill_Package extends Skill {
 
 					if (args.length == 3) {
 						try {
-							skills.add("sleep:" + Integer.parseInt(args[2]));
+							runskills.add("sleep:" + Integer.parseInt(args[2]));
 						} catch (NumberFormatException eee) {
 							Send.sendPluginMessage(p, "请输入一个整数作为延迟添加.");
 						}
@@ -113,12 +113,12 @@ public class Skill_Package extends Skill {
 				} else if (args[1].equalsIgnoreCase("list")) {
 					if (args.length == 2) {
 						String str = "技能顺序列表:";
-						if (skills != null)
-							for (int i = 0; i < skills.size(); i++) {
+						if (runskills != null)
+							for (int i = 0; i < runskills.size(); i++) {
 								if (i != 0)
 									str += ",";
 
-								str += i + ":" + skills.get(i);
+								str += i + ":" + runskills.get(i);
 							}
 						p.sendMessage(str);
 						return true;
@@ -137,14 +137,14 @@ public class Skill_Package extends Skill {
 		return false;
 	}
 
-	@Override
-	public void run(Mob mob, Entity entity, Event event) {
+	public void run(Mob mob, Entity[] es, Event event) {
 		if (!isUnit)
-		for (int i = 0; i < skills.size(); i++) {
-			if (Skill.isSkill(skills.get(i)) == -1)
-				if (skills.get(i).startsWith("sleep:"))
+			for (int i = 0; i < runskills.size(); i++) {
+				if (Skill.isSkill(runskills.get(i)) == -1)
+					if (runskills.get(i).startsWith("sleep:"))
 					try {
-						Thread.sleep(Integer.parseInt(skills.get(i).replaceAll(
+							Thread.sleep(Integer.parseInt(runskills.get(i)
+									.replaceAll(
 								"sleep:", "")));
 						continue;
 					} catch (Exception e) {
@@ -155,28 +155,35 @@ public class Skill_Package extends Skill {
 				continue;
 
 
-			Skill sk = Skill.getSkill(skills.get(i));
-			sk.run(mob, entity, event);
+				Skill sk = Skill.getSkill(runskills.get(i));
+				sk.run(mob, es, event);
 			}
 		else
-			for (int i = 0; i < skills.size(); i++) {
-				long rrr = System.currentTimeMillis();
-				if (Skill.isSkill(skills.get(i)) == -1)
-					if (skills.get(i).startsWith("sleep:"))
+ {
+			long rrr = 0;
+			for (int i = 0; i < runskills.size(); i++) {
+				if (Skill.isSkill(runskills.get(i)) == -1)
+					if (runskills.get(i).startsWith("sleep:"))
+ {
 						try {
-							rrr += Integer.parseInt(skills.get(i).replaceAll(
+							rrr += Integer.parseInt(runskills.get(i)
+									.replaceAll(
 									"sleep:", ""));
 							continue;
 						} catch (Exception e) {
-							// TODO 自动生成的 catch 块
 							e.printStackTrace();
 						}
-					else
+					} else
 						continue;
 
-				Skill sk = Skill.getSkill(skills.get(i));
+
+				Skill sk = Skill.getSkill(runskills.get(i));
 				sk.runSkillLater(mob, rrr);
 			}
+		}
+	}
+
+	public void run(Mob mob, Entity entity, Event event) {
 
 	}
 

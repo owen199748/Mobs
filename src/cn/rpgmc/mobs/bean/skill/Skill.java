@@ -210,7 +210,8 @@ public abstract class Skill {
 			if (!range.equalsIgnoreCase(RANGE_TARGET))
 				if (!range.equalsIgnoreCase(RANGE_CHUNK))
 					if (!range.equalsIgnoreCase(RANGE_PLAYER))
-					if (!range.startsWith(RANGE_NEARBY))
+						if (!range.toUpperCase().startsWith(
+								RANGE_NEARBY.toUpperCase()))
 					return false;
 		return true;
 	}
@@ -223,6 +224,12 @@ public abstract class Skill {
 			if (args.length != 3)
 				return false;
 			setChance(Double.parseDouble(args[2]));
+
+		} else if (args[1].equalsIgnoreCase("del")) {
+			if (args.length != 2)
+				return false;
+			this.remove();
+			Main.setsSkill(null);
 
 		} else if (args[1].equalsIgnoreCase("cooling")) {
 			if (args.length != 3)
@@ -242,7 +249,7 @@ public abstract class Skill {
 				return true;
 			}
 
-			setTrigger(args[2]);
+			setTrigger(args[2].toUpperCase());
 
 		} else if (args[1].equalsIgnoreCase("range")) {
 			if (args.length != 3)
@@ -258,7 +265,7 @@ public abstract class Skill {
 				return true;
 			}
 
-			setRange(args[2]);
+			setRange(args[2].toUpperCase());
 
 		} else if (args[1].equalsIgnoreCase("enemys")) {
 			if (args.length < 3)
@@ -267,7 +274,7 @@ public abstract class Skill {
 			if (args[2].equalsIgnoreCase("add")) {
 				if (args.length != 4)
 					return false;
-				enemys.add(args[3]);
+				enemys.add(args[3].toUpperCase());
 
 			} else if (args[2].equalsIgnoreCase("del")) {
 				if (args.length != 4)
@@ -322,6 +329,17 @@ public abstract class Skill {
 
 	}
 
+	public boolean remove() {
+		
+		if (!getSkills().remove(this))
+			return false;
+		ConfigurationSection m = Main.getCfg().getConfigurationSection("Skill");
+		if (m == null)
+			return true;
+		m.set(this.getsName(), null);
+		return true;
+	}
+
 	/**
 	 * 技能实例独有的命令
 	 * 
@@ -332,7 +350,7 @@ public abstract class Skill {
 	 * 执行技能实例
 	 * 
 	 */
-	public abstract void run(Mob mob, Entity entity, Event event);
+	public abstract void run(Mob mob, Entity[] es, Event event);
 
 	/**
 	 * 返回技能实例属性
@@ -447,7 +465,8 @@ public abstract class Skill {
 				+ "    /mobs skill modify enemys add PLAYER (该技能可以作用于所有玩家)"
 				+ "    /mobs skill modify enemys add ZOMBIE (该技能可以作用于所有僵尸)"
 				+ "    /mobs skill modify enemys add ALL (该技能可以作用于所有生物)"
-				+ "    /mobs skill modify enemys add ME (该技能可以作用于自己)";
+				+ "    /mobs skill modify enemys add ME (该技能可以作用于自己)"
+				+ "  /mobs skill modify del 删除当前技能";
 
 	}
 
@@ -647,8 +666,9 @@ public abstract class Skill {
 	}
 
 	public void runSkillLater(Mob m, long time) {
-		skillRun.put(m, System.currentTimeMillis() + time);
+		skillRun.put(m, (System.currentTimeMillis() + time));
 	}
+
 
 	public void skillRun() {
 		Object[] key = skillRun.keySet().toArray();
@@ -656,7 +676,9 @@ for(int i=0;i<key.length;i++)
 			if (skillRun.get(key[i]) != null)
 	if(skillRun.get(key[i])<=System.currentTimeMillis())
  {
-				((Mob) key[i]).runSkill(Skill.TRIGGER_CYCLE, null, null);
+
+
+					((Mob) key[i]).runSkillAuto(this);
 				skillRun.remove(key[i]);
 			}
 
@@ -706,18 +728,21 @@ for(int i=0;i<key.length;i++)
 			long time = System.currentTimeMillis();
 			if (time - mob.getBeCooling(this) > cooling * 50) {
 				mob.setBeCooling(this, System.currentTimeMillis());
-
+				List<Entity> ls = new ArrayList<Entity>();
 				for (int i = 0; i < e.size(); i++) {
 					if (!isEnemy("ALL")) {
 						if (e.get(i) != null)
 						if (isEnemy(e.get(i).getType().name()))
-								this.run(mob, e.get(i), event);
+								ls.add(e.get(i));
 					} else
-						this.run(mob, e.get(i), event);
+						ls.add(e.get(i));
 
 				}
 				if (isEnemy("ME"))
-					this.run(mob, mob.getE(), event);
+					ls.add(mob.getE());
+
+				this.run(mob, (Entity[]) ls.toArray(new Entity[ls.size()]),
+						event);
 
 			}
 

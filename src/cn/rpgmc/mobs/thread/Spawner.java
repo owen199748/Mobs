@@ -7,7 +7,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import cn.rpgmc.mobs.bean.mob.DropItemStack;
 import cn.rpgmc.mobs.bean.mob.Mob;
-import cn.rpgmc.mobs.bean.skill.Skill;
 import cn.rpgmc.mobs.bean.spawn.PointSpawn;
 import cn.rpgmc.mobs.bean.spawn.Spawn;
 import cn.rpgmc.mobs.bean.spawn.WorldSpawn;
@@ -34,10 +33,8 @@ public class Spawner extends BukkitRunnable {
 			return;
 
 		if (g == 0)
- {
 			lowSpawn(spawn);
-			Skill.skillRunAll();
-		}
+
 		long n = System.currentTimeMillis() - startTime;
 		if (spawn.getMobModel() == null)
 			return;

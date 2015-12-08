@@ -106,7 +106,11 @@ public class Skill_Teleport extends Skill {
 		return false;
 	}
 
-	@Override
+	public void run(Mob mob, Entity[] es, Event event) {
+		for (int i = 0; i < es.length; i++)
+			this.run(mob, es[i], event);
+	}
+
 	public void run(Mob mob, Entity entity, Event event) {
 		World w = Bukkit.getWorld(world.replaceAll("%w%", entity.getWorld()
 				.getName()));
