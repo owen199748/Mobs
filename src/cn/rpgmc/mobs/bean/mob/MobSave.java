@@ -57,7 +57,8 @@ public class MobSave {
 	private String spawnType = Spawn.POINTMOBCREATE;
 	@JsonProperty
 	private Boolean noRepel = false;
-
+	@JsonProperty
+	private Boolean noNatureDamage = false;
 	public MobSave(Mob mob) {
 		this.e = new LivingEntitySave((LivingEntity) mob.getE(), mob.getType());
 		this.mobType = mob.getType().getName();
@@ -73,6 +74,7 @@ public class MobSave {
 		this.sName = mob.getsName();
 		this.id = mob.getId();
 		this.rider = mob.getRider();
+		this.noNatureDamage = mob.isNoNatureDamage();
 		this.noRepel = mob.isNoRepel();
 		if (mob.getSpawner() instanceof Spawn) {
 			spawner = ((Spawn) mob.getSpawner()).getcName();
@@ -122,7 +124,7 @@ public class MobSave {
 
 		Mob m = new Mob(spawn, id, dmg, e.news(), drop, asSkills(skills), exp,
 				isAttrCover, bossName, sName, rider, noRepel,
-				MobType.fromName(mobType));
+				MobType.fromName(mobType), noNatureDamage);
 
 		MobModel.getMobModel(sName).addMob(m);
 		return m;

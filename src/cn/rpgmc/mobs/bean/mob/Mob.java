@@ -40,6 +40,12 @@ public class Mob {
 	private Object spawner = null;
 	private Boolean noRepel = false;
 	private MobType type;
+	private boolean noNatureDamage = false;
+
+
+	public boolean isNoNatureDamage() {
+		return noNatureDamage;
+	}
 
 	public Boolean isNoRepel() {
 		return noRepel;
@@ -166,18 +172,19 @@ public class Mob {
 			ArrayList<ItemStack> drop,
 			ArrayList<Skill> skills, int exp, boolean isAttrCover,
  BossName bossName, String sName, String rider,
-			Boolean noRepel, MobType type) {
+			Boolean noRepel, MobType type, Boolean noNatureDamage) {
 		this(spawnOf, StringEncrypt
 				.getBase64(Math.random() + "/" + System.currentTimeMillis()
 						+ "/" + e.getLocation().toString()), dmg, e, drop,
-				skills, exp, isAttrCover, bossName, sName, rider, noRepel, type);
+				skills, exp, isAttrCover, bossName, sName, rider, noRepel,
+				type, noNatureDamage);
 
 	}
 
 	public Mob(Object spawnOf, String id, int dmg, LivingEntity e,
 			ArrayList<ItemStack> drop, ArrayList<Skill> skills, int exp,
 			boolean isAttrCover, BossName bossName, String sName, String rider,
-			Boolean noRepel, MobType type) {
+			Boolean noRepel, MobType type, boolean noNatureDamage) {
 		this.type = type;
 		HashMap<Skill, Long> h = new HashMap<Skill, Long>();
 		for (int i = 0; i < skills.size(); i++)
@@ -206,6 +213,7 @@ public class Mob {
 		this.exp = exp;
 		this.isAttrCover = isAttrCover;
 		this.bossName = bossName;
+		this.noNatureDamage = noNatureDamage;
 		this.id = id;
 		e.setMetadata("Mobs", new FixedMetadataValue(Main.getMain(), id));
 		this.noRepel = noRepel;

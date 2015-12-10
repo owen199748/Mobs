@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -49,6 +50,32 @@ public class AutoListener implements Listener {
 				e.setCancelled(true);
 				return;
 			}
+	}
+
+	@EventHandler
+	public void e5(EntityDamageEvent e) {
+		if(Mob.getMob(e.getEntity().getEntityId())!=null)
+			if(Mob.getMob(e.getEntity().getEntityId()).isNoNatureDamage())
+			{
+				
+				
+				
+				if (e.getCause() != EntityDamageEvent.DamageCause.CONTACT)
+					if (e.getCause() != EntityDamageEvent.DamageCause.DROWNING)
+						if (e.getCause() != EntityDamageEvent.DamageCause.FALL)
+							if (e.getCause() != EntityDamageEvent.DamageCause.FALLING_BLOCK)
+								if (e.getCause() != EntityDamageEvent.DamageCause.FIRE)
+									if (e.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK)
+										if (e.getCause() != EntityDamageEvent.DamageCause.LAVA)
+											if (e.getCause() != EntityDamageEvent.DamageCause.LIGHTNING)
+												if (e.getCause() != EntityDamageEvent.DamageCause.MELTING)
+													if (e.getCause() != EntityDamageEvent.DamageCause.SUFFOCATION)
+														if (e.getCause() != EntityDamageEvent.DamageCause.VOID)
+															return;
+
+				e.setCancelled(true);
+			}
+
 	}
 
 	@EventHandler
@@ -179,7 +206,9 @@ public class AutoListener implements Listener {
 				ede.getDrops().clear();
 				ede.getDrops().addAll(m.getDrop());
 			}
+			
 
+	         
 			m.remove();
 		}
 

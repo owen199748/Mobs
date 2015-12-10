@@ -87,20 +87,20 @@ public class Skill_Message extends Skill {
 					.replaceAll("%a%",
 							((LivingEntity) mob.getE()).getCustomName())
 					.replaceAll("%b%", ((Player) entity).getDisplayName())
-							.replaceAll("x1",
+					.replaceAll("%x1%",
 									mob.getE().getLocation().getBlockX() + "")
-							.replaceAll("y1",
+					.replaceAll("%y1%",
 									mob.getE().getLocation().getBlockY() + "")
-							.replaceAll("z1",
+					.replaceAll("%z1%",
 									mob.getE().getLocation().getBlockZ() + "")
-							.replaceAll("w1", mob.getE().getWorld().getName())
-							.replaceAll("x2",
+					.replaceAll("%w1%", mob.getE().getWorld().getName())
+					.replaceAll("%x2%",
 									entity.getLocation().getBlockX() + "")
-							.replaceAll("y2",
+					.replaceAll("%y2%",
 									entity.getLocation().getBlockY() + "")
-							.replaceAll("z2",
+					.replaceAll("%z2%",
 									entity.getLocation().getBlockZ() + "")
-							.replaceAll("w2", entity.getWorld().getName())
+					.replaceAll("%w2%", entity.getWorld().getName())
 							.replaceAll("&", "¡ì"));
 
 	}

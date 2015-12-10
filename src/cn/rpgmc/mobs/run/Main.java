@@ -554,10 +554,16 @@ public class Main extends JavaPlugin {
 							+ sw.toString());
 					Send.sendPluginMessage(p, "§d插件异常:§c§l"
 							+ e.getClass().getName());
+
 					if (e instanceof IllegalArgumentException)
-						Send.sendPluginMessage(p, "§d异常原因:§c§l参数异常");
+						Send.sendPluginMessage(p,
+								"§d异常原因:§c§l参数异常(参数无法被转换为整数形)");
+					else if (e instanceof NullPointerException)
+						Send.sendPluginMessage(p,
+								"§d异常原因:§c§l空指针异常(目标参数不存在,有可能是因为手动配置有误或者配置版本有误)");
 					else
 						Send.sendPluginMessage(p, "§d异常原因:§c§l未知");
+
 					Send.sendPluginMessage(p, "§d详情查看控制台的错误信息.");
 					e.printStackTrace();
 					return true;

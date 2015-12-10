@@ -19,6 +19,7 @@ import cn.rpgmc.mobs.utils.Send;
 import cn.rpgmc.mobs.utils.mobtype.MobType;
 import cn.rpgmc.mobs.utils.potion.Potion;
 import cn.rpgmc.mobs.utils.rangeint.Damage;
+import cn.rpgmc.mobs.utils.rangeint.DropNum;
 import cn.rpgmc.mobs.utils.rangeint.EXP;
 import cn.rpgmc.mobs.utils.rangeint.HP;
 
@@ -58,15 +59,24 @@ public class MobModify_CMD implements PluginCommand {
 					return true;
 				}
 
-				if (args.length != 3) {
+				if (args.length != 3)
+					if (args.length != 4)
+						if (args.length != 5)
 					return false;
-				}
 				
 
-					
+
+				if (args.length == 3)
 					mm.addDrop(p.getItemInHand(), Integer.parseInt(args[2]) );
-
-				
+				if (args.length == 4)
+					mm.addDrop(p.getItemInHand(), Integer.parseInt(args[2]),
+							new DropNum(Integer.parseInt(args[3])));
+				if (args.length == 5)
+					mm.addDrop(
+							p.getItemInHand(),
+							Integer.parseInt(args[2]),
+							new DropNum(Integer.parseInt(args[3]), Integer
+									.parseInt(args[4])));
 
 			} else if (args[1].equalsIgnoreCase("list")) {
 
@@ -75,7 +85,11 @@ public class MobModify_CMD implements PluginCommand {
 				for (int i = 0; i < a.size(); i++) {
 					s += i + ":[类型-" + a.get(i).getItem().getType().name()
 							+ "|" + a.get(i).getI() + "%|"
-							+ a.get(i).getItem().getAmount() + "个]";
+							+ ((a.get(i).getDropSize() == null) ? a.get(i)
+									.getItem().getAmount() : a.get(i)
+									.getDropSize().getMin()
+									+ "~" + a.get(i).getDropSize().getMax())
+							+ "个]";
 					if (i != a.size() - 1) {
 						s += ",";
 					}
@@ -88,10 +102,10 @@ public class MobModify_CMD implements PluginCommand {
 				if (args.length != 3) {
 					return false;
 				}
-
-
-					
-				mm.addDrop(p.getItemInHand(), Integer.parseInt(args[2]));
+				if (!mm.delDrop(Integer.parseInt(args[2]))) {
+					Send.sendPluginMessage(p, "移除失败,可能是掉落物序号不存在!");
+					return true;
+				}
 				
 	
 				
@@ -271,6 +285,16 @@ public class MobModify_CMD implements PluginCommand {
 				mm.setNoRepel(true);
 			else if (args[1].equalsIgnoreCase("false"))
 				mm.setNoRepel(false);
+			else
+				return false;
+
+		} else if (args[0].equalsIgnoreCase("noNatureDamage")) {
+			if (args.length != 2)
+				return false;
+			if (args[1].equalsIgnoreCase("true"))
+				mm.setNoNatureDamage(true);
+			else if (args[1].equalsIgnoreCase("false"))
+				mm.setNoNatureDamage(false);
 			else
 				return false;
 

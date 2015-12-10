@@ -113,7 +113,7 @@ public class Help_CMD implements PluginCommand {
 		Send.sendPluginMessage(p, "&3  /Mobs mob killall 移除该怪物类型的所有实体");
 		Send.sendPluginMessage(p, "&3  /Mobs mob modify del 删除一个怪物");
 		Send.sendPluginMessage(p,
-				"&3  /Mobs mob modify drop [add/list/del] 增加掉落物和掉落几率");
+				"&3  /Mobs mob modify drop [add [几率] <最大数量> <最小数量>(不填数量默认为手持的堆叠数)/list/del [掉落物编号]] 增加掉落物和掉落几率");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs mob modify droptype [方式(All,Invalid,Random)] 设置掉落方式");
 		Send.sendPluginMessage(p, "&3  /Mobs mob modify name [Name] 设置名称");
@@ -124,18 +124,20 @@ public class Help_CMD implements PluginCommand {
 		Send.sendPluginMessage(p,
 				"&3  /Mobs mob modify noRepel [boolean] 设置是否不被击退");
 		Send.sendPluginMessage(p,
+				"&3  /Mobs mob modify noNatureDamage [boolean] 设置是否取消自然伤害(掉落,窒息等)");
+		Send.sendPluginMessage(p,
 				"&3  /Mobs mob modify damage [HighDamage] <LowDamage> 设置伤害");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs mob modify exp [HighEXP] <LowEXP> 设置死亡掉落的经验");
 		Send.sendPluginMessage(p, "&3  /Mobs mob modify type [Type] 设置怪物类型");
 		Send.sendPluginMessage(p,
-				"&3  /Mobs mob modify potion [set:([药水类型] [药水等级])/del/list] 增加怪物的永久药水状态");
+				"&3  /Mobs mob modify potion [set:([药水类型] [药水等级])/del [药水名称]/list] 增加怪物的永久药水状态");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs mob modify rider [sName] 让这个怪物附带一个驾驶者(其他的怪物模板)");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs mob modify eqpt 设置装备为当前穿戴的装备和手拿的武器");
 		Send.sendPluginMessage(p,
-				"&3  /Mobs mob modify skill [add/list/del] 增删查技能列表");
+				"&3  /Mobs mob modify skill [add/list/del [技能编号]] 增删查技能列表");
 		Send.sendPluginMessage(
 				p,
 				"&3  /Mobs mob modify sl [Day/Night/Sun/Rain/Thunder] [true/false] 设置怪物刷新对环境的需求");

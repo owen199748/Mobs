@@ -21,6 +21,7 @@ import cn.rpgmc.mobs.utils.mobtype.MobType;
 import cn.rpgmc.mobs.utils.mobtype.example.MobType_CanSize;
 import cn.rpgmc.mobs.utils.potion.Potion;
 import cn.rpgmc.mobs.utils.rangeint.Damage;
+import cn.rpgmc.mobs.utils.rangeint.DropNum;
 import cn.rpgmc.mobs.utils.rangeint.EXP;
 import cn.rpgmc.mobs.utils.rangeint.HP;
 
@@ -40,6 +41,7 @@ public class MobModel {
 	private ArrayList<DropItemStack> drop = new ArrayList<DropItemStack>();
 	private Integer dropType = 0;
 	private Boolean noRepel = false;
+	private Boolean noNatureDamage = false;
 	private String rider = null;
 	private HashMap<String, Integer> potion = new HashMap<String, Integer>();
 	private SurvivalLimit survivalLimit = new SurvivalLimit();
@@ -208,6 +210,7 @@ public class MobModel {
 		exp.setMin(cfg.getInt("exp_min"));
 		exp.setMax(cfg.getInt("exp_max"));
 		size = cfg.getInt("size");
+		noNatureDamage = cfg.getBoolean("noNatureDamage");
 		type = MobType.fromName((String) cfg.get("type"));
 		dropType = cfg.getInt("dropType");
 		isAttrCover = cfg.getBoolean("isAttrCover");
@@ -228,8 +231,24 @@ public class MobModel {
 				List<ItemStack> lst = (List<ItemStack>) dp.getList((String) ar
 						.toArray()[i]);
 				for (int l = 0; l < lst.size(); l++) {
-					drop.add(new DropItemStack(lst.get(l), Integer
-							.parseInt((String) ar.toArray()[i])));
+					String[] all = null;
+					if (((String) ar.toArray()[i]).indexOf("_") != -1)
+						all = ((String) ar.toArray()[i]).split("_");
+					else
+						all = new String[] { (String) ar.toArray()[i], "-1",
+								"-1" };
+
+if(all.length!=3)
+	continue;
+
+					int random =Integer.parseInt(all[0]);
+					int min=Integer.parseInt(all[1]);
+					int max=Integer.parseInt(all[2]);
+					if (min == max && min == -1)
+						drop.add(new DropItemStack(lst.get(l), random));
+					else
+						drop.add(new DropItemStack(lst.get(l), random,
+								new DropNum(max, min)));
 				}
 			}
 		}
@@ -329,6 +348,10 @@ public class MobModel {
 		this.noRepel = noRepel;
 	}
 
+	public void setNoNatureDamage(Boolean noNatureDamage) {
+		this.noNatureDamage = noNatureDamage;
+	}
+
 	public void save() throws IOException {
 		cfg.set("displayName", displayName);
 		cfg.createSection("bossName");
@@ -344,6 +367,7 @@ public class MobModel {
 		cfg.set("dmg_max", dmg.getMax());
 		cfg.set("exp_min", exp.getMin());
 		cfg.set("exp_max", exp.getMax());
+		cfg.set("noNatureDamage", noNatureDamage);
 		cfg.set("size", size);
 		cfg.set("noRepel", noRepel);
 		if (type != null)
@@ -383,7 +407,12 @@ public class MobModel {
 			}
 			// EntityType.ARROW
 			l.add(drop.get(i).getItem());
-			cfg.getConfigurationSection("drop").set(drop.get(i).getI() + "", l);
+			DropNum sz = drop.get(i).getDropSize();
+			cfg.getConfigurationSection("drop").set(
+					drop.get(i).getI()
+							+ "_"
+							+ ((sz == null) ? "-1_-1" : sz.getMin() + "_"
+									+ sz.getMax()), l);
 		}
 		ArrayList<String> skillStr = new ArrayList<String>();
 		for (int i = 0; i < skills.size(); i++) {
@@ -494,7 +523,8 @@ public class MobModel {
 
 		Mob m = new Mob(spawnOf, dmg.getInt(), e, isl, getSkills(),
 				exp.getInt(),
- isAttrCover, bossName, sName, ri, noRepel, type);
+ isAttrCover, bossName, sName, ri, noRepel, type,
+				noNatureDamage);
 		if (m != null)
  {
 			mobs.add(m);
@@ -661,6 +691,11 @@ public class MobModel {
 	public void setType(MobType t, int size) {
 		this.size = size;
 		setType(t);
+
+	}
+
+	public void addDrop(ItemStack item, int random, DropNum dn) {
+		this.drop.add(new DropItemStack(item, random, dn));
 
 	}
 
