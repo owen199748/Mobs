@@ -107,8 +107,19 @@ public class TitleShows extends BukkitRunnable {
 		}
 
 		return v.replaceAll("%bar%", str).replaceAll("%hp%",
-				Double.toString(e.getHealth()));
+				toDisHp(e.getHealth()));
 
+	}
+
+	private String toDisHp(double hp) {
+		int hp1 = (int) hp;
+		String low = ".0";
+		if (hp - hp1 > 0.75)
+			hp1++;
+		else if (hp - hp1 > 0.25)
+			low = ".5";
+
+		return hp1 + low;
 	}
 
 	public static void show(Player p, Mob m) {

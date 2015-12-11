@@ -1,6 +1,7 @@
 package cn.rpgmc.mobs.bean.spawn;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +18,9 @@ public class WorldSpawn extends Spawn {
 	private ArrayList<World> world = new ArrayList<World>();
 	private double chance = 0;
 	private int playerNearby = 0;
+	private int maxInChunk = -1;
+	private int maxInWorld = -1;
+	private int maxInServer = -1;
 
 	// TODO:增加公式计算属性增幅
 
@@ -32,6 +36,29 @@ public class WorldSpawn extends Spawn {
 		this.playerNearby = playerNearby;
 	}
 
+	public int getMaxInChunk() {
+		return maxInChunk;
+	}
+
+	public int getMaxInServer() {
+		return maxInServer;
+	}
+
+	public int getMaxInWorld() {
+		return maxInWorld;
+	}
+
+	public void setMaxInChunk(int maxInChunk) {
+		this.maxInChunk = maxInChunk;
+	}
+
+	public void setMaxInServer(int maxInServer) {
+		this.maxInServer = maxInServer;
+	}
+
+	public void setMaxInWorld(int maxInWorld) {
+		this.maxInWorld = maxInWorld;
+	}
 	public static int isWSpawn(String string) {
 		for (int i = 0; i < Wmobcreates.size(); i++) {
 			if (Wmobcreates.get(i).getcName().equalsIgnoreCase(string)) {
@@ -52,6 +79,9 @@ public class WorldSpawn extends Spawn {
 		chance = cfg.getDouble("chance");
 		playerNearby = cfg.getInt("playerNearby");
 		Wmobcreates.add(this);
+		maxInChunk = cfg.getInt("maxInChunk");
+		maxInWorld = cfg.getInt("maxInWorld");
+		maxInServer = cfg.getInt("maxInServer");
 	}
 
 	public WorldSpawn(String sName, ConfigurationSection cfg,
@@ -61,7 +91,9 @@ public class WorldSpawn extends Spawn {
 		chance = 5;
 		playerNearby = 16;
 		Wmobcreates.add(this);
-
+		maxInChunk = -1;
+		maxInWorld = -1;
+		maxInServer = -1;
 	}
 
 	@Override
@@ -73,7 +105,9 @@ public class WorldSpawn extends Spawn {
 		}
 		getCfg().set("world", worlds);
 		getCfg().set("PlayerNearby", playerNearby);
-
+		getCfg().set("maxInChunk", maxInChunk);
+		getCfg().set("maxInWorld", maxInWorld);
+		getCfg().set("maxInServer", maxInServer);
 		super.save();
 	}
 
@@ -169,17 +203,27 @@ public class WorldSpawn extends Spawn {
 	public Mob spawnMob(Location loc) {
 		if (getMobModel() == null)
 			return null;
+		if (getMobs().size() >= getMaxInServer())
+			return null;
+
+		List<Entity> es2 = loc.getWorld().getEntities();
+		int l = 0;
+		for (int i = 0; i < es2.size(); i++)
+			if (isSpawnMob(es2.get(i).getEntityId()))
+				l++;
+
+		if (l >= getMaxInWorld())
+			return null;
 
 		Entity[] es = loc.getChunk().getEntities();
-		int l = 0;
-		for (int i = 0; i < es.length; i++) {
-			if (getMobModel().isMob(es[i].getEntityId())) {
+		l = 0;
+		for (int i = 0; i < es.length; i++)
+			if (isSpawnMob(es[i].getEntityId()))
 				l++;
-			}
-		}
-		if (l >= getAll()) {
+
+		if (l >= getMaxInChunk())
 			return null;
-		} else
+
 			return super.spawnMob(loc);
 	}
 
@@ -188,12 +232,16 @@ public class WorldSpawn extends Spawn {
 
 		String s1 = "刷新几率:" + chance;
 		String s2 = "离玩家最远距离:" + playerNearby;
-		String s3 = "  刷新世界:";
+		String s3 = "区块内最多数量:" + maxInChunk;
+		String s4 = "世界内最多数量:" + maxInWorld;
+		String s5 = "服务器内最多数量:" + maxInServer;
+		String s6 = "  刷新世界:";
 		for (int i = 0; i < world.size(); i++) {
-			s3 += ("\n    " + world.get(i).getName());
+			s6 += ("\n    " + world.get(i).getName());
 		}
 
-		return getMainSee() + "\n" + s1 + "\n" + s2 + "\n" + s3;
+		return getMainSee() + "\n" + s1 + "\n" + s2 + "\n" + s3 + "\n" + s4
+				+ "\n" + s5 + "\n" + s6;
 	}
 
 	public static WorldSpawn getWorldSpawn(String spawner) {
@@ -202,6 +250,11 @@ public class WorldSpawn extends Spawn {
 				return Wmobcreates.get(i);
 
 		return null;
+	}
+
+	@Override
+	public int getSurplusQuantity() {
+		return 1;
 	}
 
 }

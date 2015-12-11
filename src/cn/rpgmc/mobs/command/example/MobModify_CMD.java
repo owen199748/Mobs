@@ -288,6 +288,16 @@ public class MobModify_CMD implements PluginCommand {
 			else
 				return false;
 
+		} else if (args[0].equalsIgnoreCase("autoSave")) {
+			if (args.length != 2)
+				return false;
+			if (args[1].equalsIgnoreCase("true"))
+				mm.setAutoSave(true);
+			else if (args[1].equalsIgnoreCase("false"))
+				mm.setAutoSave(false);
+			else
+				return false;
+
 		} else if (args[0].equalsIgnoreCase("noNatureDamage")) {
 			if (args.length != 2)
 				return false;

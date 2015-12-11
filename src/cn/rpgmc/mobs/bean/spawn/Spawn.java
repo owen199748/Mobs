@@ -27,7 +27,6 @@ public abstract class Spawn {
 	private String mm = null;
 	private int time = 0;
 	private long now = 0;
-	private int all = 0;
 	private static int THREADS;
 	private static int THREADS_INT = -1;
 	private long last = 0;
@@ -46,6 +45,14 @@ public abstract class Spawn {
 
 	public long getLast() {
 		return last;
+	}
+
+	public boolean isSpawnMob(int entityId) {
+		for (int i = 0; i < mobs.size(); i++)
+			if (mobs.get(i).getE().getEntityId() == entityId)
+				return true;
+
+		return false;
 	}
 
 	public static int getTHREADS() {
@@ -151,7 +158,7 @@ public abstract class Spawn {
 		now = 0;
 		mm = null;
 		time = 100;
-		all = 6;
+
 
 		cfg.createSection(sName);
 		this.cfg = cfg.getConfigurationSection(sName);
@@ -168,7 +175,6 @@ public abstract class Spawn {
 
 		this.cfg = cfg;
 		now = 0;
-		all = cfg.getInt("all");
 		cName = cfg.getName();
 		if (cfg.getString("MobModel") == null) {
 			mm = null;
@@ -242,17 +248,10 @@ public abstract class Spawn {
 		else
 			cfg.set("MobModel", mm);
 		cfg.set("time", time);
-		cfg.set("all", all);
 
 	}
 
-	public int getAll() {
-		return all;
-	}
 
-	public void setAll(int all) {
-		this.all = all;
-	}
 
 	public ConfigurationSection getCfg() {
 		return cfg;
@@ -278,8 +277,7 @@ public abstract class Spawn {
 		else
 			s3 = "怪物模板:" + mm;
 		String s4 = "刷新间隔:" + time;
-		String s5 = "最大数量:" + all;
-		return s1 + "\n" + s2 + "\n" + s3 + "\n" + s4 + "\n" + s5;
+		return s1 + "\n" + s2 + "\n" + s3 + "\n" + s4;
 	}
 
 	public void addMob(Mob mob) {
@@ -287,6 +285,7 @@ public abstract class Spawn {
 
 	}
 
+	public abstract int getSurplusQuantity();
 	public void addElseMob(Mob m) {
 		elseMobs.add(m);
 	}

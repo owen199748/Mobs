@@ -42,6 +42,7 @@ public class MobModel {
 	private Integer dropType = 0;
 	private Boolean noRepel = false;
 	private Boolean noNatureDamage = false;
+	private Boolean autoSave = true;
 	private String rider = null;
 	private HashMap<String, Integer> potion = new HashMap<String, Integer>();
 	private SurvivalLimit survivalLimit = new SurvivalLimit();
@@ -216,6 +217,7 @@ public class MobModel {
 		isAttrCover = cfg.getBoolean("isAttrCover");
 		rider = cfg.getString("rider");
 		noRepel = cfg.getBoolean("noRepel");
+		autoSave = cfg.getBoolean("autoSave");
 		ConfigurationSection effs = cfg.getConfigurationSection("potionEffect");
 		Set<String> effset = effs.getKeys(false);
 		for (int i = 0; i < effset.size(); i++)
@@ -368,6 +370,7 @@ if(all.length!=3)
 		cfg.set("exp_min", exp.getMin());
 		cfg.set("exp_max", exp.getMax());
 		cfg.set("noNatureDamage", noNatureDamage);
+		cfg.set("autoSave", autoSave);
 		cfg.set("size", size);
 		cfg.set("noRepel", noRepel);
 		if (type != null)
@@ -524,7 +527,7 @@ if(all.length!=3)
 		Mob m = new Mob(spawnOf, dmg.getInt(), e, isl, getSkills(),
 				exp.getInt(),
  isAttrCover, bossName, sName, ri, noRepel, type,
-				noNatureDamage);
+				noNatureDamage, autoSave);
 		if (m != null)
  {
 			mobs.add(m);
@@ -541,6 +544,10 @@ if(all.length!=3)
 
 		return m;
 
+	}
+
+	public void setAutoSave(Boolean autoSave) {
+		this.autoSave = autoSave;
 	}
 
 	public int getDropType() {

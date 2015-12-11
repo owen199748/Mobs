@@ -116,7 +116,6 @@ public class TitleAPI {
 					new Class[] { c5 });
 			m5.invoke(pc, new Object[] { ppoc });
 		} catch (Exception ex) {
-			ex.printStackTrace();
 		}
 	}
 
@@ -169,7 +168,6 @@ public class TitleAPI {
 				sendPacket(player, subtitlePacket);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -203,7 +201,7 @@ public class TitleAPI {
 			field.set(packet, tabFooter);
 			sendPacket(player, packet);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+
 		}
 	}
 

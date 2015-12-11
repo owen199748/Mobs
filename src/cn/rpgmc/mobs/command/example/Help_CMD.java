@@ -72,6 +72,12 @@ public class Help_CMD implements PluginCommand {
 		Send.sendPluginMessage(p, "&3  /Mobs spawn modify chance [几率] 修改刷新的几率");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs spawn modify playerNearby [距离] 修改与玩家的刷新最大距离");
+		Send.sendPluginMessage(p,
+				"&3  /Mobs spawn modify maxInChunk [数量] 修改在当前区块的最大数量");
+		Send.sendPluginMessage(p,
+				"&3  /Mobs spawn modify maxInWorld [数量] 修改在当前世界的最大数量");
+		Send.sendPluginMessage(p,
+				"&3  /Mobs spawn modify maxInServer [数量] 修改在当前服务器的最大数量");
 
 	}
 
@@ -79,6 +85,8 @@ public class Help_CMD implements PluginCommand {
 		Send.sendPluginMessage(p, "&3  /Mobs spawn modify point 设置刷新点中心位置");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs spawn modify single [Single] 设置每次刷新数量");
+		Send.sendPluginMessage(p,
+ "&3  /Mobs spawn modify max [Max] 设置怪物最大数量");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs spawn modify range [Range] 设置刷新半径(如果onMove为True超出会被弹回原点)");
 		Send.sendPluginMessage(p, "&3  /Mobs spawn modify onPoint 设置是否只在刷新点上刷新");
@@ -98,8 +106,6 @@ public class Help_CMD implements PluginCommand {
 		Send.sendPluginMessage(p, "&3  /Mobs spawn modify mob [sName] 设置怪物模板");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs spawn modify lag [Lag] 设置刷新间隔(tick:20tick=1s)");
-		Send.sendPluginMessage(p,
-				"&3  /Mobs spawn modify max [Max] 设置怪物最大数量(世界刷新为区块最大数量)");
 
 	}
 
@@ -121,6 +127,8 @@ public class Help_CMD implements PluginCommand {
 				"&3  /Mobs mob modify hp [HighHP] <LowHP>设置血量");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs mob modify attrcover [boolean] 设置是否覆盖属性");
+		Send.sendPluginMessage(p,
+				"&3  /Mobs mob modify autoSave [boolean] 设置重启之后是否保存该怪物");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs mob modify noRepel [boolean] 设置是否不被击退");
 		Send.sendPluginMessage(p,

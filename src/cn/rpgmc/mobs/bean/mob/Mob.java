@@ -41,6 +41,7 @@ public class Mob {
 	private Boolean noRepel = false;
 	private MobType type;
 	private boolean noNatureDamage = false;
+	private Boolean autoSave = true;
 
 
 	public boolean isNoNatureDamage() {
@@ -52,6 +53,10 @@ public class Mob {
 	}
 	public boolean isAttrCover() {
 		return isAttrCover;
+	}
+
+	public boolean isAutoSave() {
+		return autoSave;
 	}
 
 	public BossName getBossName() {
@@ -172,19 +177,21 @@ public class Mob {
 			ArrayList<ItemStack> drop,
 			ArrayList<Skill> skills, int exp, boolean isAttrCover,
  BossName bossName, String sName, String rider,
-			Boolean noRepel, MobType type, Boolean noNatureDamage) {
+			Boolean noRepel, MobType type, Boolean noNatureDamage,
+			Boolean autoSave) {
 		this(spawnOf, StringEncrypt
 				.getBase64(Math.random() + "/" + System.currentTimeMillis()
 						+ "/" + e.getLocation().toString()), dmg, e, drop,
 				skills, exp, isAttrCover, bossName, sName, rider, noRepel,
-				type, noNatureDamage);
+				type, noNatureDamage, autoSave);
 
 	}
 
 	public Mob(Object spawnOf, String id, int dmg, LivingEntity e,
 			ArrayList<ItemStack> drop, ArrayList<Skill> skills, int exp,
 			boolean isAttrCover, BossName bossName, String sName, String rider,
-			Boolean noRepel, MobType type, boolean noNatureDamage) {
+			Boolean noRepel, MobType type, boolean noNatureDamage,
+			Boolean autoSave) {
 		this.type = type;
 		HashMap<Skill, Long> h = new HashMap<Skill, Long>();
 		for (int i = 0; i < skills.size(); i++)
@@ -208,6 +215,7 @@ public class Mob {
 		this.sName = sName;
 		this.skills = h;
 		this.dmg = dmg;
+		this.autoSave = autoSave;
 		this.e = e;
 		this.drop = drop;
 		this.exp = exp;
@@ -325,6 +333,8 @@ public class Mob {
 			if (mobs.get(i) == null)
 				continue;
 			if (mobs.get(i).getE().isDead())
+				continue;
+			if (!mobs.get(i).isAutoSave())
 				continue;
 
 			MobSave save = new MobSave(mobs.get(i));

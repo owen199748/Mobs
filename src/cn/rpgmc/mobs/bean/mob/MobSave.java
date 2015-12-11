@@ -124,7 +124,7 @@ public class MobSave {
 
 		Mob m = new Mob(spawn, id, dmg, e.news(), drop, asSkills(skills), exp,
 				isAttrCover, bossName, sName, rider, noRepel,
-				MobType.fromName(mobType), noNatureDamage);
+				MobType.fromName(mobType), noNatureDamage, true);
 
 		MobModel.getMobModel(sName).addMob(m);
 		return m;

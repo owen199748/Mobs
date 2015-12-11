@@ -16,6 +16,7 @@ public class PointSpawn extends Spawn {
 	private Loc p;
 	private int range = 15;
 	private int one = 1;
+	private int all = 0;
 	private boolean onPoint = false;
 	private boolean onMove = true;
 
@@ -47,6 +48,7 @@ public class PointSpawn extends Spawn {
 		range = 15;
 		this.p = new Loc(p);
 		this.one = 1;
+		this.all = 6;
 		this.onPoint = false;
 		this.onMove = false;
 		Pmobcreates.add(this);
@@ -60,6 +62,7 @@ public class PointSpawn extends Spawn {
 						.getConfigurationSection("point").getInt("Y"), cfg
 						.getConfigurationSection("point").getInt("Z"));
 		one = cfg.getInt("one");
+		all = cfg.getInt("all");
 		onPoint = cfg.getBoolean("onPoint");
 		onMove = cfg.getBoolean("onMove");
 		Pmobcreates.add(this);
@@ -67,6 +70,7 @@ public class PointSpawn extends Spawn {
 
 	@Override
 	public void save() {
+		getCfg().set("all", all);
 		getCfg().set("one", one);
 		getCfg().createSection("center");
 		getCfg().createSection("point");
@@ -87,7 +91,6 @@ public class PointSpawn extends Spawn {
 	public void setOne(int one) {
 		this.one = one;
 	}
-
 	@Override
 	public String getCreateType() {
 		// TODO 自动生成的方法存根
@@ -114,15 +117,15 @@ public class PointSpawn extends Spawn {
 
 	@Override
 	public String getSee() {
-
 		String s1 = "刷新点位置:" + p.getX() + "," + p.getY() + "," + p.getZ() + "|"
 				+ p.getWorld();
 		String s2 = "只在点上刷新:" + onPoint;
 		String s3 = "只在刷新范围内活动:" + onMove;
 		String s4 = "怪物刷新范围:" + range;
 		String s5 = "一次刷新数量:" + one;
+		String s6 = "最大数量:" + all;
 		return getMainSee() + "\n" + s1 + "\n" + s2 + "\n" + s3 + "\n" + s4
-				+ "\n" + s5;
+				+ "\n" + s5 + "\n" + s6;
 	}
 
 	public static int isPSpawn(String string) {
@@ -271,6 +274,14 @@ public class PointSpawn extends Spawn {
 
 	public static void addPointMob(Mob mob) {
 
+	}
+
+	public void setAll(int all) {
+		this.all = all;
+	}
+	@Override
+	public int getSurplusQuantity() {
+		return this.all - this.getMobs().size();
 	}
 
 }

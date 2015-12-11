@@ -39,7 +39,7 @@ public class Spawner extends BukkitRunnable {
 		if (spawn.getMobModel() == null)
 			return;
 
-		int a = spawn.getAll() - spawn.getMobs().size();// 计算刷新几个
+		int a = spawn.getSurplusQuantity();// 计算刷新几个
 		int rr = 0;
 		if (spawn.getCreateType().equalsIgnoreCase(Spawn.POINTMOBCREATE)) {
 			rr = ((PointSpawn) spawn).getOne();

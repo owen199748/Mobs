@@ -53,6 +53,11 @@ public class SpawnModify_CMD implements PluginCommand {
 				pSpawn.setOne(Integer.parseInt(args[1]));
 
 
+			} else if (args[0].equalsIgnoreCase("max")) {
+				if (args.length != 2) {
+					return false;
+				}
+				pSpawn.setAll(Integer.parseInt(args[1]));
 			} else if (args[0].equalsIgnoreCase("range")) {
 				if (args.length != 2) {
 					return false;
@@ -141,6 +146,21 @@ public class SpawnModify_CMD implements PluginCommand {
 					return false;
 				}
 				wSpawn.setChance(Double.parseDouble(args[1]));
+			} else if (args[0].equalsIgnoreCase("maxInChunk")) {
+				if (args.length != 2) {
+					return false;
+				}
+				wSpawn.setMaxInChunk(Integer.parseInt(args[1]));
+			} else if (args[0].equalsIgnoreCase("maxInWorld")) {
+				if (args.length != 2) {
+					return false;
+				}
+				wSpawn.setMaxInWorld(Integer.parseInt(args[1]));
+			} else if (args[0].equalsIgnoreCase("maxInServer")) {
+				if (args.length != 2) {
+					return false;
+				}
+				wSpawn.setMaxInServer(Integer.parseInt(args[1]));
 			} else if (args[0].equalsIgnoreCase("playerNearby")) {
 				if (args.length != 2) {
 					return false;
@@ -170,11 +190,6 @@ public class SpawnModify_CMD implements PluginCommand {
 				return false;
 			}
 			spawn.setTime(Integer.parseInt(args[1]));
-		} else if (args[0].equalsIgnoreCase("max")) {
-			if (args.length != 2) {
-				return false;
-			}
-			spawn.setAll(Integer.parseInt(args[1]));
 		} else if (args[0].equalsIgnoreCase("Mob")) {
 
 			if (args.length != 2) {
