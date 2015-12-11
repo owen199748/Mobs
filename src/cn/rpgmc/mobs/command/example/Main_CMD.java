@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -245,14 +248,23 @@ public class Main_CMD implements PluginCommand {
 		key = ws.getKeys(false).toArray();
 		for (int i = 0; i < key.length; i++) {
 			ws.set((String) key[i], null);
-			new WorldSpawn((String) key[i], ws, null)
+			new WorldSpawn((String) key[i], ws, new ArrayList<World>())
 					.save();
 		}
 
 		key = ps.getKeys(false).toArray();
 		for (int i = 0; i < key.length; i++) {
+			if(ps.getConfigurationSection((String) key[i])==null)
+				continue;
+			if(ps.getConfigurationSection((String) key[i]).getConfigurationSection("point")==null)
+				continue;
+			ConfigurationSection sss = ps.getConfigurationSection((String) key[i]).getConfigurationSection("point");
+			Location locc = new Location(
+					Bukkit.getWorld(sss.getString("WORLD")), sss.getInt("X"),
+					sss.getInt("Y"), sss.getInt("Z"));
+			
 			ps.set((String) key[i], null);
-			new PointSpawn((String) key[i], ps, null)
+			new PointSpawn((String) key[i], ps, locc)
 					.save();
 		}
 
