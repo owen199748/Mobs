@@ -72,7 +72,8 @@ public class LivingEntitySave {
 	public LivingEntitySave(LivingEntity e, MobType t) {
 		
 
-		 w = e.getLocation().getWorld().getName(); x = e.getLocation().getX();
+		w = e.getLocation().getWorld().getName();
+		x = e.getLocation().getX();
 		y = e.getLocation().getY();
 		z = e.getLocation().getZ();
 
@@ -101,12 +102,13 @@ public class LivingEntitySave {
 	}
 
 	public LivingEntity news() {
+		if (Bukkit.getWorld(w) == null)
+			return null;
 
 		LivingEntity e = MobType.create(MobType.fromName(type), new Location(
 				Bukkit.getWorld(w), x, y, z));
 
 		e.getEquipment().setArmorContents(eqpt);
-
 		e.setCanPickupItems(canPickupItems);
 		e.setCustomName(customName);
 		e.setCustomNameVisible(customNameVisible);

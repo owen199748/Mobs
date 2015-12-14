@@ -106,7 +106,11 @@ public class MobSave {
 	public Mob toMob() {
 		if (e == null)
 			return null;
-		
+		if (Bukkit.getWorld(e.w) == null)
+ {
+			// Bukkit.broadcastMessage(e.w);
+			return null;
+		}
 		if(MobModel.getMobModel(sName)==null)
 			return null;
 		Spawn spawn = null;

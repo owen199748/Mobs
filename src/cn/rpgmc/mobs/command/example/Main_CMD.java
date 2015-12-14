@@ -54,6 +54,7 @@ public class Main_CMD implements PluginCommand {
 					Main.setClickItem(p.getItemInHand().getTypeId());
 					Send.sendPluginMessage(p, "您已经将"
 							+ p.getItemInHand().getType().name() + "作为点选择器.");
+					Main.saveYml();
 					return true;
 				} else {
 					return false;

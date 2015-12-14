@@ -105,15 +105,24 @@ public class PointSpawn extends Spawn {
 		for (int i = 0; i < m.size(); i++) {
 			if (Math.abs(m.get(i).getE().getLocation().getBlockX()
 					- getP().getBlockX()) > getRange()) {
-				m.get(i).getE().teleport(getP());
+				m.get(i).getE().teleport(canSpawn(getP()));
 			}
 
 			if (Math.abs(m.get(i).getE().getLocation().getBlockY()
 					- getP().getBlockY()) > getRange()) {
-				m.get(i).getE().teleport(getP());
+				m.get(i).getE().teleport(canSpawn(getP()));
 			}
 		}
 	}
+
+
+	private Location canSpawn(Location loc) {
+		Location loc2 = loc;
+		loc2.setY(canSpawn(loc.getBlockX(), loc.getBlockZ(), loc.getBlockY(),
+				loc.getWorld()));
+		return loc2;
+	}
+
 
 	@Override
 	public String getSee() {
@@ -169,7 +178,7 @@ public class PointSpawn extends Spawn {
 		if (w == null)
 			return null;
 
-		int y = canSpawn(x, z, p.getY(), w, p);
+		int y = canSpawn(x, z, p.getY(), w);
 
 		if (y != -1)
 			return new Location(w, x, y, z);
@@ -180,7 +189,7 @@ public class PointSpawn extends Spawn {
 	}
 
 
-	private int canSpawn(int x, int z, int startY, World w, Loc p) {
+	private int canSpawn(int x, int z, int startY, World w) {
 		int max = w.getMaxHeight();
 
 		List<Integer> is = new ArrayList<Integer>();
@@ -272,9 +281,6 @@ public class PointSpawn extends Spawn {
 		return null;
 	}
 
-	public static void addPointMob(Mob mob) {
-
-	}
 
 	public void setAll(int all) {
 		this.all = all;

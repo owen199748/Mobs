@@ -203,18 +203,23 @@ public class WorldSpawn extends Spawn {
 	public Mob spawnMob(Location loc) {
 		if (getMobModel() == null)
 			return null;
+		if (getMaxInServer() != -1)
 		if (getMobs().size() >= getMaxInServer())
 			return null;
 
 		List<Entity> es2 = loc.getWorld().getEntities();
+
 		int l = 0;
+		if (getMaxInWorld() != -1) {
 		for (int i = 0; i < es2.size(); i++)
 			if (isSpawnMob(es2.get(i).getEntityId()))
 				l++;
 
 		if (l >= getMaxInWorld())
 			return null;
+		}
 
+		if (getMaxInChunk() != -1) {
 		Entity[] es = loc.getChunk().getEntities();
 		l = 0;
 		for (int i = 0; i < es.length; i++)
@@ -223,6 +228,7 @@ public class WorldSpawn extends Spawn {
 
 		if (l >= getMaxInChunk())
 			return null;
+		}
 
 			return super.spawnMob(loc);
 	}

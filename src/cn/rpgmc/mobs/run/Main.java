@@ -149,6 +149,7 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+
 		main = this;
 		new BukkitRunnable() {
 
@@ -283,8 +284,7 @@ public class Main extends JavaPlugin {
 
 
 		} catch (Exception e) {
-			// TODO 自动生成的 catch 块
-			e.printStackTrace();
+
 		}
 		
 

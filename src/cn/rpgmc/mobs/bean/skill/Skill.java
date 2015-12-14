@@ -468,6 +468,7 @@ public abstract class Skill {
 				+ "    /mobs skill modify enemys add ME (该技能可以作用于自己)"
 				+ "  /mobs skill modify del 删除当前技能";
 
+
 	}
 
 	public static Class<? extends Skill> isType(String str) {

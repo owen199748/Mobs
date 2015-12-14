@@ -39,10 +39,10 @@ public class MobModel {
 	private MobType type = null;
 	private Boolean isAttrCover = true;
 	private ArrayList<DropItemStack> drop = new ArrayList<DropItemStack>();
-	private Integer dropType = 0;
-	private Boolean noRepel = false;
 	private Boolean noNatureDamage = false;
 	private Boolean autoSave = true;
+	private Integer dropType = 0;
+	private Boolean noRepel = false;
 	private String rider = null;
 	private HashMap<String, Integer> potion = new HashMap<String, Integer>();
 	private SurvivalLimit survivalLimit = new SurvivalLimit();
@@ -54,6 +54,83 @@ public class MobModel {
 	static {
 		MAIN_CFG = Main.getCfg();
 		MAIN_F = Main.getF();
+	}
+
+	public String getSee() {
+		String s1 = "怪物名:" + sName;
+		String s2 = "显示名:" + displayName;
+		String s3 = "血量:" + hp;
+		String s4 = "伤害:" + dmg;
+		String s5 = "  装备:";
+		String ss6 = "";
+		String ss7 = "";
+		String ss8 = "";
+		String ss9 = "";
+		String ss10 = "";
+		if (eqpt.getHelmet() != null)
+			ss6 = eqpt.getHelmet().getType().name();
+		else
+			ss6 = "null";
+
+		if (eqpt.getChestplate() != null)
+			ss7 = eqpt.getChestplate().getType().name();
+		else
+			ss7 = "null";
+
+		if (eqpt.getLeggings() != null)
+			ss8 = eqpt.getLeggings().getType().name();
+		else
+			ss8 = "null";
+
+		if (eqpt.getBoots() != null)
+			ss9 = eqpt.getBoots().getType().name();
+		else
+			ss9 = "null";
+
+		if (eqpt.getHand() != null)
+			ss10 = eqpt.getHand().getType().name();
+		else
+			ss10 = "null";
+
+		String s6 = "    头盔:" + ss6;
+		String s7 = "    胸甲:" + ss7;
+		String s8 = "    护腿:" + ss8;
+		String s9 = "    靴子:" + ss9;
+		String s10 = "    武器:" + ss10;
+		String s11 = "怪物类型:" + type;
+		String s12 = "掉落物:" + drop.size() + "个";
+		String s13 = "掉落类型:";
+		if (dropType == 0) {
+			s8 += "不修改掉落";
+		} else if (dropType == 1) {
+			s8 += "全部掉落";
+		} else if (dropType == 2) {
+			s8 += "按几率掉落";
+		}
+		String s14 = "  存在限制:";
+		String s15 = "    白天才刷新:" + survivalLimit.isDay();
+		String s16 = "    夜晚才刷新:" + survivalLimit.isNight();
+		String s17 = "    晴天才刷新:" + survivalLimit.isSun();
+		String s18 = "    下雨才刷新:" + survivalLimit.isRain();
+		String s19 = "    打雷才刷新:" + survivalLimit.isThundering();
+		String s20 = "技能:" + skills.size() + "个";
+		String s21 = "骑乘者:" + rider;
+		String s22 = "抗击退:" + noRepel;
+		String s23 = "属性覆盖:" + isAttrCover + "\n" + "取消自然伤害:" + noNatureDamage
+				+ "\n" + "关闭服务器是否保存:" + autoSave;
+		String s24 = "  Boss名显示方式:";
+		String s25 = "    是否开启:" + bossName.isEnable();
+		String s26 = "    显示内容:" + bossName.getValue();
+		String s27 = "    显示范围:" + bossName.getNearby();
+		String s28 = "自带药水属性:" + potion.size() + "种";
+
+		return s1 + "\n" + s1 + "\n" + s2 + "\n" + s3 + "\n" + s4 + "\n" + s5
+				+ "\n" + s6 + "\n" + s7 + "\n" + s8 + "\n" + s9 + "\n" + s10
+				+ "\n" + s11 + "\n" + s12 + "\n" + s13 + "\n" + s14 + "\n"
+				+ s15 + "\n" + s16 + "\n" + s17 + "\n" + s18 + "\n" + s19
+				+ "\n" + s20 + "\n" + s21 + "\n" + s22 + "\n" + s23 + "\n"
+				+ s24 + "\n" + s25 + "\n" + s26 + "\n" + s27 + "\n" + s28;
+
 	}
 
 	public SurvivalLimit getSurvivalLimit() {
@@ -603,81 +680,7 @@ if(all.length!=3)
 		return null;
 	}
 
-	public String getSee() {
-		String s1 = "怪物名:" + sName;
-		String s2 = "显示名:" + displayName;
-		String s3 = "血量:" + hp;
-		String s4 = "伤害:" + dmg;
-		String s5 = "  装备:";
-		String ss6 = "";
-		String ss7 = "";
-		String ss8 = "";
-		String ss9 = "";
-		String ss10 = "";
-		if (eqpt.getHelmet() != null)
-			ss6 = eqpt.getHelmet().getType().name();
-		else
-			ss6 = "null";
 
-		if (eqpt.getChestplate() != null)
-			ss7 = eqpt.getChestplate().getType().name();
-		else
-			ss7 = "null";
-
-		if (eqpt.getLeggings() != null)
-			ss8 = eqpt.getLeggings().getType().name();
-		else
-			ss8 = "null";
-
-		if (eqpt.getBoots() != null)
-			ss9 = eqpt.getBoots().getType().name();
-		else
-			ss9 = "null";
-
-		if (eqpt.getHand() != null)
-			ss10 = eqpt.getHand().getType().name();
-		else
-			ss10 = "null";
-
-		String s6 = "    头盔:" + ss6;
-		String s7 = "    胸甲:" + ss7;
-		String s8 = "    护腿:" + ss8;
-		String s9 = "    靴子:" + ss9;
-		String s10 = "    武器:" + ss10;
-		String s11 = "怪物类型:" + type;
-		String s12 = "掉落物:" + drop.size() + "个";
-		String s13 = "掉落类型:";
-		if (dropType == 0) {
-			s8 += "不修改掉落";
-		} else if (dropType == 1) {
-			s8 += "全部掉落";
-		} else if (dropType == 2) {
-			s8 += "按几率掉落";
-		}
-		String s14 = "  存在限制:";
-		String s15 = "    白天才刷新:" + survivalLimit.isDay();
-		String s16 = "    夜晚才刷新:" + survivalLimit.isNight();
-		String s17 = "    晴天才刷新:" + survivalLimit.isSun();
-		String s18 = "    下雨才刷新:" + survivalLimit.isRain();
-		String s19 = "    打雷才刷新:" + survivalLimit.isThundering();
-		String s20 = "技能:" + skills.size() + "个";
-		String s21 = "骑乘者:" + rider;
-		String s22 = "抗击退:" + noRepel;
-		String s23 = "属性覆盖:" + isAttrCover;
-		String s24 = "  Boss名显示方式:";
-		String s25 = "    是否开启:" + bossName.isEnable();
-		String s26 = "    显示内容:" + bossName.getValue();
-		String s27 = "    显示范围:" + bossName.getNearby();
-		String s28 = "自带药水属性:" + potion.size() + "种";
-
-		return s1 + "\n" + s1 + "\n" + s2 + "\n" + s3 + "\n" + s4 + "\n" + s5
-				+ "\n" + s6 + "\n" + s7 + "\n" + s8 + "\n" + s9 + "\n" + s10
-				+ "\n" + s11 + "\n" + s12 + "\n" + s13 + "\n" + s14 + "\n"
-				+ s15 + "\n" + s16 + "\n" + s17 + "\n" + s18 + "\n" + s19
-				+ "\n" + s20 + "\n" + s21 + "\n" + s22 + "\n" + s23 + "\n"
-				+ s24 + "\n" + s25 + "\n" + s26 + "\n" + s27 + "\n" + s28;
-
-	}
 
 	public void killAll() {
 		for (int i = 0; i < Mob.getMobs().size(); i++) {
