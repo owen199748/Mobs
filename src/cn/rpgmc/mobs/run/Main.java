@@ -1,6 +1,8 @@
 package cn.rpgmc.mobs.run;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.zip.GZIPInputStream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -18,6 +21,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -149,6 +153,7 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		try {
 
 		main = this;
 		new BukkitRunnable() {
@@ -191,19 +196,13 @@ public class Main extends JavaPlugin {
 			cfg.createSection("PointSpawn");
 			cfg.createSection("WorldSpawn");
 			cfg.createSection("Skill");
-			try {
+
 				saveYml();
-			} catch (IOException e) {
 
-				e.printStackTrace();
-			}
 		} else {
-			try {
-				cfg.load(f);
-			} catch (Exception e) {
 
-				e.printStackTrace();
-			}
+				cfg.load(f);
+
 		}
 		loadSkills();
 		MobType.values();
@@ -233,28 +232,34 @@ public class Main extends JavaPlugin {
 						TitleShows.RUNS, TitleShows.RUNS);
 
 
+		} catch (Exception maine) {
+			ErrorReport.report(LoggerListener.toString(maine));
+			try {
+				ErrorReport.update();
+			} catch (IOException e) {
+				// TODO 自动生成的 catch 块
+				e.printStackTrace();
+			}
+			maine.printStackTrace();
+		}
 	}
 
 
 
-	private void loadAllMobs() {
+	private void loadAllMobs() throws FileNotFoundException, IOException,
+			InvalidConfigurationException {
 
 		mobSaveFile = new File(Bukkit.getPluginManager()
 				.getPlugin(this.getName()).getDataFolder().getAbsolutePath()
-				+ File.separator + "save.yml");
+				+ File.separator + "save.dat");
 
-		if (!mobSaveFile.exists()) {
-			try {
+		if (!mobSaveFile.exists())
 				mobSaveFile.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 
-		}
 
-		try {
 
-			mobYml.load(mobSaveFile);
+
+			mobYml.load(new GZIPInputStream(new FileInputStream(mobSaveFile)));
 			if (mobYml.getConfigurationSection("Mobs") == null)
 				return;
 			ConfigurationSection s = mobYml.getConfigurationSection("Mobs");
@@ -283,9 +288,7 @@ public class Main extends JavaPlugin {
 
 
 
-		} catch (Exception e) {
 
-		}
 		
 
 
@@ -333,7 +336,11 @@ public class Main extends JavaPlugin {
 				try {
 					skillName = sklr.newInstance().getType();
 				} catch (Exception e) {
-
+					Send.sendConsole("[技能:" + skillName + "]"
+							+ skillList.get(i).getAbsoluteFile().getName()
+							+ "<" + "§c" + l.get(r).getName() + ".class" + "§b"
+							+ ">装载失败");
+					continue;
 				}
 				Send.sendConsole("[技能:" + skillName + "]"
 								+ skillList.get(i).getAbsoluteFile().getName()
@@ -368,7 +375,8 @@ public class Main extends JavaPlugin {
 				}
 				j.close();
 			} catch (IOException e) {
-
+				Send.sendConsole("[技能包头部信息加载失败]"
+						+ skillList.get(i).getAbsoluteFile().getName());
 			}
 			String[] infoNexts = infoNext.split("\n");
 			Send.sendConsole(info);
@@ -497,19 +505,19 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		try {
+			Mob.saveAll();
+		} catch (IOException e) {
+			Send.sendConsole(Color.RED + "生物保存失败,现有生物有可能会被刷新.");
+			ErrorReport.report(LoggerListener.toString(e));
+		}
+		Mob.killAll();
+		try {
 			ErrorReport.update();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		try {
 
-			Mob.saveAll();
-		} catch (IOException e) {
-			Send.sendConsole(Color.RED + "生物保存失败,现有生物有可能会被刷新.");
-			e.printStackTrace();
 
-		}
-		Mob.killAll();
 		Send.sendConsole("┏一一一一一一一一一一一┓");
 		Send.sendConsole(" ---<<<<<<<<<<<<<<<<<<---");
 		Send.sendConsole(" ---<<<<<卸载成功<<<<<---");

@@ -1,10 +1,12 @@
 package cn.rpgmc.mobs.bean.mob;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -324,6 +326,7 @@ public class Mob {
 	public MobType getType() {
 		return type;
 	}
+
 	public static void saveAll() throws IOException {
 		Main.getMobYml().set("Mobs", null);
 		Main.getMobYml().createSection("Mobs");
@@ -346,10 +349,18 @@ public class Mob {
 			s1.set("Eqpt", Arrays.asList(save.AEQPT()));
 
 		}
+		GZIPOutputStream gz = null;
+		try {
+			gz = new GZIPOutputStream(new FileOutputStream(
+				Main.getMobSaveFile()));
+		gz.write(Main.getMobYml().saveToString().getBytes());
+		gz.finish();
+		gz.flush();
+		gz.close();
+		} finally {
+			gz.close();
+		}
 
-		
-
-		Main.getMobYml().save(Main.getMobSaveFile());
 
 
 	}

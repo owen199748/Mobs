@@ -78,6 +78,8 @@ public class Help_CMD implements PluginCommand {
 				"&3  /Mobs spawn modify maxInWorld [数量] 修改在当前世界的最大数量");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs spawn modify maxInServer [数量] 修改在当前服务器的最大数量");
+		Send.sendPluginMessage(p,
+				"&3  /Mobs spawn modify onPlayerNum [true/false] 刷新几率是否考虑玩家数量");
 
 	}
 

@@ -1,5 +1,6 @@
 package cn.rpgmc.mobs.bean.mob;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.bukkit.Bukkit;
@@ -7,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import cn.rpgmc.mobs.utils.mobtype.MobType;
 
@@ -24,7 +26,7 @@ public class LivingEntitySave {
 	@JsonProperty
 	public double z = 0;
 	@JsonProperty
-	public Collection<PotionEffect> potionEffects;
+	public Collection<PotionObj> potionEffects;
 	@JsonProperty
 	public boolean canPickupItems = false;
 	@JsonProperty
@@ -96,7 +98,10 @@ public class LivingEntitySave {
 		type = t.getName();
 
 		// velocity = e.getVelocity();
-		potionEffects = e.getActivePotionEffects();
+		potionEffects = new ArrayList<PotionObj>();
+		for (int i = 0; i < e.getActivePotionEffects().size(); i++)
+			potionEffects.add(PotionObj.load((PotionEffect) e
+					.getActivePotionEffects().toArray()[i]));
 		// lastDamageCause = e.getLastDamageCause();
 		 
 	}
@@ -126,7 +131,10 @@ public class LivingEntitySave {
 		if (ticksLived >= 1)
 			e.setTicksLived(ticksLived);
 
-		potionEffects = e.getActivePotionEffects();
+		PotionObj pe;
+		for (int i = 0; i < potionEffects.size(); i++)
+			{pe=(PotionObj)potionEffects.toArray()[i];
+			e.addPotionEffect(new PotionEffect(PotionEffectType.getByName(pe.getName()), pe.getDuration(), pe.getAmplifier()));}
 		// e.setLastDamageCause(lastDamageCause);
 		// e.setVelocity(velocity);
 

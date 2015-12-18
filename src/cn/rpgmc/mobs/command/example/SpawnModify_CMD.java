@@ -168,6 +168,18 @@ public class SpawnModify_CMD implements PluginCommand {
 
 				wSpawn.setPlayerNearby(Integer.parseInt(args[1]));
 
+			} else if (args[0].equalsIgnoreCase("onPlayerNum")) {
+				if (args.length != 2) {
+					return false;
+				}
+
+				if (args[1].equalsIgnoreCase("true"))
+					wSpawn.setOnPlayerNum(true);
+				else if (args[1].equalsIgnoreCase("false"))
+					wSpawn.setOnPlayerNum(false);
+				else
+					return false;
+
 			} else {
 				b = false;
 			}

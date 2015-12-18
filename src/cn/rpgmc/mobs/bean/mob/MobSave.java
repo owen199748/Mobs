@@ -106,13 +106,13 @@ public class MobSave {
 	public Mob toMob() {
 		if (e == null)
 			return null;
+
 		if (Bukkit.getWorld(e.w) == null)
- {
-			// Bukkit.broadcastMessage(e.w);
 			return null;
-		}
+
 		if(MobModel.getMobModel(sName)==null)
 			return null;
+
 		Spawn spawn = null;
 		if (spawner != null) {
 
@@ -125,11 +125,9 @@ public class MobSave {
 			}
 		}
 
-
 		Mob m = new Mob(spawn, id, dmg, e.news(), drop, asSkills(skills), exp,
 				isAttrCover, bossName, sName, rider, noRepel,
 				MobType.fromName(mobType), noNatureDamage, true);
-
 		MobModel.getMobModel(sName).addMob(m);
 		return m;
 

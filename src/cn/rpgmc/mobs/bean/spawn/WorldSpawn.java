@@ -21,6 +21,7 @@ public class WorldSpawn extends Spawn {
 	private int maxInChunk = -1;
 	private int maxInWorld = -1;
 	private int maxInServer = -1;
+	private boolean onPlayerNum = true;
 
 	// TODO:增加公式计算属性增幅
 
@@ -48,6 +49,13 @@ public class WorldSpawn extends Spawn {
 		return maxInWorld;
 	}
 
+	public void setOnPlayerNum(boolean onPlayerNum) {
+		this.onPlayerNum = onPlayerNum;
+	}
+
+	public boolean isOnPlayerNum() {
+		return onPlayerNum;
+	}
 	public void setMaxInChunk(int maxInChunk) {
 		this.maxInChunk = maxInChunk;
 	}
@@ -82,6 +90,7 @@ public class WorldSpawn extends Spawn {
 		maxInChunk = cfg.getInt("maxInChunk");
 		maxInWorld = cfg.getInt("maxInWorld");
 		maxInServer = cfg.getInt("maxInServer");
+		onPlayerNum = cfg.getBoolean("onPlayerNum");
 	}
 
 	public WorldSpawn(String sName, ConfigurationSection cfg,
@@ -94,6 +103,7 @@ public class WorldSpawn extends Spawn {
 		maxInChunk = -1;
 		maxInWorld = -1;
 		maxInServer = -1;
+		onPlayerNum = true;
 	}
 
 	@Override
@@ -108,6 +118,7 @@ public class WorldSpawn extends Spawn {
 		getCfg().set("maxInChunk", maxInChunk);
 		getCfg().set("maxInWorld", maxInWorld);
 		getCfg().set("maxInServer", maxInServer);
+		getCfg().set("onPlayerNum", onPlayerNum);
 		super.save();
 	}
 
@@ -131,6 +142,80 @@ public class WorldSpawn extends Spawn {
 	}
 
 	public ArrayList<Location> getLoc() {
+		if(onPlayerNum)
+		return getLocOnPlayerNum();
+		else return getLocOnOne();
+	}
+	
+	
+	
+	private ArrayList<Location> getLocOnOne() {
+		ArrayList<Location> loc = new ArrayList<Location>();
+		for (int s = 0; s < getWorld().size(); s++) {
+			World w = getWorld().get(s);
+
+			if (w != null)
+				if (w.getPlayers().size() != 0)
+				if (is())
+
+ {
+
+					Player p = w.getPlayers().get(
+							(int) (w.getPlayers().size() * Math.random()));
+
+					int x = p.getLocation().getBlockX()
+							+ (((int) (Math.random() * (getPlayerNearby() * 2))) - getPlayerNearby());
+					int z = p.getLocation().getBlockZ()
+							+ (((int) (Math.random() * (getPlayerNearby() * 2))) - getPlayerNearby());
+					int y1 = -1;
+					int y2 = -1;
+					int y = -1;
+					for (int i = p.getLocation().getBlockY(); i <= w
+							.getMaxHeight(); i++) {
+						if (w.getBlockAt(x, i, z).getType().name()
+								.equalsIgnoreCase(Material.AIR.name()))
+							;
+						{
+							if (!w.getBlockAt(x, i - 1, z).getType().name()
+									.equalsIgnoreCase(Material.AIR.name())) {
+								y1 = i;
+								break;
+							}
+						}
+					}
+					for (int i = p.getLocation().getBlockY(); i >= 0; i--) {
+						if (w.getBlockAt(x, i, z).getType().name()
+								.equalsIgnoreCase(Material.AIR.name()))
+							;
+						{
+							if (!w.getBlockAt(x, i - 1, z).getType().name()
+									.equalsIgnoreCase(Material.AIR.name())) {
+								y2 = i + 1;
+								break;
+							}
+						}
+					}
+
+					if (Math.abs(y1 - p.getLocation().getBlockY()) > Math
+							.abs(y2 - p.getLocation().getBlockY())) {
+						y = y2;
+					} else {
+						y = y1;
+					}
+
+					if (y == -1)
+						continue;
+
+					loc.add(new Location(w, x, y, z));
+
+
+				}
+
+		}
+		return loc;
+	}
+
+	public ArrayList<Location> getLocOnPlayerNum() {
 		ArrayList<Location> loc = new ArrayList<Location>();
 		for (int s = 0; s < getWorld().size(); s++) {
 			World w = getWorld().get(s);
@@ -241,13 +326,14 @@ public class WorldSpawn extends Spawn {
 		String s3 = "区块内最多数量:" + maxInChunk;
 		String s4 = "世界内最多数量:" + maxInWorld;
 		String s5 = "服务器内最多数量:" + maxInServer;
-		String s6 = "  刷新世界:";
+		String s6 = "刷新几率是否考虑玩家数:" + onPlayerNum;
+		String s7 = "  刷新世界:";
 		for (int i = 0; i < world.size(); i++) {
 			s6 += ("\n    " + world.get(i).getName());
 		}
 
 		return getMainSee() + "\n" + s1 + "\n" + s2 + "\n" + s3 + "\n" + s4
-				+ "\n" + s5 + "\n" + s6;
+				+ "\n" + s5 + "\n" + s6 + "\n" + s7;
 	}
 
 	public static WorldSpawn getWorldSpawn(String spawner) {

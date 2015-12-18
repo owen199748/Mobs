@@ -1,6 +1,9 @@
 ﻿name: Mobs
 main: cn.rpgmc.mobs.run.Main
-version: 3.2.4
+softdepend: [Multiverse-Core, MultiWorld, WorldLoad, My Worlds]
+website: http://www.rpgmc.cn
+author: owen
+version: 3.2.5
 commands:
   Mobs:
     description: by owen
