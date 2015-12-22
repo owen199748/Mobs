@@ -209,7 +209,7 @@ public class AutoListener implements Listener {
 			
 
 	         
-			m.remove();
+			m.onlyRemove();
 		}
 
 	}

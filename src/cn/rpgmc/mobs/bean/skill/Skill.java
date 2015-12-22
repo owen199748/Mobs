@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 import cn.rpgmc.mobs.bean.mob.Mob;
+import cn.rpgmc.mobs.bean.mob.MobModel;
 import cn.rpgmc.mobs.run.Main;
 import cn.rpgmc.mobs.utils.Send;
 
@@ -224,6 +225,20 @@ public abstract class Skill {
 			if (args.length != 3)
 				return false;
 			setChance(Double.parseDouble(args[2]));
+
+		} else if (args[1].equalsIgnoreCase("copy")) {
+			if (args.length != 3)
+				return false;
+
+			if (MobModel.getMobModel(args[2]) != null) {
+				Send.sendPluginMessage(p, "将要复制的技能名已存在");
+				return true;
+			}
+
+
+			Skill.newSkill(Main.copySection(getCfg(), Main.getCfg()
+					.getConfigurationSection("Skill"), args[2]));
+
 
 		} else if (args[1].equalsIgnoreCase("del")) {
 			if (args.length != 2)
@@ -466,7 +481,8 @@ public abstract class Skill {
 				+ "    /mobs skill modify enemys add ZOMBIE (该技能可以作用于所有僵尸)"
 				+ "    /mobs skill modify enemys add ALL (该技能可以作用于所有生物)"
 				+ "    /mobs skill modify enemys add ME (该技能可以作用于自己)"
-				+ "  /mobs skill modify del 删除当前技能";
+				+ "  /mobs skill modify del 删除当前技能"
+				+ "  /mobs skill modify copy [新技能名] 复制当前技能到新的名字";
 
 
 	}

@@ -3,15 +3,13 @@ package cn.rpgmc.mobs.thread;
 import java.util.ArrayList;
 
 import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import cn.rpgmc.mobs.bean.mob.DropItemStack;
-import cn.rpgmc.mobs.bean.mob.Mob;
 import cn.rpgmc.mobs.bean.spawn.PointSpawn;
 import cn.rpgmc.mobs.bean.spawn.Spawn;
 import cn.rpgmc.mobs.bean.spawn.WorldSpawn;
 
-public class Spawner extends BukkitRunnable {
+public class Spawner implements Runnable {
 	private long g = 0;
 	private long startTime = 0;
 	public static final int RUNS = 20;
@@ -23,17 +21,9 @@ public class Spawner extends BukkitRunnable {
 
 	@Override
 	public void run() {
-
-		g++;
-		if (g % 10 == 0)
-			g = 0;
-
 		Spawn spawn = Spawn.getNextSpawn();
 		if (spawn == null)
 			return;
-
-		if (g == 0)
-			lowSpawn(spawn);
 
 		long n = System.currentTimeMillis() - startTime;
 		if (spawn.getMobModel() == null)
@@ -88,27 +78,5 @@ public class Spawner extends BukkitRunnable {
 
 	}
 
-	private void lowSpawn(Spawn spawn) {
-		Spawn mob = spawn;
-		ArrayList<Mob> mobs = mob.getMobs();
-		for (int l = 0; l < mobs.size(); l++) {
-			Mob m = mobs.get(mobs.size() - (l + 1));
-			if (m.getE().isDead()) {
-				mobs.remove(mobs.size() - (l + 1));
-
-			} else {
-				if (mob instanceof PointSpawn) {
-					PointSpawn pmob = (PointSpawn) mob;
-
-					pmob.test();
-				}
-
-
-			}
-
-		}
-
-
-	}
 
 }

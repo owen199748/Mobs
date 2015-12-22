@@ -259,6 +259,11 @@ public abstract class Spawn {
 
 	public void remove() {
 		getSpawns().remove(this);
+		if (this.getCreateType().equalsIgnoreCase(POINTMOBCREATE))
+			PointSpawn.getPmobcreates().remove(this);
+		else if (this.getCreateType().equalsIgnoreCase(WORLDMOBCREATE))
+			WorldSpawn.getWmobcreates().remove(this);
+
 		ConfigurationSection m = MAIN_CFG.getConfigurationSection(this
 				.getCreateType());
 		if (m == null)

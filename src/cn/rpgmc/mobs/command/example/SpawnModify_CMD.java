@@ -53,6 +53,30 @@ public class SpawnModify_CMD implements PluginCommand {
 				pSpawn.setOne(Integer.parseInt(args[1]));
 
 
+			} else if (args[0].equalsIgnoreCase("copyto")) {
+				if (args.length != 2)
+					return false;
+
+				if (PointSpawn.getPointSpawn(args[1]) != null) {
+					Send.sendPluginMessage(p, "将要复制的刷新点名已存在");
+					return true;
+				}
+				if (Main.getO() == null) {
+					Send.sendPluginMessage(p, "请先用选择器选择新刷新点的位置");
+					return true;
+				}
+
+
+
+
+				new PointSpawn(
+						Main.copySection(pSpawn.getCfg(), Main.getCfg()
+								.getConfigurationSection(Spawn.POINTMOBCREATE),
+								args[1]))
+						.setP(Main
+						.getO());
+
+
 			} else if (args[0].equalsIgnoreCase("max")) {
 				if (args.length != 2) {
 					return false;
@@ -195,6 +219,7 @@ public class SpawnModify_CMD implements PluginCommand {
 		// /以下为共有命令
 		Spawn spawn = Main.getsSpawn();
 		if (args[0].equalsIgnoreCase("del")) {
+
 			spawn.remove();
 			Main.setsSpawn(null);
 		} else if (args[0].equalsIgnoreCase("lag")) {
@@ -202,6 +227,32 @@ public class SpawnModify_CMD implements PluginCommand {
 				return false;
 			}
 			spawn.setTime(Integer.parseInt(args[1]));
+		} else if (args[0].equalsIgnoreCase("copy")) {
+			if (args.length != 2)
+				return false;
+
+			if (spawn instanceof PointSpawn) {
+				if(PointSpawn.getPointSpawn(args[1])!=null)
+				{Send.sendPluginMessage(p, "将要复制的刷新点名已存在");
+				return true;}
+
+				new PointSpawn(
+						Main.copySection(spawn.getCfg(), Main.getCfg()
+								.getConfigurationSection(Spawn.POINTMOBCREATE),
+								args[1]));
+
+			} else if (spawn instanceof WorldSpawn) {
+				if (WorldSpawn.getWorldSpawn(args[1]) != null) {
+					Send.sendPluginMessage(p, "将要复制的刷新点名已存在");
+					return true;
+				}
+				new WorldSpawn(
+						Main.copySection(spawn.getCfg(), Main.getCfg()
+								.getConfigurationSection(Spawn.WORLDMOBCREATE),
+								args[1]));
+			} else
+				throw new NullPointerException();
+
 		} else if (args[0].equalsIgnoreCase("Mob")) {
 
 			if (args.length != 2) {

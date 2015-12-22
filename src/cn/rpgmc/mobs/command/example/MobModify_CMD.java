@@ -318,6 +318,11 @@ public class MobModify_CMD implements PluginCommand {
 				return false;
 			}
 		} else if (args[0].equalsIgnoreCase("bossname")) {
+			if (Main.bukkitVer < 1.8)
+ {
+				Send.sendPluginMessage(p, "当前版本服务端不支持本命令");
+				return true;
+			}
 			if (args.length < 2)
 				return false;
 			if (args[1].equalsIgnoreCase("enable")) {
@@ -346,6 +351,19 @@ public class MobModify_CMD implements PluginCommand {
 				mm.getBossName().setNearby(Integer.parseInt(args[2]));
 			}
 
+		} else if (args[0].equalsIgnoreCase("copy")) {
+			if (args.length != 2)
+				return false;
+
+			if (MobModel.getMobModel(args[1]) != null) {
+				Send.sendPluginMessage(p, "将要复制的怪物模板名已存在");
+					return true;
+				}
+
+			new MobModel(
+					Main.copySection(mm.getCfg(), Main.getCfg().getConfigurationSection(
+							"MobModel"),
+							args[1]));
 		} else if (args[0].equalsIgnoreCase("type")) {
 			if (args.length != 2)
 				if (args.length != 3)

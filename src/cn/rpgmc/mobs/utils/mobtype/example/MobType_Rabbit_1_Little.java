@@ -11,6 +11,9 @@ public class MobType_Rabbit_1_Little extends MobType {
 		super("Ð¡ºÚÍÃ", EntityType.RABBIT);
 	}
 
+	public static double getStartWith() {
+		return 1.8;
+	}
 	@Override
 	public LivingEntity modify(LivingEntity e) {
 		Rabbit r = (Rabbit) e;

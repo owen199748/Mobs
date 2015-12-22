@@ -1,12 +1,11 @@
 ﻿name: Mobs
 main: cn.rpgmc.mobs.run.Main
-softdepend: [Multiverse-Core, MultiWorld, WorldLoad, My Worlds]
 website: http://www.rpgmc.cn
 author: owen
-version: 3.2.5
+version: 4.0.0
 commands:
   Mobs:
     description: by owen
-    usage: §c§l[Mobs]§5参数错误,您可以使用/Mobs help命令排查错误.
+    usage: §c§l[Mobs]§9参数错误,您可以使用/Mobs help命令排查错误.
     permission: mobs
     permission-message: §c§l[Mobs]§5您没有<mobs>权限

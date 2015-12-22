@@ -91,8 +91,12 @@ public class Help_CMD implements PluginCommand {
  "&3  /Mobs spawn modify max [Max] 设置怪物最大数量");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs spawn modify range [Range] 设置刷新半径(如果onMove为True超出会被弹回原点)");
-		Send.sendPluginMessage(p, "&3  /Mobs spawn modify onPoint 设置是否只在刷新点上刷新");
-		Send.sendPluginMessage(p, "&3  /Mobs spawn modify onMove 设置是否只在刷新范围内活动");
+		Send.sendPluginMessage(p,
+				"&3  /Mobs spawn modify onPoint [true/false] 设置是否只在刷新点上刷新");
+		Send.sendPluginMessage(p,
+				"&3  /Mobs spawn modify onMove [true/false] 设置是否只在刷新范围内活动");
+		Send.sendPluginMessage(p,
+				"&3  /Mobs spawn modify copyTo [新刷新点名] 复制当前刷新点到新的名字和位置");
 
 	}
 
@@ -108,6 +112,8 @@ public class Help_CMD implements PluginCommand {
 		Send.sendPluginMessage(p, "&3  /Mobs spawn modify mob [sName] 设置怪物模板");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs spawn modify lag [Lag] 设置刷新间隔(tick:20tick=1s)");
+		Send.sendPluginMessage(p,
+				"&3  /Mobs spawn modify copy [新刷新点名] 复制当前刷新点到新的名字");
 
 	}
 
@@ -127,6 +133,8 @@ public class Help_CMD implements PluginCommand {
 		Send.sendPluginMessage(p, "&3  /Mobs mob modify name [Name] 设置名称");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs mob modify hp [HighHP] <LowHP>设置血量");
+		Send.sendPluginMessage(p,
+				"&3  /Mobs mob modify copy [新怪物模板名] 复制当前怪物模板到新的名字");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs mob modify attrcover [boolean] 设置是否覆盖属性");
 		Send.sendPluginMessage(p,

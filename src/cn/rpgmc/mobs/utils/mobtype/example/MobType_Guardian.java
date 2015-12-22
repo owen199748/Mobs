@@ -11,6 +11,11 @@ public class MobType_Guardian extends MobType {
 		super(" ÿŒ¿’ﬂ", EntityType.GUARDIAN);
 	}
 
+
+	public static double getStartWith() {
+		return 1.8;
+	}
+
 	@Override
 	public LivingEntity modify(LivingEntity e) {
 		Guardian g = (Guardian) e;

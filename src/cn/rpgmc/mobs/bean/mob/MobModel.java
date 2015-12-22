@@ -101,11 +101,11 @@ public class MobModel {
 		String s12 = "掉落物:" + drop.size() + "个";
 		String s13 = "掉落类型:";
 		if (dropType == 0) {
-			s8 += "不修改掉落";
+			s13 += "不修改掉落";
 		} else if (dropType == 1) {
-			s8 += "全部掉落";
+			s13 += "全部掉落";
 		} else if (dropType == 2) {
-			s8 += "按几率掉落";
+			s13 += "按几率掉落";
 		}
 		String s14 = "  存在限制:";
 		String s15 = "    白天才刷新:" + survivalLimit.isDay();
@@ -279,6 +279,8 @@ public class MobModel {
 		if (boss != null) {
 			bossName = new BossName(boss.getBoolean("isEnable"),
 					boss.getString("value"), boss.getInt("nearby"));
+			if (Main.bukkitVer < 1.8)
+				bossName.setEnable(false);
 		}
 
 		hp.setMax(cfg.getInt("hp_max"));

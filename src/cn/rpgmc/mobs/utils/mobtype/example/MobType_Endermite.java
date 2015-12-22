@@ -10,6 +10,10 @@ public class MobType_Endermite extends MobType {
 		super("Ä©Ó°òý", EntityType.ENDERMITE);
 	}
 
+	public static double getStartWith() {
+		return 1.8;
+	}
+
 	@Override
 	public LivingEntity modify(LivingEntity e) {
 		return e;

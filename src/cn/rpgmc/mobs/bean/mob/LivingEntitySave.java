@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import cn.rpgmc.mobs.run.Main;
 import cn.rpgmc.mobs.utils.mobtype.MobType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -91,6 +92,9 @@ public class LivingEntitySave {
 		maximumAir = e.getMaximumAir();
 		maximumNoDamageTicks = e.getMaximumNoDamageTicks();
 		noDamageTicks = e.getNoDamageTicks();
+		if (Main.bukkitVer < 1.8)
+			op = false;
+		else
 		op = e.isOp();
 		remainingAir = e.getRemainingAir();
 		removeWhenFarAway = e.getRemoveWhenFarAway();
@@ -125,6 +129,7 @@ public class LivingEntitySave {
 		e.setMaximumAir(maximumAir);
 		e.setMaximumNoDamageTicks(maximumNoDamageTicks);
 		e.setNoDamageTicks(noDamageTicks);
+		if (Main.bukkitVer >= 1.8)
 		e.setOp(op);
 		e.setRemainingAir(remainingAir);
 		e.setRemoveWhenFarAway(removeWhenFarAway);

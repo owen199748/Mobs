@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="E:/MinecraftServer/API/spigot-api-1.8.8-R0.1-SNAPSHOT-shaded.jar"/>
 	<classpathentry kind="lib" path="E:/jackson-core-2.2.3.jar"/>
 	<classpathentry kind="lib" path="E:/jackson-databind-2.2.3.jar"/>
 	<classpathentry kind="lib" path="E:/jackson-annotations-2.2.3.jar"/>
+	<classpathentry kind="lib" path="E:/MinecraftServer/spigot1.8.8/server.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

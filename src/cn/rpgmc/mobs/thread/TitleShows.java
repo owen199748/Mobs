@@ -5,12 +5,11 @@ import java.util.Map;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import cn.rpgmc.mobs.bean.mob.Mob;
 import cn.rpgmc.mobs.utils.TitleAPI;
 
-public class TitleShows extends BukkitRunnable {
+public class TitleShows implements Runnable {
 	public static final long RUNS = 10;
 	private static Map<Player, Mob> players = new HashMap<Player, Mob>();
 	private String value = "\u2764";

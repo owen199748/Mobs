@@ -19,6 +19,7 @@ import cn.rpgmc.mobs.bean.mob.Mob;
 import cn.rpgmc.mobs.bean.mob.MobModel;
 import cn.rpgmc.mobs.bean.skill.Skill;
 import cn.rpgmc.mobs.bean.spawn.PointSpawn;
+import cn.rpgmc.mobs.bean.spawn.Spawn;
 import cn.rpgmc.mobs.bean.spawn.WorldSpawn;
 import cn.rpgmc.mobs.command.PluginCommand;
 import cn.rpgmc.mobs.run.Main;
@@ -181,6 +182,11 @@ public class Main_CMD implements PluginCommand {
 
 						Main.getCfg().load(Main.getF());
 					// Main.getCfg().set("Version", Main.getV());
+					Skill.getSkills().clear();
+					MobModel.getMobModels().clear();
+					PointSpawn.getPmobcreates().clear();
+					WorldSpawn.getWmobcreates().clear();
+					Spawn.getSpawns().clear();
 						Main.loadYml();
 						Mob.killAll();
 						Send.sendPluginMessage(p, "≈‰÷√÷ÿ‘ÿ≥…π¶.");

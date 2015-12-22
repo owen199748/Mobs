@@ -165,7 +165,7 @@ public class PointSpawn extends Spawn {
 
 	public Location getRandomLocation() {
 		if (onPoint)
-			return p.getLocation();
+			return canSpawn(p.getLocation());
 
 		return getRandomLocation(p, range);
 

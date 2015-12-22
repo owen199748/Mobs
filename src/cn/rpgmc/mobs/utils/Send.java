@@ -15,7 +15,7 @@ public static void sendConsole(String s){
 						+ s.replaceAll("&", "¡ì"));
 }
 public static void sendPluginMessage(Player p,String s){
-		p.sendMessage("¡ìc¡ìl[Mobs]¡ìf" + s.replaceAll("&", "¡ì"));
+		p.sendMessage("¡ìc¡ìl[Mobs]¡ì3" + s.replaceAll("&", "¡ì"));
 }
 
 }

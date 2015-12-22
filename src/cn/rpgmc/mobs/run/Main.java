@@ -1,5 +1,6 @@
 package cn.rpgmc.mobs.run;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -69,7 +70,15 @@ public class Main extends JavaPlugin {
 	private static YamlConfiguration mobYml = new YamlConfiguration();
 	private static File mobSaveFile = null;
 	private static boolean autoErrorReporting = true;
-
+	public static double bukkitVer;
+	static{
+		try {
+			bukkitVer = Double.parseDouble(Bukkit.getBukkitVersion().substring(
+					0, 3));
+		} catch (NumberFormatException e) {
+			bukkitVer = 1.7;
+		}
+	}
 	public static YamlConfiguration getMobYml() {
 		return mobYml;
 	}
@@ -151,22 +160,13 @@ public class Main extends JavaPlugin {
 		return classLoader;
 	}
 
+
 	@Override
 	public void onEnable() {
 		try {
 
-		main = this;
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				Bukkit.getLogger().setFilter(new LoggerListener());
-
-			}
-		}.runTask(this);
-
-		Bukkit.getLogger().setFilter(new LoggerListener());
-
+			main = this;
+			Bukkit.getLogger().setFilter(new LoggerListener());
 		classLoader = this.getClassLoader();
 		Server server = getServer();
 		PluginManager manager = server.getPluginManager();
@@ -207,12 +207,28 @@ public class Main extends JavaPlugin {
 		loadSkills();
 		MobType.values();
 		loadYml();
-		loadAllMobs();
-		Send.sendConsole("┏一一一一一一一一一一一┓");
-		Send.sendConsole(" --->>>>>>>>>>>>>>>>>>---");
-		Send.sendConsole(" --->>>>>加载成功>>>>>---");
-		Send.sendConsole(" --->>>>>>>>>>>>>>>>>>---");
-		Send.sendConsole("┗一一一一一一一一一一一┛");
+
+			new BukkitRunnable() {
+
+				@Override
+				public void run() {
+					Bukkit.getLogger().setFilter(new LoggerListener());
+
+				}
+			}.runTask(this);
+			new BukkitRunnable() {
+
+						@Override
+						public void run() {
+							try {
+								loadAllMobs();
+							} catch (Exception e) {
+						ErrorReport.report(LoggerListener.toString(e));
+								e.printStackTrace();
+							}
+
+						}
+			}.runTask(this);
 
 		for (int i = 0; i < Spawn.getTHREADS(); i++) {
 			tid.add(Bukkit
@@ -242,6 +258,12 @@ public class Main extends JavaPlugin {
 			}
 			maine.printStackTrace();
 		}
+
+		Send.sendConsole("┏一一一一一一一一一一一┓");
+		Send.sendConsole(" --->>>>>>>>>>>>>>>>>>---");
+		Send.sendConsole(" --->>>>>加载成功>>>>>---");
+		Send.sendConsole(" --->>>>>>>>>>>>>>>>>>---");
+		Send.sendConsole("┗一一一一一一一一一一一┛");
 	}
 
 
@@ -258,8 +280,12 @@ public class Main extends JavaPlugin {
 
 
 
-
+		try {
 			mobYml.load(new GZIPInputStream(new FileInputStream(mobSaveFile)));
+
+		} catch (EOFException e) {
+			return;
+		}
 			if (mobYml.getConfigurationSection("Mobs") == null)
 				return;
 			ConfigurationSection s = mobYml.getConfigurationSection("Mobs");
@@ -584,5 +610,28 @@ public class Main extends JavaPlugin {
 	}
 
 
+	public static ConfigurationSection copySection(ConfigurationSection section,
+			ConfigurationSection config, String str) {
+		return pushSection(section, config.createSection(str));
+	}
+
+	private static ConfigurationSection pushSection(
+			ConfigurationSection section, ConfigurationSection newSection) {
+		Object[] key = section.getKeys(false).toArray();
+		for (int i = 0; i < key.length; i++)
+			if (section.getConfigurationSection((String) key[i]) == null)
+				newSection.set((String) key[i], section.get((String) key[i]));
+			else
+				pushSection(section.getConfigurationSection((String) key[i]),
+						newSection.createSection((String) key[i]));
+
+		try {
+			Main.saveYml();
+		} catch (IOException e) {
+			Send.sendConsole("配置储存失败.");
+			return newSection;
+		}
+		return newSection;
+	}
 
 }

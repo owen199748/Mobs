@@ -284,6 +284,11 @@ public class Mob {
 
 	}
 
+	public void onlyRemove() {
+		mobs.remove(this);
+
+	}
+
 	public static List<Mob> getMob(List<Entity> l) {
 		ArrayList<Mob> s = new ArrayList<Mob>();
 		for (int i = 0; i < l.size(); i++)

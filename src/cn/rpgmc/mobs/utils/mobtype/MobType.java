@@ -1,6 +1,8 @@
 package cn.rpgmc.mobs.utils.mobtype;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -21,11 +23,17 @@ public abstract class MobType {
 		values = regValues();
 	}
 
+
 	public String getName() {
 
 		return type;
 	}
 
+	@Override
+	public String toString() {
+		// TODO 自动生成的方法存根
+		return getName();
+	}
 	protected MobType(String type, EntityType eType) {
 
 		this.type = type;
@@ -57,6 +65,9 @@ public abstract class MobType {
 
 	protected abstract LivingEntity modify(LivingEntity e);
 
+	public static double getStartWith() {
+		return 1.7;
+	}
 	public static MobType fromName(String str) {
 		for (int i = 0; i < values.length; i++)
 			if (values[i].getName().equalsIgnoreCase(str))
@@ -73,14 +84,24 @@ public abstract class MobType {
 			List<Class<?>> cs = JarLoad.getJarClass(Main.getMain()
 					.getMainFile().getAbsolutePath(), MobType.class,
 					Main.getCLoader());
-
-			MobType[] vl = new MobType[cs.size()];
+			List<MobType> ls = new ArrayList<MobType>();
 
 			for (int i = 0; i < cs.size(); i++)
-				vl[i] = (MobType) cs.get(i).newInstance();
+				if (Double.parseDouble(cs.get(i)
+						.getMethod("getStartWith", null).invoke(null, null)
+						.toString()) <= Main.bukkitVer)
+					ls.add((MobType) cs.get(i).newInstance());
+
+				
+			MobType[] vl = new MobType[ls.size()];
+			vl = ls.toArray(vl);
+
+			
 			return vl;
 		} catch (ClassNotFoundException | IOException | InstantiationException
-				| IllegalAccessException e) {
+				| IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException
+				| SecurityException e) {
 			e.printStackTrace();
 			return new MobType[0];
 		}
