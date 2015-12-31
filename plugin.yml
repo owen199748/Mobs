@@ -1,6 +1,6 @@
 ﻿name: Mobs
-main: cn.rpgmc.mobs.run.Main
-website: http://www.rpgmc.cn
+main: pw.owen.mobs.run.Main
+website: http://www.owen.pw
 author: owen
 version: 4.0.0
 commands:

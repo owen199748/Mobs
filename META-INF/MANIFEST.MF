@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Rsrc-Class-Path: ./ substance.jar
 Class-Path: .
-Rsrc-Main-Class: cn.rpgmc.mobs.ui.UI
+Rsrc-Main-Class: pw.owen.mobs.ui.UI
 Main-Class: org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader
 
