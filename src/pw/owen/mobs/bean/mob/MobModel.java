@@ -397,9 +397,11 @@ if(all.length!=3)
 	}
 
 	public boolean delDrop(int drop) {
-		if (this.drop.remove(drop) == null) {
+		if (this.drop.size() <= drop)
 			return false;
-		}
+		if (this.drop.remove(drop) == null)
+			return false;
+
 		return true;
 	}
 

@@ -80,10 +80,10 @@ public class Manager implements Runnable {
 			Spawn mob = Spawn.getSpawns().get(i);
 
 			for (int l = 0; l < mob.getMobs().size(); l++) {
-				Mob m = mob.getMobs().get(mob.getMobs().size() - (l + 1));
-				if (m.getE().isDead() || m.getE().isEmpty()
-						|| !m.getE().isValid())
-					mob.getMobs().remove(mob.getMobs().size() - (l + 1));
+				Mob m = mob.getMobs().get(l);
+
+				if (m.getE().isDead() || !m.getE().isValid())
+					mob.getMobs().set(l, null);
 
 				else if (mob instanceof PointSpawn) {
 					PointSpawn pmob = (PointSpawn) mob;
@@ -91,6 +91,9 @@ public class Manager implements Runnable {
 				}
 
 		}
+			List<Mob> nullArr = new ArrayList<Mob>();
+			nullArr.add(null);
+			mob.getMobs().removeAll(nullArr);
 
 		}
 

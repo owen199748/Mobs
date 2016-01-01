@@ -2,7 +2,7 @@
 main: pw.owen.mobs.run.Main
 website: http://www.owen.pw
 author: owen
-version: 4.0.0
+version: 4.0.1
 commands:
   Mobs:
     description: by owen
