@@ -356,11 +356,26 @@ public class Main extends JavaPlugin {
 				continue;
 
 			for (int r = 0; r < l.size(); r++) {
-				Class<? extends Skill> sklr = (Class<? extends Skill>) l.get(r);
-				Skill.registerSkill(sklr);
 				String skillName = "null";
 				try {
+					Class<? extends Skill> sklr = (Class<? extends Skill>) l
+							.get(r);
 					skillName = sklr.newInstance().getType();
+					String[] vers = sklr.newInstance().getCanExecuteVersion();
+					boolean canExe = false;
+					for (int z = 0; z < vers.length; z++)
+						if (vers[z].equals(bukkitVer + ""))
+							canExe = true;
+
+					if (!canExe) {
+						Send.sendConsole("[技能:" + skillName + "]"
+								+ skillList.get(i).getAbsoluteFile().getName()
+								+ "<" + "§c" + l.get(r).getName() + ".class"
+								+ "§b" + ">装载失败(不支持的服务端版本号:" + bukkitVer + ")");
+						continue;
+					}
+
+					Skill.registerSkill(sklr);
 				} catch (Exception e) {
 					Send.sendConsole("[技能:" + skillName + "]"
 							+ skillList.get(i).getAbsoluteFile().getName()

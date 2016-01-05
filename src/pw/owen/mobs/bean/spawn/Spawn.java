@@ -2,6 +2,7 @@ package pw.owen.mobs.bean.spawn;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -67,19 +68,23 @@ public abstract class Spawn {
 		Spawn.spawns = spawns;
 	}
 
-	private Spawn() {
-
-	}
-
 	public static void removeEntity(LivingEntity entity) {
 		if (entity == null)
 			return;
 		for (int i = 0; i < getSpawns().size(); i++) {
 			Spawn spawn = getSpawns().get(i);
-			for (int l = 0; l < spawn.getMobs().size(); l++) {
-				if (spawn.getMobs().get(l).getE().getEntityId() == entity
+			List<Mob> sl = new ArrayList<Mob>(spawn.getMobs());
+			for (int l = 0; l < sl.size(); l++) {
+				if (sl.get(l) == null)
+					continue;
+
+				if (sl.get(l).getE() == null) {
+					spawn.getMobs().remove(sl.get(l));
+					continue;
+				}
+				if (sl.get(l).getE().getEntityId() == entity
 						.getEntityId()) {
-					spawn.getMobs().remove(l);
+					spawn.getMobs().remove(sl.get(l));
 				}
 			}
 		}

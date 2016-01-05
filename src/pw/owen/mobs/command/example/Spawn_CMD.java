@@ -2,6 +2,7 @@ package pw.owen.mobs.command.example;
 
 import java.util.ArrayList;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -124,6 +125,24 @@ public class Spawn_CMD implements PluginCommand{
 
 		Spawn spawn = Main.getsSpawn();
 
+		if(spawn instanceof PointSpawn)
+		{
+			PointSpawn ps = (PointSpawn) spawn;
+			if(args[0].equalsIgnoreCase("tp"))
+ {
+				Location loc = ps.canSpawn(ps.getP());
+				if (loc == null)
+					p.teleport(ps.getP());
+				else
+					p.teleport(loc);
+				Send.sendPluginMessage(p, "´«ËÍ³É¹¦");
+				return true;
+			}
+		} else if (spawn instanceof WorldSpawn)
+			;
+		
+		
+		
 		if (args[0].equalsIgnoreCase("killall")) {
 
 			spawn.killAll();

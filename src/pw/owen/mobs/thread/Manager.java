@@ -78,22 +78,24 @@ public class Manager implements Runnable {
 	private void checkSpawn() {
 		for (int i = 0; i < Spawn.getSpawns().size(); i++) {
 			Spawn mob = Spawn.getSpawns().get(i);
+			List<Mob> ml = new ArrayList<Mob>(mob.getMobs());
+			for (int l = 0; l < ml.size(); l++) {
+				Mob m = ml.get(l);
 
-			for (int l = 0; l < mob.getMobs().size(); l++) {
-				Mob m = mob.getMobs().get(l);
+				if (m == null || m.getE() == null)
+					mob.getMobs().remove(m);
 
-				if (m.getE().isDead() || !m.getE().isValid())
-					mob.getMobs().set(l, null);
-
+				if (m.getE().isDead() || !m.getE().isValid()) {
+					m.getE().remove();
+					mob.getMobs().remove(m);
+				}
 				else if (mob instanceof PointSpawn) {
 					PointSpawn pmob = (PointSpawn) mob;
 					pmob.test();
 				}
 
 		}
-			List<Mob> nullArr = new ArrayList<Mob>();
-			nullArr.add(null);
-			mob.getMobs().removeAll(nullArr);
+
 
 		}
 

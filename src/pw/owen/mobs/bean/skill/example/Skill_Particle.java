@@ -214,6 +214,7 @@ public class Skill_Particle extends Skill {
 
 	}
 
+
 	@Override
 	public boolean canTriggerToCycle() {
 		// TODO 自动生成的方法存根

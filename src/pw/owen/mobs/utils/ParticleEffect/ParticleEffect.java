@@ -11,6 +11,7 @@ package pw.owen.mobs.utils.ParticleEffect;
 /*      */ import org.bukkit.Bukkit;
 /*      */ import org.bukkit.Location;
 /*      */ import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 /*      */ import org.bukkit.entity.Player;
 /*      */ import org.bukkit.util.Vector;
 /*      */ 
@@ -735,11 +736,17 @@ package pw.owen.mobs.utils.ParticleEffect;
 /*      */       }
 /* 1515 */       String worldName = center.getWorld().getName();
 /* 1516 */       double squared = range * range;
-/* 1517 */       for (Player player : Bukkit.getOnlinePlayers())
+
+			/* 1517 */for (OfflinePlayer ofplayer : Bukkit.getOfflinePlayers()) {
+				if (ofplayer.isOnline()) {
+					Player player = ofplayer.getPlayer();
 /* 1518 */         if ((player.getWorld().getName().equals(worldName)) && (player.getLocation().distanceSquared(center) <= squared))
 /*      */         {
 /* 1521 */           sendTo(center, player);
 /*      */         }
+				}
+
+			}
 /*      */     }
 /*      */ 
 /*      */     private static final class PacketInstantiationException extends RuntimeException

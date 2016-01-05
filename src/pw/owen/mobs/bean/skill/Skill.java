@@ -83,6 +83,10 @@ public abstract class Skill {
 		Skill.skills = skills;
 	}
 
+	public String[] getCanExecuteVersion() {
+		return new String[] { "1.7", "1.8" };
+	}
+
 	public static void registerSkill(Class<? extends Skill> c) {
 		types.add(c);
 	}

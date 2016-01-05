@@ -103,6 +103,10 @@ public class PointSpawn extends Spawn {
 
 		ArrayList<Mob> m = getMobs();
 		for (int i = 0; i < m.size(); i++) {
+
+			if (m.get(i) == null || m.get(i).getE() == null)
+				continue;
+
 			if (Math.abs(m.get(i).getE().getLocation().getBlockX()
 					- getP().getBlockX()) > getRange()) {
 				m.get(i).getE().teleport(canSpawn(getP()));
@@ -116,8 +120,12 @@ public class PointSpawn extends Spawn {
 	}
 
 
-	private Location canSpawn(Location loc) {
-		Location loc2 = loc;
+	public Location canSpawn(Location loc) {
+		Location loc2 = loc.clone();
+		int y = canSpawn(loc.getBlockX(), loc.getBlockZ(), loc.getBlockY(),
+				loc.getWorld());
+		if(y==-1)
+			return null;
 		loc2.setY(canSpawn(loc.getBlockX(), loc.getBlockZ(), loc.getBlockY(),
 				loc.getWorld()));
 		return loc2;

@@ -84,6 +84,7 @@ public class Help_CMD implements PluginCommand {
 	}
 
 	public static void pointSpawnHelp(Player p) {
+		Send.sendPluginMessage(p, "&3  /Mobs spawn tp 传送到这个刷怪点处");
 		Send.sendPluginMessage(p, "&3  /Mobs spawn modify point 设置刷新点中心位置");
 		Send.sendPluginMessage(p,
 				"&3  /Mobs spawn modify single [Single] 设置每次刷新数量");
