@@ -1,6 +1,5 @@
 package pw.owen.mobs.run;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,14 +9,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 
 import pw.owen.mobs.bean.mob.Mob;
 import pw.owen.mobs.bean.skill.Skill;
-import pw.owen.mobs.bean.spawn.Spawn;
 import pw.owen.mobs.thread.TitleShows;
 import pw.owen.mobs.utils.Send;
 
@@ -35,27 +32,21 @@ public class AutoListener implements Listener {
 
 	}
 
-	@EventHandler
-	public void ler(PlayerInteractEntityEvent e) {
-		if (Mob.getMob(e.getRightClicked().getEntityId()) != null)
-			e.setCancelled(true);
-	}
+
 
 	@EventHandler
-	public void ecc(ChunkUnloadEvent e) {
-		Entity[] es = e.getChunk().getEntities();
-		for (int i = 0; i < es.length; i++)
-			if (es[i].getMetadata("Mobs") != null
-					&& es[i].getMetadata("Mobs").size() != 0) {
-				e.setCancelled(true);
-				return;
-			}
+	public void ler15(ChunkLoadEvent e) {
+		for (int i = 0; i < e.getChunk().getEntities().length; i++)
+			Mob.changeEntity(e.getChunk().getEntities()[i]);
+
 	}
+
 
 	@EventHandler
 	public void e5(EntityDamageEvent e) {
-		if(Mob.getMob(e.getEntity().getEntityId())!=null)
-			if(Mob.getMob(e.getEntity().getEntityId()).isNoNatureDamage())
+		Mob e1 = Mob.getMob(e.getEntity());
+		if (e1 != null)
+			if (e1.isNoNatureDamage())
 			{
 				
 				
@@ -80,19 +71,15 @@ public class AutoListener implements Listener {
 
 	@EventHandler
 	public void ete(EntityTargetEvent ete) {
+		Mob m1 = Mob.getMob(ete.getEntity());
+		Mob m2 = Mob.getMob(ete.getTarget());
+		if (m1 != null)
+			m1.runSkill(Skill.TRIGGER_TARGET, ete.getTarget(), ete);
 
-		if (Mob.isMob(ete.getEntity().getEntityId())) {
-			Mob m = Mob.getMob(ete.getEntity().getEntityId());
-			m.runSkill(Skill.TRIGGER_TARGET, ete.getTarget(), ete);
+		if (m2 != null)
+			m2.runSkill(Skill.TRIGGER_TARGET, ete.getEntity(), ete);
 
-		}
 
-		if (ete.getTarget() != null)
-			if (Mob.isMob(ete.getTarget().getEntityId())) {
-				Mob m = Mob.getMob(ete.getTarget().getEntityId());
-				m.runSkill(Skill.TRIGGER_TARGET, ete.getEntity(), ete);
-
-			}
 
 	}
 
@@ -153,33 +140,33 @@ public class AutoListener implements Listener {
 
 	@EventHandler
 	public void edbee(EntityDamageByEntityEvent edbee) {
+		Mob m1 = Mob.getMob(Mob.getId(edbee.getDamager()));
 
+		if (m1 != null) {
 
-		if (Mob.isMob(edbee.getDamager().getEntityId())) {
-			Mob m = Mob.getMob(edbee.getDamager().getEntityId());
-			int dmg = m.getDmg();
+			int dmg = m1.getDmg();
 			if (dmg != -1) {
-				if (m.isAttrCover())
+				if (m1.isAttrCover())
 					edbee.setDamage(dmg);
 				else
 					edbee.setDamage(edbee.getDamage() + dmg);
 			}
 
-			m.runSkill(Skill.TRIGGER_ATTACK, edbee.getEntity(), edbee);
+			m1.runSkill(Skill.TRIGGER_ATTACK, edbee.getEntity(), edbee);
 
 
 		}
 		
-		
-		if (Mob.isMob(edbee.getEntity().getEntityId())) {
-			Mob m = Mob.getMob(edbee.getEntity().getEntityId());
-			m.runSkill(Skill.TRIGGER_HURT, edbee.getDamager(), edbee);
+		Mob m2 = Mob.getMob(Mob.getId(edbee.getEntity()));
+		if (m2 != null) {
 			
-			if (m.isNoRepel() != null)
-				if (m.isNoRepel()) {
+			m2.runSkill(Skill.TRIGGER_HURT, edbee.getDamager(), edbee);
+
+			if (m2.isNoRepel() != null)
+				if (m2.isNoRepel()) {
 					double dmg = edbee.getDamage();
 					edbee.setCancelled(true);
-					((LivingEntity) m.getE()).damage(dmg);
+					((LivingEntity) m2.getE()).damage(dmg);
 				}
 
 		}
@@ -188,13 +175,12 @@ public class AutoListener implements Listener {
 		
 	}
 
+
 	@EventHandler
 	public void ede(EntityDeathEvent ede) {
-		Spawn.removeEntity(ede.getEntity());
-		if (Mob.isMob(ede.getEntity().getEntityId())) {
-			Entity e = ede.getEntity();
-			Mob m = Mob.getMob(e.getEntityId());
+		Mob m = Mob.getMob(ede.getEntity());
 
+		if (m != null) {
 			if (m.isAttrCover())
 				ede.setDroppedExp(m.getExp());
 			else

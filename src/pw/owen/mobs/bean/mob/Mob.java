@@ -15,7 +15,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import pw.owen.mobs.bean.skill.Skill;
 import pw.owen.mobs.bean.spawn.PointSpawn;
@@ -23,6 +22,7 @@ import pw.owen.mobs.bean.spawn.Spawn;
 import pw.owen.mobs.bean.spawn.WorldSpawn;
 import pw.owen.mobs.run.Main;
 import pw.owen.mobs.thread.TitleShows;
+import pw.owen.mobs.utils.Send;
 import pw.owen.mobs.utils.StringEncrypt;
 import pw.owen.mobs.utils.mobtype.MobType;
 
@@ -113,31 +113,6 @@ public class Mob {
 		return exp;
 	}
 
-	public static boolean isMob(int entityId) {
-		for (int i = 0; i < mobs.size(); i++) {
-			if (mobs.get(i).getE().getEntityId() == entityId) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static Mob getMob(int entityId) {
-		for (int i = 0; i < mobs.size(); i++) {
-			if (mobs.get(i).getE().getEntityId() == entityId) {
-
-				if (MobModel.getMobModel(mobs.get(i).getsName()) != null)
- {
-					MobModel.getMobModel(mobs.get(i).getsName()).addMob(
-							mobs.get(i));
-					return mobs.get(i);
-				}
-
-			}
-		}
-		return null;
-	}
-
 	public ArrayList<Skill> getSkills() {
 		ArrayList<Skill> a = new ArrayList<Skill>(skills.keySet());
 		return a;
@@ -181,12 +156,10 @@ public class Mob {
  BossName bossName, String sName, String rider,
 			Boolean noRepel, MobType type, Boolean noNatureDamage,
 			Boolean autoSave) {
-		this(spawnOf, StringEncrypt
-				.getBase64(Math.random() + "/" + System.currentTimeMillis()
-						+ "/" + e.getLocation().toString()), dmg, e, drop,
+		this(spawnOf, e.getUniqueId().toString(), dmg, e, drop,
 				skills, exp, isAttrCover, bossName, sName, rider, noRepel,
 				type, noNatureDamage, autoSave);
-
+		
 	}
 
 	public Mob(Object spawnOf, String id, int dmg, LivingEntity e,
@@ -225,11 +198,11 @@ public class Mob {
 		this.bossName = bossName;
 		this.noNatureDamage = noNatureDamage;
 		this.id = id;
-		e.setMetadata("Mobs", new FixedMetadataValue(Main.getMain(), id));
 		this.noRepel = noRepel;
 		mobs.add(this);
 
 	}
+
 
 	public String getId() {
 		return id;
@@ -246,22 +219,22 @@ public class Mob {
 
 
 	public static void killAll() {
-		for (int i = 0; i < mobs.size(); i++) {
-			mobs.get(i).getE().remove();
-		}
-		mobs.clear();
+
+
 		List<Entity> rm = new ArrayList<Entity>();
 		for (int l = 0; l < Bukkit.getWorlds().size(); l++)
 			for (int i = 0; i < Bukkit.getWorlds().get(l).getEntities().size(); i++) {
 				Entity es = Bukkit.getWorlds().get(l).getEntities().get(i);
-				if (es.getMetadata("Mobs") != null
-						&& es.getMetadata("Mobs").size() != 0)
+				if (getMob(es) != null)
 					rm.add(es);
 			}
 		
 		for (int i = 0; i < rm.size(); i++)
 			rm.get(i).remove();
-			
+
+		ArrayList<Mob> ms = new ArrayList<Mob>(mobs);
+		for (int i = 0; i < ms.size(); i++)
+			ms.get(i).remove();
 			}
 
 
@@ -281,50 +254,72 @@ public class Mob {
 	public void remove() {
 		getE().remove();
 		mobs.remove(this);
+		MobModel.remove(this);
+		for (int i = 0; i < Spawn.getSpawns().size(); i++)
+			Spawn.getSpawns().get(i).kill(this);
 
 	}
 
 	public void onlyRemove() {
 		mobs.remove(this);
+		MobModel.remove(this);
+		for (int i = 0; i < Spawn.getSpawns().size(); i++)
+			Spawn.getSpawns().get(i).onlyKill(this);
 
 	}
 
 	public static List<Mob> getMob(List<Entity> l) {
 		ArrayList<Mob> s = new ArrayList<Mob>();
 		for (int i = 0; i < l.size(); i++)
-			if (isMob(l.get(i).getEntityId()))
-				s.add(getMob(l.get(i).getEntityId()));
+			if (getMob(getId(l.get(i))) != null)
+				s.add(getMob(getId(l.get(i))));
 		if (s.size() == 0)
 			return null;
 		else
 			return s;
 	}
 
+	public static Mob getMob(Entity e) {
+
+		for (int i = 0; i < mobs.size(); i++)
+			if (mobs.get(i).getId().equals(Mob.getId(e)))
+				return mobs.get(i);
+
+		return null;
+	}
+
 	public static boolean isMob(List<Entity> l) {
 		for (int i = 0; i < l.size(); i++)
-			if (isMob(l.get(i).getEntityId()))
+			if (getMob(getId(l.get(i))) != null)
 				return true;
 
 		return false;
 	}
 
+	public static String getId(Entity e) {
+		if (e == null)
+			return null;
+		return e.getUniqueId().toString();
+	}
+
 	public static Mob getNearbyBoss(Player p, double x, double y, double z) {
 		List<Entity> es = p.getNearbyEntities(x, y, z);
 		for (int i = 0; i < es.size(); i++)
-			if (isMob(es.get(i).getEntityId()))
-				if (getMob(es.get(i).getEntityId()).getBossName().isEnable())
-				return getMob(es.get(i).getEntityId());
-
+ {
+			Mob mob = getMob(getId(es.get(i)));
+			if (mob != null)
+				if (mob.getBossName().isEnable())
+					return mob;
+		}
 		return null;
 	}
 
 
 	public static void checkAll() {
-		for (int i = 0; i < mobs.size(); i++) {
-			if (mobs.get(mobs.size() - 1 - i).getE().isDead())
-				mobs.get(mobs.size() - 1 - i).remove();
-
-		}
+		ArrayList<Mob> ms = new ArrayList<Mob>(mobs);
+		for (int i = 0; i < ms.size(); i++)
+			if (ms.get(i).getE().isDead())
+				ms.get(i).remove();
 
 	}
 
@@ -337,40 +332,38 @@ public class Mob {
 		Main.getMobYml().createSection("Mobs");
 		ConfigurationSection section = Main.getMobYml()
 				.getConfigurationSection("Mobs");
-		for (int i = 0; i < mobs.size(); i++) {
-			if (mobs.get(i) == null)
-				continue;
-			if (mobs.get(i).getE().isDead())
-				continue;
-			if (!mobs.get(i).isAutoSave())
-				continue;
+		for (int i = 0; i < mobs.size(); i++)
+			if (mobs.get(i) != null) {
+				if (!((Mob) mobs.get(i)).getE().isDead()) {
+					if (((Mob) mobs.get(i)).isAutoSave()) {
+						MobSave save = new MobSave((Mob) mobs.get(i));
+						String key = StringEncrypt.getBase64(save.toJson()
+								.replaceAll("\n", ""));
 
-			MobSave save = new MobSave(mobs.get(i));
-			String key = StringEncrypt.getBase64(save.toJson().replaceAll("\n",
-					""));
-
-			ConfigurationSection s1 = section.createSection(key);
-			s1.set("Drop", save.ADrop());
-			s1.set("Eqpt", Arrays.asList(save.AEQPT()));
-
-		}
+						ConfigurationSection s1 = section.createSection(key);
+						s1.set("Drop", save.ADrop());
+						s1.set("Eqpt", Arrays.asList(save.AEQPT()));
+					}
+				}
+			}
 		GZIPOutputStream gz = null;
 		try {
 			gz = new GZIPOutputStream(new FileOutputStream(
-				Main.getMobSaveFile()));
-		gz.write(Main.getMobYml().saveToString().getBytes());
-		gz.finish();
-		gz.flush();
-		gz.close();
+					Main.getMobSaveFile()));
+			gz.write(Main.getMobYml().saveToString().getBytes());
+			gz.finish();
+			gz.flush();
+			gz.close();
 		} finally {
 			gz.close();
 		}
 
 
-
 	}
 
 	public static Mob getMob(String id) {
+		if (id == null)
+			return null;
 		for (int i = 0; i < mobs.size(); i++) {
 			if (mobs.get(i).getId().equals(id))
 				return mobs.get(i);
@@ -405,6 +398,47 @@ public class Mob {
 
 					}
 
+	public static void changeEntity(Entity e) {
+		String eid = getId(e);
+		if (eid == null)
+			return;
+		for(int i=0;i<mobs.size();i++)
+			if (mobs.get(i).getId().equals(eid))
+				if (e instanceof LivingEntity)
+					mobs.get(i).setE((LivingEntity) e);
+	}
+
+	public boolean getNewEntity() {
+		for (int i = 0; i < Bukkit.getWorlds().size(); i++) {
+			List<Entity> ls = Bukkit.getWorlds().get(i).getEntities();
+			for (int r = 0; r < ls.size(); r++)
+				if (ls.get(r).getUniqueId().toString().equals(getId())) {
+					Entity ne = ls.get(r);
+					if (ne instanceof LivingEntity) {
+						setE((LivingEntity) ne);
+						return true;
+					}
+
+				}
+		}
+		return false;
+	}
+
+	public static Entity getEntity(String uuid) {
+		// Send.sendConsole("get" + Bukkit.getWorlds().size());
+		for (int i = 0; i < Bukkit.getWorlds().size(); i++) {
+			List<Entity> ls = Bukkit.getWorlds().get(i).getEntities();
+			for (int r = 0; r < ls.size(); i++)
+				if (ls.get(i).getUniqueId().toString().equals(uuid))
+					return ls.get(i);
+				else
+					Send.sendConsole(ls.get(i).getUniqueId().toString() + "|"
+							+ uuid);
+			// Send.sendConsole(ls.size() + "");
+		}
+		return null;
+
+	}
 
 
 

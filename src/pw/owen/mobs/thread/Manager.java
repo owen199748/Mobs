@@ -19,8 +19,6 @@ public class Manager implements Runnable {
 
 	private long startTime = 0;
 	private long g = 0;
-	private long g1 = 0;
-	private long g2 = 0;
 	public static final int RUNS = 10;
 
 	public Manager() {
@@ -38,17 +36,16 @@ public class Manager implements Runnable {
 		g++;
 		if (g % 60 == 0)
  {
-			g = 0;
 			checkSpawn();
 		}
 
-		g1++;
-		if (g1 % (60 * 2) == 0)
+		if (g % (60 * 2) == 0)
  {
-			g1 = 0;
 			mobSave();
 		}
 
+		if (g == Long.MAX_VALUE)
+			g = 0;
 	}
 
 	private void runCycleSkill() {
@@ -76,6 +73,7 @@ public class Manager implements Runnable {
 	}
 
 	private void checkSpawn() {
+		Mob.checkAll();
 		for (int i = 0; i < Spawn.getSpawns().size(); i++) {
 			Spawn mob = Spawn.getSpawns().get(i);
 			List<Mob> ml = new ArrayList<Mob>(mob.getMobs());
@@ -83,11 +81,16 @@ public class Manager implements Runnable {
 				Mob m = ml.get(l);
 
 				if (m == null || m.getE() == null)
+ {
 					mob.getMobs().remove(m);
-
+					continue;
+				}
 				if (m.getE().isDead() || !m.getE().isValid()) {
-					m.getE().remove();
-					mob.getMobs().remove(m);
+					if (!m.getNewEntity())
+ {
+						m.remove();
+						continue;
+					}
 				}
 				else if (mob instanceof PointSpawn) {
 					PointSpawn pmob = (PointSpawn) mob;

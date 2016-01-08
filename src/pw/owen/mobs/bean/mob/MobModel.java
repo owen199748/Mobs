@@ -56,6 +56,9 @@ public class MobModel {
 		MAIN_F = Main.getF();
 	}
 
+	public ArrayList<Mob> getMobs() {
+		return mobs;
+	}
 	public String getSee() {
 		String s1 = "怪物名:" + sName;
 		String s2 = "显示名:" + displayName;
@@ -188,12 +191,11 @@ public class MobModel {
 		MobModel.mobModel = mobModel;
 	}
 
-	public boolean isMob(int r) {
-		for (int i = 0; i < mobs.size(); i++) {
-			if (mobs.get(i).getE().getEntityId() == r) {
+	public boolean isMob(String id) {
+		for (int i = 0; i < mobs.size(); i++)
+			if (mobs.get(i).getId().equals(id))
 				return true;
-			}
-		}
+
 		return false;
 	}
 
@@ -687,13 +689,11 @@ if(all.length!=3)
 
 
 	public void killAll() {
-		for (int i = 0; i < Mob.getMobs().size(); i++) {
-			if (Mob.getMobs().get(i).getsName().equalsIgnoreCase(this.sName))
-				Mob.getMobs().get(i).getE().remove();
+		List<Mob> ms = new ArrayList<Mob>(mobs);
+		for (int i = 0; i < ms.size(); i++)
+				ms.get(i).remove();
 
-		}
-		mobs = new ArrayList<Mob>();
-		Mob.checkAll();
+		mobs.clear();
 
 	}
 
@@ -710,6 +710,16 @@ if(all.length!=3)
 
 	public void addDrop(ItemStack item, int random, DropNum dn) {
 		this.drop.add(new DropItemStack(item, random, dn));
+
+	}
+
+
+
+	public static void remove(Mob mob) {
+		for(int i=0;i<mobModel.size();i++)
+			mobModel.get(i).getMobs().remove(mob);
+			
+		
 
 	}
 

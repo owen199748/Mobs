@@ -7,7 +7,6 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
 import pw.owen.mobs.bean.mob.Mob;
@@ -39,7 +38,9 @@ public abstract class Spawn {
 		MAIN_F = Main.getF();
 	}
 
-
+	public ArrayList<Mob> getElseMobs() {
+		return elseMobs;
+	}
 	protected void setLast() {
 		last = System.currentTimeMillis();
 	}
@@ -48,9 +49,9 @@ public abstract class Spawn {
 		return last;
 	}
 
-	public boolean isSpawnMob(int entityId) {
+	public boolean isSpawnMob(String id) {
 		for (int i = 0; i < mobs.size(); i++)
-			if (mobs.get(i).getE().getEntityId() == entityId)
+			if (mobs.get(i).getId().equals(id))
 				return true;
 
 		return false;
@@ -68,8 +69,34 @@ public abstract class Spawn {
 		Spawn.spawns = spawns;
 	}
 
-	public static void removeEntity(LivingEntity entity) {
-		if (entity == null)
+	public static void remove(Mob mob) {
+		if (mob == null)
+			return;
+		for (int i = 0; i < getSpawns().size(); i++) {
+			Spawn spawn = getSpawns().get(i);
+			List<Mob> sl = new ArrayList<Mob>(spawn.getMobs());
+			List<Mob> sl2 = new ArrayList<Mob>(spawn.getElseMobs());
+			for (int l = 0; l < sl.size(); l++) {
+				if (sl.get(l) == null)
+					continue;
+
+				if (sl.get(l).getId().equals(mob.getId()))
+					sl.get(l).remove();
+			}
+			for (int l = 0; l < sl2.size(); l++) {
+				if (sl2.get(l) == null)
+					continue;
+
+				if (sl2.get(l).getId().equals(mob.getId()))
+					sl2.get(l).remove();
+
+			}
+
+		}
+	}
+
+	public static void remove(String id) {
+		if (id == null)
 			return;
 		for (int i = 0; i < getSpawns().size(); i++) {
 			Spawn spawn = getSpawns().get(i);
@@ -78,18 +105,12 @@ public abstract class Spawn {
 				if (sl.get(l) == null)
 					continue;
 
-				if (sl.get(l).getE() == null) {
-					spawn.getMobs().remove(sl.get(l));
-					continue;
-				}
-				if (sl.get(l).getE().getEntityId() == entity
-						.getEntityId()) {
+				if (sl.get(l).getId().equals(id)) {
 					spawn.getMobs().remove(sl.get(l));
 				}
 			}
 		}
 	}
-
 	public static Spawn getCreate(String name) {
 		for (int i = 0; i < getSpawns().size(); i++) {
 			if (getSpawns().get(i).getcName().equalsIgnoreCase(name)) {
@@ -224,17 +245,22 @@ public abstract class Spawn {
 
 	public void killAll() {
 		for (int i = 0; i < mobs.size(); i++)
-			mobs.get(i).getE().remove();
+			mobs.get(i).remove();
 
 		mobs.clear();
 
 		for (int i = 0; i < elseMobs.size(); i++)
 			if (elseMobs.get(i) != null && elseMobs.get(i).getE() != null)
-			elseMobs.get(i).getE().remove();
-
+				elseMobs.get(i).remove();
 
 		elseMobs.clear();
 
+	}
+
+	public static void killAlls() {
+		for (int r = 0; r < spawns.size(); r++) {
+			spawns.get(r).killAll();
+		}
 	}
 
 	public void addItems(ItemStack item, int i) {
@@ -312,6 +338,15 @@ public abstract class Spawn {
 		Mob.checkAll();
 
 
+	}
+
+	public void kill(Mob mob) {
+		mob.getE().remove();
+		mobs.remove(mob);
+	}
+
+	public void onlyKill(Mob mob) {
+		mobs.remove(mob);
 	}
 
 }

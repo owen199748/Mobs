@@ -297,7 +297,7 @@ public class WorldSpawn extends Spawn {
 		int l = 0;
 		if (getMaxInWorld() != -1) {
 		for (int i = 0; i < es2.size(); i++)
-			if (isSpawnMob(es2.get(i).getEntityId()))
+				if (isSpawnMob(Mob.getId(es2.get(i))))
 				l++;
 
 		if (l >= getMaxInWorld())
@@ -308,7 +308,7 @@ public class WorldSpawn extends Spawn {
 		Entity[] es = loc.getChunk().getEntities();
 		l = 0;
 		for (int i = 0; i < es.length; i++)
-			if (isSpawnMob(es[i].getEntityId()))
+				if (isSpawnMob(Mob.getId(es[i])))
 				l++;
 
 		if (l >= getMaxInChunk())
