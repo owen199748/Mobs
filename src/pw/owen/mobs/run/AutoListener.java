@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 import pw.owen.mobs.bean.mob.Mob;
 import pw.owen.mobs.bean.skill.Skill;
@@ -41,6 +42,18 @@ public class AutoListener implements Listener {
 
 	}
 
+	@EventHandler
+	public void ler16(ChunkLoadEvent e) {
+		for (int i = 0; i < e.getChunk().getEntities().length; i++)
+			if (Mob.changeEntity(e.getChunk().getEntities()[i]))
+ {// Bukkit.broadcastMessage("ChunkLoadEvent");
+			}
+	}
+
+	@EventHandler
+	public void lerXX16(ChunkUnloadEvent e) {
+
+	}
 
 	@EventHandler
 	public void e5(EntityDamageEvent e) {
@@ -71,15 +84,23 @@ public class AutoListener implements Listener {
 
 	@EventHandler
 	public void ete(EntityTargetEvent ete) {
+
 		Mob m1 = Mob.getMob(ete.getEntity());
 		Mob m2 = Mob.getMob(ete.getTarget());
+
 		if (m1 != null)
-			m1.runSkill(Skill.TRIGGER_TARGET, ete.getTarget(), ete);
+			if (ete.getReason() != EntityTargetEvent.TargetReason.TARGET_DIED)
+				if (!m1.isTarget(ete.getReason()))
+ {
+					ete.setCancelled(true);
+					return;
+				}
+
+		if (m1 != null)
+			m1.runSkill(Skill.TRIGGER_BETARGET, ete.getTarget(), ete);
 
 		if (m2 != null)
 			m2.runSkill(Skill.TRIGGER_TARGET, ete.getEntity(), ete);
-
-
 
 	}
 
@@ -88,8 +109,11 @@ public class AutoListener implements Listener {
 		if (pje.getPlayer().isOp()) {
 			if (!Main.getCfg().getString("Version")
 					.equalsIgnoreCase(Main.getV())) {
+
 				Send.sendPluginMessage(pje.getPlayer(),
 						"插件与存在的配置版本不统一,请删除配置并重载插件.");
+				Send.sendPluginMessage(pje.getPlayer(),
+						"插件已經移除所有被保存的Mobs生物,請將配置升級成功后將會自動恢復.");
 				Send.sendPluginMessage(pje.getPlayer(),
 						"如果确认老版本配置支持当前版本请输入 /Mobs update 转换为新版本配置.");
 				Send.sendPluginMessage(pje.getPlayer(),

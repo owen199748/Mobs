@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
@@ -14,6 +15,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.inventory.ItemStack;
 
 import pw.owen.mobs.bean.skill.Skill;
@@ -44,8 +46,11 @@ public class Mob {
 	private MobType type;
 	private boolean noNatureDamage = false;
 	private Boolean autoSave = true;
+	private HashSet<String> target;
 
-
+public HashSet<String> getTarget() {
+	return target;
+}
 	public boolean isNoNatureDamage() {
 		return noNatureDamage;
 	}
@@ -155,10 +160,10 @@ public class Mob {
 			ArrayList<Skill> skills, int exp, boolean isAttrCover,
  BossName bossName, String sName, String rider,
 			Boolean noRepel, MobType type, Boolean noNatureDamage,
-			Boolean autoSave) {
+			Boolean autoSave, HashSet<String> target) {
 		this(spawnOf, e.getUniqueId().toString(), dmg, e, drop,
 				skills, exp, isAttrCover, bossName, sName, rider, noRepel,
-				type, noNatureDamage, autoSave);
+				type, noNatureDamage, autoSave,target);
 		
 	}
 
@@ -166,8 +171,12 @@ public class Mob {
 			ArrayList<ItemStack> drop, ArrayList<Skill> skills, int exp,
 			boolean isAttrCover, BossName bossName, String sName, String rider,
 			Boolean noRepel, MobType type, boolean noNatureDamage,
-			Boolean autoSave) {
+			Boolean autoSave, HashSet<String> target) {
 		this.type = type;
+		if(target!=null)
+		this.target=target;
+		else
+			this.target=new HashSet<String>();
 		HashMap<Skill, Long> h = new HashMap<Skill, Long>();
 		for (int i = 0; i < skills.size(); i++)
 			h.put(skills.get(i), new Long(0));
@@ -334,9 +343,9 @@ public class Mob {
 				.getConfigurationSection("Mobs");
 		for (int i = 0; i < mobs.size(); i++)
 			if (mobs.get(i) != null) {
-				if (!((Mob) mobs.get(i)).getE().isDead()) {
-					if (((Mob) mobs.get(i)).isAutoSave()) {
-						MobSave save = new MobSave((Mob) mobs.get(i));
+				if (!(mobs.get(i)).getE().isDead()) {
+					if ((mobs.get(i)).isAutoSave()) {
+						MobSave save = new MobSave(mobs.get(i));
 						String key = StringEncrypt.getBase64(save.toJson()
 								.replaceAll("\n", ""));
 
@@ -398,14 +407,21 @@ public class Mob {
 
 					}
 
-	public static void changeEntity(Entity e) {
+	public static boolean changeEntity(Entity e) {
 		String eid = getId(e);
 		if (eid == null)
-			return;
+			return false;
 		for(int i=0;i<mobs.size();i++)
 			if (mobs.get(i).getId().equals(eid))
 				if (e instanceof LivingEntity)
+					if (e != mobs.get(i).getE())
+ {
+
+					mobs.get(i).getE().remove();
 					mobs.get(i).setE((LivingEntity) e);
+					return true;
+				}
+		return false;
 	}
 
 	public boolean getNewEntity() {
@@ -414,10 +430,13 @@ public class Mob {
 			for (int r = 0; r < ls.size(); r++)
 				if (ls.get(r).getUniqueId().toString().equals(getId())) {
 					Entity ne = ls.get(r);
-					if (ne instanceof LivingEntity) {
+					if (ne instanceof LivingEntity)
+						if (ne != e) {
+						e.remove();
 						setE((LivingEntity) ne);
 						return true;
-					}
+						} else
+							return true;
 
 				}
 		}
@@ -438,6 +457,15 @@ public class Mob {
 		}
 		return null;
 
+	}
+	public boolean isTarget(TargetReason reason) {
+TargetSelect tg = TargetSelect.valuesOfReason(reason);
+
+			if(tg!=null)
+				for(int i=0;i<target.size();i++)
+					if(target.toArray()[i].equals(tg.name()))
+						return true;
+			return false;
 	}
 
 

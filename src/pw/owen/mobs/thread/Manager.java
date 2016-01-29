@@ -34,7 +34,7 @@ public class Manager implements Runnable {
 		Skill.skillRunAll();
 
 		g++;
-		if (g % 60 == 0)
+		if (g % 5 == 0)
  {
 			checkSpawn();
 		}
@@ -85,17 +85,16 @@ public class Manager implements Runnable {
 					mob.getMobs().remove(m);
 					continue;
 				}
-				if (m.getE().isDead() || !m.getE().isValid()) {
-					if (!m.getNewEntity())
- {
-						m.remove();
-						continue;
-					}
-				}
-				else if (mob instanceof PointSpawn) {
-					PointSpawn pmob = (PointSpawn) mob;
-					pmob.test();
-				}
+				// if (m.getE().isDead() || !m.getE().isValid()) {
+				if (m.getE().getLocation().getChunk().isLoaded())
+				if (!m.getNewEntity())
+					m.remove();
+				// Bukkit.broadcastMessage(m.getE().isDead() + "||"
+				// + m.getE().isValid());
+
+				// }
+				else if (mob instanceof PointSpawn)
+					((PointSpawn) mob).locationRepush();
 
 		}
 

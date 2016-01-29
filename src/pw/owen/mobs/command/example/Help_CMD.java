@@ -163,7 +163,7 @@ public class Help_CMD implements PluginCommand {
 		Send.sendPluginMessage(
 				p,
 				"&3  /Mobs mob modify bossname [enable/show/nearby] 是否以boss方式显示名称(nearby属性中,0代表boss所在世界全部玩家,-1代表所有玩家 )");
-
+		Send.sendPluginMessage(p, "&3  /Mobs mob modify target [add/del/list] 添加/删除(使用名称而非编号)/列举该怪物的攻击目标列表</Mobs TargetType 查看支持的类型>");
 	}
 
 	public static void skillHelp(Player p) {
@@ -189,6 +189,7 @@ public class Help_CMD implements PluginCommand {
 		Send.sendPluginMessage(p, "&3  /Mobs listBan 查看你所在的世界是否禁用默认产生的动物/怪物");
 		Send.sendPluginMessage(p, "&3  /Mobs PotionType 查看所有支持的药水类型");
 		Send.sendPluginMessage(p, "&3  /Mobs MobType 查看所有支持作为怪物的类型");
+		Send.sendPluginMessage(p, "&3  /Mobs TargetType 查看所有支持作为攻击目标的类型");
 		Send.sendPluginMessage(p, "&3  /Mobs update 智能升级旧版配置");
 		Send.sendPluginMessage(p, "&3  /Mobs reload 重载插件");
 		Send.sendPluginMessage(p, "&3  /Mobs help 帮助");

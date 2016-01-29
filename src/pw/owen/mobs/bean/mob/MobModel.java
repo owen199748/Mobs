@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +40,7 @@ public class MobModel {
 	private MobType type = null;
 	private Boolean isAttrCover = true;
 	private ArrayList<DropItemStack> drop = new ArrayList<DropItemStack>();
+	private HashSet<String> target = new HashSet<String>();
 	private Boolean noNatureDamage = false;
 	private Boolean autoSave = true;
 	private Integer dropType = 0;
@@ -262,6 +264,8 @@ public class MobModel {
 		dmg.setMax(7);
 		exp.setMin(5);
 		exp.setMax(10);
+		for(int i=0;i<TargetSelect.values().length;i++)
+			target.add(TargetSelect.values()[i].name());
 		size = 5;
 		type = MobType.fromName("½©Ê¬");
 		dropType = 2;
@@ -299,6 +303,11 @@ public class MobModel {
 		rider = cfg.getString("rider");
 		noRepel = cfg.getBoolean("noRepel");
 		autoSave = cfg.getBoolean("autoSave");
+		List<?> tgs = cfg.getList("target");
+		if(tgs!=null)
+		for(int i=0;i<tgs.size();i++)
+			if(TargetSelect.valueOf((String) tgs.get(i))!=null)
+			target.add(TargetSelect.valueOf((String) tgs.get(i)).name());
 		ConfigurationSection effs = cfg.getConfigurationSection("potionEffect");
 		Set<String> effset = effs.getKeys(false);
 		for (int i = 0; i < effset.size(); i++)
@@ -478,7 +487,7 @@ if(all.length!=3)
 		cfg.getConfigurationSection("eqpt").set("Boots", eqpt.getBoots());
 		cfg.getConfigurationSection("eqpt").set("Hand", eqpt.getHand());
 		cfg.set("potionEffect", null);
-		cfg.createSection("potionEffect");
+		cfg.createSection("potionEffect");		
 		Object[] effc = potion.keySet().toArray();
 		for (int i = 0; i < effc.length; i++) {
 			cfg.getConfigurationSection("potionEffect").set((String) effc[i],
@@ -486,26 +495,28 @@ if(all.length!=3)
 		}
 		cfg.createSection("drop");
 		for (int i = 0; i < drop.size(); i++) {
+			DropItemStack dp = drop.get(i);
+			DropNum sz = dp.getDropSize();
+			String tag = drop.get(i).getI()
+					+ "_"
+					+ ((sz == null) ? "-1_-1" : sz.getMin() + "_" + sz.getMax());
 			List<ItemStack> l = (List<ItemStack>) cfg.getConfigurationSection(
-					"drop").getList(drop.get(i).getI() + "");
+					"drop").getList(tag);
+			
 			if (l == null) {
 				l = new ArrayList<ItemStack>();
 			}
-			// EntityType.ARROW
+
 			l.add(drop.get(i).getItem());
-			DropNum sz = drop.get(i).getDropSize();
-			cfg.getConfigurationSection("drop").set(
-					drop.get(i).getI()
-							+ "_"
-							+ ((sz == null) ? "-1_-1" : sz.getMin() + "_"
-									+ sz.getMax()), l);
+			cfg.getConfigurationSection("drop").set(tag, l);
 		}
 		ArrayList<String> skillStr = new ArrayList<String>();
 		for (int i = 0; i < skills.size(); i++) {
 			skillStr.add(skills.get(i).getsName());
 		}
 		cfg.set("skills", skillStr);
-
+			cfg.set("target", new ArrayList<String>(target));
+		
 	}
 
 	public String getrider() {
@@ -610,7 +621,7 @@ if(all.length!=3)
 		Mob m = new Mob(spawnOf, dmg.getInt(), e, isl, getSkills(),
 				exp.getInt(),
  isAttrCover, bossName, sName, ri, noRepel, type,
-				noNatureDamage, autoSave);
+				noNatureDamage, autoSave,target);
 		if (m != null)
  {
 			mobs.add(m);
@@ -627,6 +638,9 @@ if(all.length!=3)
 
 		return m;
 
+	}
+	public HashSet<String> getTarget() {
+		return target;
 	}
 
 	public void setAutoSave(Boolean autoSave) {

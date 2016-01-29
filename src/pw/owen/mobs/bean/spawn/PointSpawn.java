@@ -97,7 +97,7 @@ public class PointSpawn extends Spawn {
 		return this.POINTMOBCREATE;
 	}
 
-	public void test() {
+	public void locationRepush() {
 		if (!isOnMove())
 			return;
 
@@ -173,7 +173,7 @@ public class PointSpawn extends Spawn {
 
 	public Location getRandomLocation() {
 		if (onPoint)
-			return canSpawn(p.getLocation());
+			return p.getLocation();
 
 		return getRandomLocation(p, range);
 

@@ -259,6 +259,10 @@ public class Main extends JavaPlugin {
 			maine.printStackTrace();
 		}
 
+		if (!Main.getCfg().getString("Version").equalsIgnoreCase(Main.getV()))
+			new File(Bukkit.getPluginManager().getPlugin(this.getName())
+					.getDataFolder().getAbsolutePath()
+					+ File.separator + "save.dat").delete();
 		Send.sendConsole("┏一一一一一一一一一一一┓");
 		Send.sendConsole(" --->>>>>>>>>>>>>>>>>>---");
 		Send.sendConsole(" --->>>>>加载成功>>>>>---");
@@ -305,8 +309,8 @@ public class Main extends JavaPlugin {
 						.getList("Drop"));
 				save.BEQPT((List<ItemStack>) s.getConfigurationSection(key)
 						.getList("Eqpt"));
-				save.toMob();
 
+			Mob mm = save.toMob();
 			}
 			Mob.checkRider();
 			Send.sendConsole(Send.COLOR.LIGHT_PURPLE + "成功恢复了" + list.size()
@@ -552,6 +556,7 @@ public class Main extends JavaPlugin {
 			ErrorReport.report(LoggerListener.toString(e));
 		}
 		Mob.killAll();
+
 		try {
 			ErrorReport.update();
 		} catch (IOException e1) {

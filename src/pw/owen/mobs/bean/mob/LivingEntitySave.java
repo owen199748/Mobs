@@ -79,8 +79,10 @@ public class LivingEntitySave {
 		x = e.getLocation().getX();
 		y = e.getLocation().getY();
 		z = e.getLocation().getZ();
-
-		eqpt = e.getEquipment().getArmorContents();
+		eqpt = new ItemStack[5];
+		for (int i = 0; i < e.getEquipment().getArmorContents().length; i++)
+			eqpt[i] = e.getEquipment().getArmorContents()[i];
+		eqpt[4] = e.getEquipment().getItemInHand();
 		canPickupItems = e.getCanPickupItems();
 		customName = e.getCustomName();
 		customNameVisible = e.isCustomNameVisible();
@@ -116,8 +118,18 @@ public class LivingEntitySave {
 
 		LivingEntity e = MobType.create(MobType.fromName(type), new Location(
 				Bukkit.getWorld(w), x, y, z));
-
-		e.getEquipment().setArmorContents(eqpt);
+		if (eqpt.length >= 5)
+		e.getEquipment().setItemInHand(eqpt[4]);
+		ItemStack[] im = new ItemStack[4];
+		if (eqpt.length >= 1)
+			im[0] = eqpt[0];
+		if (eqpt.length >= 2)
+			im[1] = eqpt[1];
+		if (eqpt.length >= 3)
+			im[2] = eqpt[2];
+		if (eqpt.length >= 4)
+			im[3] = eqpt[3];
+		e.getEquipment().setArmorContents(im);
 		e.setCanPickupItems(canPickupItems);
 		e.setCustomName(customName);
 		e.setCustomNameVisible(customNameVisible);

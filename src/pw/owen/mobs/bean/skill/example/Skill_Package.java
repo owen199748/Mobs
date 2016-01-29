@@ -183,9 +183,6 @@ public class Skill_Package extends Skill {
 		}
 	}
 
-	public void run(Mob mob, Entity entity, Event event) {
-
-	}
 
 	@Override
 	public boolean canTriggerToCycle() {

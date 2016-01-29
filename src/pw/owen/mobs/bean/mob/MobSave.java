@@ -3,6 +3,7 @@ package pw.owen.mobs.bean.mob;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import pw.owen.mobs.bean.skill.Skill;
 import pw.owen.mobs.bean.spawn.PointSpawn;
 import pw.owen.mobs.bean.spawn.Spawn;
 import pw.owen.mobs.bean.spawn.WorldSpawn;
+import pw.owen.mobs.utils.Send;
 import pw.owen.mobs.utils.mobtype.MobType;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -59,8 +61,11 @@ public class MobSave {
 	private Boolean noRepel = false;
 	@JsonProperty
 	private Boolean noNatureDamage = false;
+	@JsonProperty
+	private HashSet<String> target=new HashSet<String>();
 	public MobSave(Mob mob) {
 		this.e = new LivingEntitySave((LivingEntity) mob.getE(), mob.getType());
+		this.target=mob.getTarget();
 		this.mobType = mob.getType().getName();
 		this.isAttrCover = mob.isAttrCover();
 		this.dmg = mob.getDmg();
@@ -124,10 +129,14 @@ public class MobSave {
 				spawn = wSpawn;
 			}
 		}
-
-		Mob m = new Mob(spawn, id, dmg, e.news(), drop, asSkills(skills), exp,
+		LivingEntity es = e.news();
+		Send.sendConsole("" + e.AEQPT()[0] + e.AEQPT()[1] + e.AEQPT()[2]
+				+ e.AEQPT()[3]);
+		Mob m = new Mob(spawn, es.getUniqueId().toString(), dmg, es,
+				drop,
+				asSkills(skills), exp,
 				isAttrCover, bossName, sName, rider, noRepel,
-				MobType.fromName(mobType), noNatureDamage, true);
+				MobType.fromName(mobType), noNatureDamage, true,target);
 		MobModel.getMobModel(sName).addMob(m);
 		return m;
 
@@ -210,9 +219,9 @@ public class MobSave {
 
 	public void BEQPT(List<ItemStack> list) {
 		ItemStack[] is = new ItemStack[list.size()];
-		for (int i = 0; i < list.size(); i++) {
+		for (int i = 0; i < list.size(); i++)
 			is[i] = list.get(i);
-		}
+
 
 		e.BEQPT(is);
 

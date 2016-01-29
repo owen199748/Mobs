@@ -12,6 +12,7 @@ import org.bukkit.potion.PotionEffectType;
 import pw.owen.mobs.bean.mob.DropItemStack;
 import pw.owen.mobs.bean.mob.Eqpt;
 import pw.owen.mobs.bean.mob.MobModel;
+import pw.owen.mobs.bean.mob.TargetSelect;
 import pw.owen.mobs.bean.skill.Skill;
 import pw.owen.mobs.command.PluginCommand;
 import pw.owen.mobs.run.Main;
@@ -231,6 +232,48 @@ public class MobModify_CMD implements PluginCommand {
 				return false;
 			}
 
+		} else if (args[0].equalsIgnoreCase("target")) {
+			if (args.length < 2)
+				return false;
+			if(args[1].equalsIgnoreCase("add")){
+				if (args.length != 3)
+					return false;
+				
+				TargetSelect tg = TargetSelect.valueOf(args[2]);
+				if(tg==null){
+					Send.sendPluginMessage(p, "该目标类型不存在.");
+					return true;
+				}
+				
+				if(!mm.getTarget().add(tg.name()))
+				{
+					
+					Send.sendPluginMessage(p, "该目标类型已存在.");
+					return true;
+				}
+			
+			}else if(args[1].equalsIgnoreCase("del")){
+				if (args.length  != 3)
+					return false;
+				if(!mm.getTarget().remove(args[2]))
+				{
+					Send.sendPluginMessage(p, "您要删除的目标类型不存在.");
+					return true;
+				}
+			}else if(args[1].equalsIgnoreCase("list")){
+				String str=mm.getsName()+"的攻击目标:";
+				for(int i=0;i<mm.getTarget().size();i++)
+				{
+					if(i!=0)
+						str+=",";
+					
+					str+=mm.getTarget().toArray()[i];
+					
+				}
+				Send.sendPluginMessage(p, str);
+				return true;
+				
+			}else return false;
 		} else if (args[0].equalsIgnoreCase("hp")) {
 			if (args.length == 2) {
 				mm.setHp(new HP(Integer.parseInt(args[1])));

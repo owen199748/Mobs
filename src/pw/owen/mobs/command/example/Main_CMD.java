@@ -17,6 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import pw.owen.mobs.bean.mob.Mob;
 import pw.owen.mobs.bean.mob.MobModel;
+import pw.owen.mobs.bean.mob.TargetSelect;
 import pw.owen.mobs.bean.skill.Skill;
 import pw.owen.mobs.bean.spawn.PointSpawn;
 import pw.owen.mobs.bean.spawn.Spawn;
@@ -177,7 +178,21 @@ public class Main_CMD implements PluginCommand {
 				Send.sendPluginMessage(p, str);
 
 				return true;
-			} else if (args[0].equalsIgnoreCase("reload")) {
+			} 
+			else if(args[1].equalsIgnoreCase("TargetType")){
+				String str="支持的攻击目标类型:";
+				for(int i=0;i<TargetSelect.values().length;i++)
+				{
+					if(i!=0)
+						str+=",";
+					
+					str+=TargetSelect.values()[i].name();
+					
+				}
+				Send.sendPluginMessage(p, str);
+				return true;
+			}
+			else if (args[0].equalsIgnoreCase("reload")) {
 				if (args.length == 1) {
 
 						Main.getCfg().load(Main.getF());

@@ -1,4 +1,4 @@
-# Mobs
+#Mobs
 Minecraft 插件
 用于制作带有RPG体系的怪物
 如需要提交BUG 请联系QQ:1160848437
