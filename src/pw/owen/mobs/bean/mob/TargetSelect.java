@@ -1,31 +1,33 @@
 package pw.owen.mobs.bean.mob;
 
-import org.bukkit.event.entity.EntityTargetEvent;
 
-public enum TargetSelect {
-	附近玩家(EntityTargetEvent.TargetReason.CLOSEST_PLAYER), 
-	碰撞(EntityTargetEvent.TargetReason.COLLISION), 
-	自定义(EntityTargetEvent.TargetReason.CUSTOM),
-	保卫村庄(EntityTargetEvent.TargetReason.DEFEND_VILLAGE), 
-	忘记目标(EntityTargetEvent.TargetReason.FORGOT_TARGET), 
-	创建者攻击目标(EntityTargetEvent.TargetReason.OWNER_ATTACKED_TARGET),
-	猪人选择目标(EntityTargetEvent.TargetReason.PIG_ZOMBIE_TARGET),
-	随机目标(EntityTargetEvent.TargetReason.RANDOM_TARGET), 
-	目标增援(EntityTargetEvent.TargetReason.REINFORCEMENT_TARGET),
-	目标攻击实体(EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY),
-	目标攻击附近实体(EntityTargetEvent.TargetReason.TARGET_ATTACKED_NEARBY_ENTITY),
-	目标攻击创建者(EntityTargetEvent.TargetReason.TARGET_ATTACKED_OWNER);
-	private EntityTargetEvent.TargetReason reason;
+public enum TargetSelect{
 
-	TargetSelect(EntityTargetEvent.TargetReason reason) {
+	附近玩家("CLOSEST_PLAYER"), 
+	碰撞("COLLISION"), 
+	自定义("CUSTOM"),
+	保卫村庄("DEFEND_VILLAGE"), 
+	忘记目标("FORGOT_TARGET"), 
+	创建者攻击目标("OWNER_ATTACKED_TARGET"),
+	猪人选择目标("PIG_ZOMBIE_TARGET"),
+	随机目标("RANDOM_TARGET"), 
+	目标增援("REINFORCEMENT_TARGET"),
+	目标攻击实体("TARGET_ATTACKED_ENTITY"),
+	目标攻击附近实体("TARGET_ATTACKED_NEARBY_ENTITY"),
+	目标攻击创建者("TARGET_ATTACKED_OWNER");
+
+	private String reason;
+
+	TargetSelect(String reason) {
 		this.reason = reason;
 	}
-	public EntityTargetEvent.TargetReason getReason() {
+
+public String getReason(){
 		return reason;
 	}
-	public static TargetSelect valuesOfReason(EntityTargetEvent.TargetReason reason) {
+	public static TargetSelect valuesOfReason(String string) {
 		for(int i=0;i<values().length;i++)
-			if(values()[i].getReason()==reason)
+			if(values()[i].getReason().equals(string))
 				return values()[i];
 		return null;
 	}

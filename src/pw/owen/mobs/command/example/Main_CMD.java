@@ -179,7 +179,7 @@ public class Main_CMD implements PluginCommand {
 
 				return true;
 			} 
-			else if(args[1].equalsIgnoreCase("TargetType")){
+			else if(args[0].equalsIgnoreCase("TargetType")){
 				String str="支持的攻击目标类型:";
 				for(int i=0;i<TargetSelect.values().length;i++)
 				{

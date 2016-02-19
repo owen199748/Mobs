@@ -4,6 +4,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -81,7 +82,15 @@ public class AutoListener implements Listener {
 			}
 
 	}
-
+	@EventHandler
+	public void etse(CreatureSpawnEvent cse) {
+		if(cse.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM)
+			if(!Main.canSpawnEntity(cse.getEntity(),cse.getLocation().getWorld()))
+				cse.setCancelled(true);
+			}
+	
+	
+	
 	@EventHandler
 	public void ete(EntityTargetEvent ete) {
 
@@ -90,7 +99,7 @@ public class AutoListener implements Listener {
 
 		if (m1 != null)
 			if (ete.getReason() != EntityTargetEvent.TargetReason.TARGET_DIED)
-				if (!m1.isTarget(ete.getReason()))
+				if (!m1.isTarget(ete.getReason().name()))
  {
 					ete.setCancelled(true);
 					return;

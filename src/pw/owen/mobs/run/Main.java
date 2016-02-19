@@ -25,6 +25,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
@@ -489,32 +492,10 @@ public class Main extends JavaPlugin {
 
 		}
 
-		List<World> ws = Bukkit.getServer().getWorlds();
-		for (int i = 0; i < ws.size(); i++) {
-			boolean m = true;
-			boolean a = true;
-			MonsterSpawnBannedWorld = (ArrayList<String>) cfg
-					.getList("MonsterSpawnBannedWorld");
-			AnimalSpawnBannedWorld = (ArrayList<String>) cfg
-					.getList("AnimalSpawnBannedWorld");
-			if (MonsterSpawnBannedWorld != null)
-				for (int r = 0; r < MonsterSpawnBannedWorld.size(); r++) {
-					if (MonsterSpawnBannedWorld.get(r).equalsIgnoreCase(
-							ws.get(i).getName())) {
-						m = false;
-					}
-				}
-
-			if (AnimalSpawnBannedWorld != null)
-				for (int r = 0; r < AnimalSpawnBannedWorld.size(); r++) {
-					if (AnimalSpawnBannedWorld.get(r).equalsIgnoreCase(
-							ws.get(i).getName())) {
-						a = false;
-					}
-				}
-			ws.get(i).setSpawnFlags(m, a);
-
-		}
+		MonsterSpawnBannedWorld = (ArrayList<String>) cfg
+				.getList("MonsterSpawnBannedWorld");
+		AnimalSpawnBannedWorld = (ArrayList<String>) cfg
+				.getList("AnimalSpawnBannedWorld");
 	}
 
 	public static void saveYml() throws IOException {
@@ -652,6 +633,28 @@ public class Main extends JavaPlugin {
 			return newSection;
 		}
 		return newSection;
+	}
+
+
+	public static boolean canSpawnEntity(LivingEntity e, World w) {
+	
+		if(e instanceof Animals){
+			if(AnimalSpawnBannedWorld==null)
+				return true;
+			else for(int i=0;i<AnimalSpawnBannedWorld.size();i++)
+				if(AnimalSpawnBannedWorld.get(i).equals(w.getName()))
+					return false;
+		}
+		else if(e instanceof Monster){
+			if(MonsterSpawnBannedWorld==null)
+				return true;
+			else for(int i=0;i<MonsterSpawnBannedWorld.size();i++)
+				if(MonsterSpawnBannedWorld.get(i).equals(w.getName()))
+					return false;
+		}
+		
+		
+		return true;
 	}
 
 }

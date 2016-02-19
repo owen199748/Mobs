@@ -15,7 +15,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.inventory.ItemStack;
 
 import pw.owen.mobs.bean.skill.Skill;
@@ -458,8 +457,8 @@ public HashSet<String> getTarget() {
 		return null;
 
 	}
-	public boolean isTarget(TargetReason reason) {
-TargetSelect tg = TargetSelect.valuesOfReason(reason);
+	public boolean isTarget(String string) {
+TargetSelect tg = TargetSelect.valuesOfReason(string);
 
 			if(tg!=null)
 				for(int i=0;i<target.size();i++)

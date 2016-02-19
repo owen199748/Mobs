@@ -153,66 +153,94 @@ public class WorldSpawn extends Spawn {
 		ArrayList<Location> loc = new ArrayList<Location>();
 		for (int s = 0; s < getWorld().size(); s++) {
 			World w = getWorld().get(s);
-
 			if (w != null)
 				if (w.getPlayers().size() != 0)
 				if (is())
 
  {
-
-					Player p = w.getPlayers().get(
-							(int) (w.getPlayers().size() * Math.random()));
-
-					int x = p.getLocation().getBlockX()
-							+ (((int) (Math.random() * (getPlayerNearby() * 2))) - getPlayerNearby());
-					int z = p.getLocation().getBlockZ()
-							+ (((int) (Math.random() * (getPlayerNearby() * 2))) - getPlayerNearby());
-					int y1 = -1;
-					int y2 = -1;
-					int y = -1;
-					for (int i = p.getLocation().getBlockY(); i <= w
-							.getMaxHeight(); i++) {
-						if (w.getBlockAt(x, i, z).getType().name()
-								.equalsIgnoreCase(Material.AIR.name()))
-							;
-						{
-							if (!w.getBlockAt(x, i - 1, z).getType().name()
-									.equalsIgnoreCase(Material.AIR.name())) {
-								y1 = i;
-								break;
-							}
-						}
-					}
-					for (int i = p.getLocation().getBlockY(); i >= 0; i--) {
-						if (w.getBlockAt(x, i, z).getType().name()
-								.equalsIgnoreCase(Material.AIR.name()))
-							;
-						{
-							if (!w.getBlockAt(x, i - 1, z).getType().name()
-									.equalsIgnoreCase(Material.AIR.name())) {
-								y2 = i + 1;
-								break;
-							}
-						}
-					}
-
-					if (Math.abs(y1 - p.getLocation().getBlockY()) > Math
-							.abs(y2 - p.getLocation().getBlockY())) {
-						y = y2;
-					} else {
-						y = y1;
-					}
-
-					if (y == -1)
-						continue;
-
-					loc.add(new Location(w, x, y, z));
-
+Location loco=getRandomLocation(w);
+if(loco!=null)
+	loc.add(loco);
 
 				}
 
 		}
 		return loc;
+	}
+
+	private Location getRandomLocation(World w) {
+
+		Player p = w.getPlayers().get(
+				(int) (w.getPlayers().size() * Math.random()));
+
+		return getRandomLocation(p,w);
+	}
+	private Location getRandomLocation(Player p, World w){
+		return getRandomLocation(p, w,0);
+	}
+	private Location getRandomLocation(Player p, World w,int i) {
+		if(i>=15)
+			return null;
+		int x = p.getLocation().getBlockX()
+				+ (((int) (Math.random() * (getPlayerNearby() * 2))) - getPlayerNearby());
+		int z = p.getLocation().getBlockZ()
+				+ (((int) (Math.random() * (getPlayerNearby() * 2))) - getPlayerNearby());
+		
+		Location loc = getRandomLocationOnY(x,p.getLocation().getBlockY(),z,w);
+		if(loc!=null)
+		return loc;
+		else
+		return getRandomLocation(p, w,i++);
+	}
+
+	private Location getRandomLocationOnY(int x, int startY, int z, World w) {
+
+int i=0;		
+while(true){
+	if(canSpawn(new Location(w,x,startY+i,z)))
+	return getGroundLocation(w,x,startY+i,z);
+	
+	if(canSpawn(new Location(w,x,startY-i,z)))
+	return getGroundLocation(w,x,startY-i,z);
+	
+	i++;
+	
+	if(startY-i<0&&startY+i>w.getMaxHeight())
+		return null;
+		
+}
+
+	
+	}
+
+
+
+	private Location getGroundLocation(World w, int x, int i, int z) {
+		Location loc = new Location(w,x,i,z);
+	while(true){
+		if(loc.getBlock().getType() != Material.AIR)
+		{loc=loc.add(0, 1, 0);
+		loc.setX(loc.getBlockX());
+		loc.setY(loc.getBlockY());
+		loc.setZ(loc.getBlockZ());
+			return loc;}
+		loc=loc.add(0, -1, 0);
+		
+		if(loc.getBlockY()<0)
+			return null;
+	}
+
+	}
+
+	private boolean canSpawn(Location location) {
+	if(location.getBlock().getType() != Material.AIR)
+		return false;
+	Location loc1 = location.clone();
+	if(loc1.add(0, 1, 0).getBlock().getType() != Material.AIR)
+		return false;
+	if(location.add(0, -1, 0).getBlock().getType() != Material.AIR)
+		return false;
+		return true;
 	}
 
 	public ArrayList<Location> getLocOnPlayerNum() {
@@ -223,51 +251,9 @@ public class WorldSpawn extends Spawn {
 			for (int l = 0; l < w.getPlayers().size(); l++) {
 				Player p = w.getPlayers().get(l);
 				if (is()) {
-					int x = p.getLocation().getBlockX()
-							+ (((int) (Math.random() * (getPlayerNearby() * 2))) - getPlayerNearby());
-					int z = p.getLocation().getBlockZ()
-							+ (((int) (Math.random() * (getPlayerNearby() * 2))) - getPlayerNearby());
-					int y1 = -1;
-					int y2 = -1;
-					int y = -1;
-					for (int i = p.getLocation().getBlockY(); i <= w
-							.getMaxHeight(); i++) {
-						if (w.getBlockAt(x, i, z).getType().name()
-								.equalsIgnoreCase(Material.AIR.name()))
-							;
-						{
-							if (!w.getBlockAt(x, i - 1, z).getType().name()
-									.equalsIgnoreCase(Material.AIR.name())) {
-								y1 = i;
-								break;
-							}
-						}
-					}
-					for (int i = p.getLocation().getBlockY(); i >= 0; i--) {
-						if (w.getBlockAt(x, i, z).getType().name()
-								.equalsIgnoreCase(Material.AIR.name()))
-							;
-						{
-							if (!w.getBlockAt(x, i - 1, z).getType().name()
-									.equalsIgnoreCase(Material.AIR.name())) {
-								y2 = i + 1;
-								break;
-							}
-						}
-					}
-
-					if (Math.abs(y1 - p.getLocation().getBlockY()) > Math
-							.abs(y2 - p.getLocation().getBlockY())) {
-						y = y2;
-					} else {
-						y = y1;
-					}
-
-					if (y == -1)
-						continue;
-
-					loc.add(new Location(w, x, y, z));
-
+					Location loco = getRandomLocation(p, w);
+					if(loco!=null)
+						loc.add(loco);
 				}
 			}
 
@@ -329,7 +315,7 @@ public class WorldSpawn extends Spawn {
 		String s6 = "刷新几率是否考虑玩家数:" + onPlayerNum;
 		String s7 = "  刷新世界:";
 		for (int i = 0; i < world.size(); i++) {
-			s6 += ("\n    " + world.get(i).getName());
+			s7 += ("\n    " + world.get(i).getName());
 		}
 
 		return getMainSee() + "\n" + s1 + "\n" + s2 + "\n" + s3 + "\n" + s4
