@@ -2,6 +2,7 @@ package pw.owen.mobs.bean.skill.example;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -11,8 +12,7 @@ import org.bukkit.event.Event;
 import pw.owen.mobs.bean.mob.Mob;
 import pw.owen.mobs.bean.skill.Skill;
 import pw.owen.mobs.utils.Calc;
-import pw.owen.mobs.utils.ParticleEffect.ParticleEffect;
-import pw.owen.mobs.utils.ParticleEffect.ParticleEffect.ParticleProperty;
+
 
 
 
@@ -72,22 +72,10 @@ public class Skill_Particle extends Skill {
 		// TODO 自动生成的方法存根
 
 		String str = "";
-		for (int i = 0; i < ParticleEffect.values().length; i++)
-			if (ParticleEffect.values()[i].isSupported())
-				if (ParticleEffect.values()[i]
-						.hasProperty(ParticleProperty.DIRECTIONAL))
-					if (!ParticleEffect.values()[i]
-							.hasProperty(ParticleProperty.COLORABLE))
-						if (!ParticleEffect.values()[i]
-								.hasProperty(ParticleProperty.REQUIRES_DATA))
-							if (!ParticleEffect.values()[i]
-									.hasProperty(ParticleProperty.REQUIRES_WATER))
-								if (i == 0)
-									str = ParticleEffect.values()[i].getName();
-								else
+		for (int i = 0; i < Particle.values().length; i++)
 									str += ","
-											+ ParticleEffect.values()[i]
-													.getName();
+											+ Particle.values()[i].name();
+													
 
 		return "技能类型:粒子技能\n"
 				+ "技能介绍:释放一个粒子效果.\n"
@@ -176,18 +164,10 @@ public class Skill_Particle extends Skill {
 	}
 
 	public void run(Mob mob, Entity e, Event event) {
-		ParticleEffect par = ParticleEffect.fromName(Ptype);
+		if(!(e instanceof Player))
+			return;
+		Particle par = Particle.valueOf(Ptype);
 		if (par == null)
-			return;
-		if (!par.isSupported())
-			return;
-		if (!par.hasProperty(ParticleProperty.DIRECTIONAL))
-			return;
-		if (par.hasProperty(ParticleProperty.COLORABLE))
-			return;
-		if (par.hasProperty(ParticleProperty.REQUIRES_DATA))
-			return;
-		if (par.hasProperty(ParticleProperty.REQUIRES_WATER))
 			return;
 
 		World w = Bukkit.getWorld(world.replaceAll("%w%", e.getWorld()
@@ -210,8 +190,11 @@ public class Skill_Particle extends Skill {
 		if(loc==null)
 			return;
 
-		par.display(0, 0, 0, speed, amount, loc, 32);
+		Player p = (Player)e;
 
+	p.spawnParticle(par, loc, amount);
+
+		
 	}
 
 

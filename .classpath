@@ -5,6 +5,6 @@
 	<classpathentry kind="lib" path="E:/jackson-core-2.2.3.jar"/>
 	<classpathentry kind="lib" path="E:/jackson-databind-2.2.3.jar"/>
 	<classpathentry kind="lib" path="E:/jackson-annotations-2.2.3.jar"/>
-	<classpathentry kind="lib" path="E:/MinecraftServer/spigot1.8.8/server.jar"/>
+	<classpathentry kind="lib" path="E:/MinecraftServer/spigot1.9/spigot_server.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

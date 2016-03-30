@@ -173,10 +173,10 @@ if(loco!=null)
 		Player p = w.getPlayers().get(
 				(int) (w.getPlayers().size() * Math.random()));
 
-		return getRandomLocation(p,w);
+		return getRandomLocation(p);
 	}
-	private Location getRandomLocation(Player p, World w){
-		return getRandomLocation(p, w,0);
+	private Location getRandomLocation(Player p){
+		return getRandomLocation(p, p.getWorld(),0);
 	}
 	private Location getRandomLocation(Player p, World w,int i) {
 		if(i>=15)
@@ -251,7 +251,7 @@ while(true){
 			for (int l = 0; l < w.getPlayers().size(); l++) {
 				Player p = w.getPlayers().get(l);
 				if (is()) {
-					Location loco = getRandomLocation(p, w);
+					Location loco = getRandomLocation(p);
 					if(loco!=null)
 						loc.add(loco);
 				}

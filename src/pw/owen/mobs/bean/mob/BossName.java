@@ -4,11 +4,13 @@ public class BossName {
 	private boolean isEnable;
 	private String value;
 	private int nearby;
+	private ShowType showType=ShowType.ACTIONBAR;
 
 	public BossName() {
 		isEnable = false;
 		value = "%name% ¡ì6[%bar%¡ì6] ¡ì4%maxhp%¡ìe/¡ìc%hp%";
 		nearby = 20;
+		showType=ShowType.ACTIONBAR;
 	}
 
 	public BossName(boolean isEnable, String value, int nearby) {
@@ -16,6 +18,16 @@ public class BossName {
 		this.value = value;
 		this.nearby = nearby;
 
+	}
+	public BossName(boolean isEnable, String value, int nearby,ShowType showType) {
+	this(isEnable,value,nearby);
+	this.showType=showType;
+	}
+	public ShowType getShowType() {
+		return showType;
+	}
+	public void setShowType(ShowType showType) {
+		this.showType = showType;
 	}
 
 	public int getNearby() {

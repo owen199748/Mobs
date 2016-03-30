@@ -17,6 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import pw.owen.mobs.bean.mob.Mob;
 import pw.owen.mobs.bean.mob.MobModel;
+import pw.owen.mobs.bean.mob.ShowType;
 import pw.owen.mobs.bean.mob.TargetSelect;
 import pw.owen.mobs.bean.skill.Skill;
 import pw.owen.mobs.bean.spawn.PointSpawn;
@@ -168,6 +169,21 @@ public class Main_CMD implements PluginCommand {
 				List<String> ll = new ArrayList<String>();
 				for (int i = 0; i < MobType.values().length; i++)
 					ll.add(MobType.values()[i].getName());
+
+				Collections.sort(ll);
+				for (int i = 0; i < ll.size(); i++) {
+					if (i != 0)
+						str += ",";
+					str += ll.get(i);
+				}
+				Send.sendPluginMessage(p, str);
+
+				return true;
+			} else if (args[0].equalsIgnoreCase("ShowType")) {
+				String str = "支持的怪物名称显示类型:";
+				List<String> ll = new ArrayList<String>();
+				for (int i = 0; i < ShowType.values().length; i++)
+					ll.add(ShowType.values()[i].name());
 
 				Collections.sort(ll);
 				for (int i = 0; i < ll.size(); i++) {

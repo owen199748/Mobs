@@ -127,14 +127,15 @@ public class MobModel {
 		String s25 = "    是否开启:" + bossName.isEnable();
 		String s26 = "    显示内容:" + bossName.getValue();
 		String s27 = "    显示范围:" + bossName.getNearby();
-		String s28 = "自带药水属性:" + potion.size() + "种";
+		String s28 =  "    显示范围:" + bossName.getShowType().name();
+		String s29 = "自带药水属性:" + potion.size() + "种";
 
 		return s1 + "\n" + s1 + "\n" + s2 + "\n" + s3 + "\n" + s4 + "\n" + s5
 				+ "\n" + s6 + "\n" + s7 + "\n" + s8 + "\n" + s9 + "\n" + s10
 				+ "\n" + s11 + "\n" + s12 + "\n" + s13 + "\n" + s14 + "\n"
 				+ s15 + "\n" + s16 + "\n" + s17 + "\n" + s18 + "\n" + s19
 				+ "\n" + s20 + "\n" + s21 + "\n" + s22 + "\n" + s23 + "\n"
-				+ s24 + "\n" + s25 + "\n" + s26 + "\n" + s27 + "\n" + s28;
+				+ s24 + "\n" + s25 + "\n" + s26 + "\n" + s27 + "\n" + s28 + "\n" + s29;
 
 	}
 
@@ -284,7 +285,7 @@ public class MobModel {
 		ConfigurationSection boss = cfg.getConfigurationSection("bossName");
 		if (boss != null) {
 			bossName = new BossName(boss.getBoolean("isEnable"),
-					boss.getString("value"), boss.getInt("nearby"));
+					boss.getString("value"), boss.getInt("nearby"),ShowType.valueOf("showType"));
 			if (Main.bukkitVer < 1.8)
 				bossName.setEnable(false);
 		}
@@ -455,6 +456,8 @@ if(all.length!=3)
 				bossName.getValue());
 		cfg.getConfigurationSection("bossName").set("nearby",
 				bossName.getNearby());
+		cfg.getConfigurationSection("bossName").set("showType",
+				bossName.getShowType().name());
 		cfg.set("hp_max", hp.getMax());
 		cfg.set("hp_min", hp.getMin());
 		cfg.set("dmg_min", dmg.getMin());

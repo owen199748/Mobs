@@ -12,6 +12,7 @@ import org.bukkit.potion.PotionEffectType;
 import pw.owen.mobs.bean.mob.DropItemStack;
 import pw.owen.mobs.bean.mob.Eqpt;
 import pw.owen.mobs.bean.mob.MobModel;
+import pw.owen.mobs.bean.mob.ShowType;
 import pw.owen.mobs.bean.mob.TargetSelect;
 import pw.owen.mobs.bean.skill.Skill;
 import pw.owen.mobs.command.PluginCommand;
@@ -392,6 +393,17 @@ public class MobModify_CMD implements PluginCommand {
 				if (args.length != 3)
 					return false;
 				mm.getBossName().setNearby(Integer.parseInt(args[2]));
+			}else if (args[1].equalsIgnoreCase("showType")) {
+				if (args.length != 3)
+					return false;
+				
+				ShowType show = ShowType.valueOf(args[2]);
+				if(show==null){
+					Send.sendPluginMessage(p, "该显示类型不存在");
+					return true;
+				}
+			
+				mm.getBossName().setShowType(show);
 			}
 
 		} else if (args[0].equalsIgnoreCase("copy")) {

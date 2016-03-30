@@ -7,6 +7,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import pw.owen.mobs.bean.mob.Mob;
+import pw.owen.mobs.bean.mob.ShowType;
 import pw.owen.mobs.utils.TitleAPI;
 
 public class TitleShows implements Runnable {
@@ -27,14 +28,14 @@ public class TitleShows implements Runnable {
 			Player p = (Player) key[i];
 			Mob m = players.get(p);
 			if (m == null) {
-				setNull(p);
+				setNull(p,m);
 				continue;
 			}
 			if (m.getE().isDead())
  {
 
 				players.put(p, null);
-				setNull(p);
+				setNull(p,m);
 				continue;
 			}
 
@@ -42,7 +43,7 @@ public class TitleShows implements Runnable {
 					&& !m.getE().getWorld().getName()
 							.equals(p.getWorld().getName())) {
 				players.put(p, null);
-				setNull(p);
+				setNull(p,m);
 				continue;
 			}
 
@@ -53,12 +54,12 @@ public class TitleShows implements Runnable {
 							.getNearby())
  {
 						players.put(p, null);
-						setNull(p);
+						setNull(p,m);
 						continue;
 					}
 
-
-						TitleAPI.sendActionBar(p, getShow(10, m));
+show(p, getShow(10, m),m);
+						
 
 		}
 
@@ -66,10 +67,7 @@ public class TitleShows implements Runnable {
 
 	}
 
-	private void setNull(Player p) {
-		TitleAPI.sendActionBar(p, "");
-
-	}
+	
 
 	private String getShow(int l, Mob m) {
 		String v = m
@@ -125,11 +123,44 @@ public class TitleShows implements Runnable {
 		players.put(p, m);
 
 	}
+	public static void show(Player p, String show, Mob m) {
+if(m.getBossName()!=null){
+	ShowType type = m.getBossName().getShowType();
+	if(type!=null){
+	if(type==ShowType.ACTIONBAR)
+		TitleAPI.sendActionBar(p,show);
+	else if(type==ShowType.SUBTITLE)
+p.sendTitle("", show);
+		else if(type==ShowType.TITLE)
+			p.sendTitle(show, "");
+
+	}
+}
+	}
+
+	public static void setNull(Player p, Mob m) {
+	show(p, "", m);
+	}
+	public static void close(Player p,Mob m) {
+		players.put(p, null);
+		setNull(p,m);
+	}
 
 	public static void close(Player p) {
 		players.put(p, null);
-		TitleAPI.sendActionBar(p, "");
-
+		setNull(p);
 	}
+
+	private static void setNull(Player p) {
+
+		TitleAPI.sendActionBar(p,"");
+
+p.sendTitle("", "");
+
+			p.sendTitle("", "");
+	
+		
+	}
+
 
 }
